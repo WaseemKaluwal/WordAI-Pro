@@ -227,7 +227,12 @@ const AIProvider = (() => {
       throw new Error(msg);
     }
     const data = await res.json();
-    return { text: p.extractText(data), tokens: p.extractTokens(data) };
+    let text = p.extractText(data) || '';
+    if (text.includes('<think>')) {
+      text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      text = text.replace(/<think>[\s\S]*$/gi, '').trim();
+    }
+    return { text, tokens: p.extractTokens(data) };
   }
 
   async function call(messages) {

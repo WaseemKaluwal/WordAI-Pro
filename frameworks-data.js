@@ -942,5 +942,576 @@ We retain personal data only for as long as necessary to fulfill service purpose
 * Publish transparent root-cause analysis (RCA) within 72 hours of incident resolution.
 * Outline 3 concrete structural engineering or policy safeguards implemented to ensure non-recurrence.`,
     aiPrompt: 'You are an executive crisis communications specialist and corporate PR counsel. Write an emergency Incident Crisis Response Playbook with severity classification tables, holding statements, media FAQ playbooks, and post-mortem debrief procedures.'
+  },
+
+  // ─── 🎯 Career & Professional CV / Resume Studio ───────────────────────────
+  'banking-finance-resume': {
+    id: 'banking-finance-resume',
+    title: '🏦 Banking & Financial Services CV / Resume',
+    category: 'career',
+    badge: 'Banking',
+    desc: 'High-impact resume tailored for Commercial Banking, Credit Risk Underwriting, AML/KYC Compliance, Branch Management, and Financial Analysis.',
+    sections: ['Candidate Header & Contact Info', 'Executive Banking Profile', 'Core Banking & Financial Competencies Matrix', 'Professional Banking Experience', 'Quantitative Lending & Risk Metrics', 'Education & Banking Certifications (CAMS, JAIBP, CFA)', 'Key Banking Achievements & Honors'],
+    skeleton: `# [CANDIDATE FULL NAME]
+**Senior Banking Operations & Credit Risk Specialist**
+\`📧 [email@domain.com]\` • \`📱 [+1 (555) 019-2834]\` • \`📍 [City, State / Country]\` • \`🔗 [linkedin.com/in/profile]\`
+
+---
+
+## Executive Professional Profile
+[Seasoned Banking & Financial Services Professional with **[X]+ years** of demonstrated leadership in commercial lending, credit risk underwriting, and branch operations across premier financial institutions. Proven track record managing **$[XX]M+** loan portfolios, reducing Non-Performing Loans (NPL) by **[X]%**, and maintaining **100% regulatory compliance** across State Bank / Federal Reserve / Basel III / AML-KYC mandates.]
+
+---
+
+## 🏦 Core Banking & Financial Competencies
+
+| Banking Operations & Lending | Risk Management & Compliance | Financial Systems & Analytics |
+| :--- | :--- | :--- |
+| • Commercial & Retail Credit Appraisal | • AML / CFT & CDD Compliance (FATF) | • Core Banking (Temenos T24 / Finacle) |
+| • Loan Syndication & SME Financing | • Basel III & IFRS 9 Risk Governance | • Advanced Financial Modeling (DCF / LBO) |
+| • Treasury & Cash Management | • Credit Risk Grading & Internal Audit | • Bloomberg Terminal & Reuters Eikon |
+| • Trade Finance (L/C, Guarantees) | • Non-Performing Loan (NPL) Remediation | • ERP Accounting (SAP FI-CO / Oracle) |
+
+---
+
+## 💼 Professional Banking Experience
+
+### **[Senior Commercial Credit Officer / Branch Manager]** | [Premier Commercial Bank Name]
+*[City, Country] • [Month, Year] – Present*
+* Managed and expanded a diversified corporate and SME lending portfolio valued at **$[XX]M**, achieving **[XX]% YoY portfolio growth** while maintaining zero defaults.
+* Spearheaded end-to-end credit appraisal, financial statement analysis, debt-service coverage (DSCR), and collateral valuation for **[XX]+ enterprise credit applications** annually.
+* Enforced strict Anti-Money Laundering (AML), Counter-Terrorist Financing (CFT), and Know Your Customer (KYC) protocols, securing a **100% Satisfactory** rating in internal and regulatory audits.
+* Restructured **$[X.X]M** in distressed credit facilities, reducing overall institutional Non-Performing Loan (NPL) ratio from **[X.X]% to [X.X]%** within 18 months.
+* Mentored and led a cross-functional team of **[XX] relationship managers and credit analysts**, exceeding annual deposit acquisition targets by **[XX]% ($[XX]M)**.
+
+### **[Credit Analyst / Relationship Associate]** | [National Investment / Commercial Bank]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Conducted rigorous ratio analysis, sensitivity stress-testing, and cash flow projections for corporate working capital lines and term finance facilities up to **$[XX]M**.
+* Drafted high-stakes Credit Approval Memos (CAM) submitted directly to the Executive Credit Committee for multi-million dollar syndications.
+* Automated credit monitoring workflows using core banking queries, accelerating credit file turnaround times by **[XX]%** without compromising risk tolerances.
+
+---
+
+## 🎓 Academic Credentials & Banking Certifications
+
+| Degree / Professional Credential | Institution / Awarding Body | Year Completed |
+| :--- | :--- | :--- |
+| **Master of Science (MS) in Banking & Finance / MBA** | [University Name, City] | [Year] |
+| **Certified Anti-Money Laundering Specialist (CAMS)** | ACAMS (Association of Certified AML Specialists) | [Year] |
+| **Chartered Financial Analyst (CFA) / FRM** | CFA Institute / GARP | [Year] |
+| **Junior / Senior Associate Banking Diploma (JAIBP / AIB)** | Institute of Bankers / Professional Banking Academy | [Year] |
+
+---
+
+## 🏆 Key Achievements & Banking Honors
+* **Best Branch / Relationship Manager of the Year ([Year]):** Recognized across the [Region] network for highest asset growth (**+$[XX]M**) and lowest credit loss provision.
+* **Special Regulatory Commendation:** Led seamless digital transition to Core Banking System (T24 / Finacle) with zero data discrepancy or operational downtime.`,
+    aiPrompt: 'You are an executive banking recruiter and commercial banking talent partner. Write an elite, ATS-optimized Banking & Financial Services CV/Resume with high-impact Google XYZ metric bullets, Basel III / AML-KYC compliance, lending portfolio metrics, and core banking technical expertise.'
+  },
+
+  'executive-leadership-resume': {
+    id: 'executive-leadership-resume',
+    title: '💼 Executive Leadership & Management Resume',
+    category: 'career',
+    badge: 'Executive',
+    desc: 'Boardroom-ready CV for C-Suite, VP, General Managers, and Management Consultants with P&L scale, M&A, and organizational transformation achievements.',
+    sections: ['Executive Header', 'Value Proposition & Vision', 'Core Executive Competencies', 'Career Milestones & P&L Scale', 'Board Advisory & Governance', 'Education & Credentials'],
+    skeleton: `# [EXECUTIVE FULL NAME]
+**Chief Executive Officer / Chief Operating Officer / Vice President**
+\`📧 [executive@domain.com]\` • \`📱 [+1 (555) 492-1102]\` • \`📍 [City, State / Country]\` • \`🔗 [linkedin.com/in/executive]\`
+
+---
+
+## Executive Value Proposition
+[Transformational C-Suite Executive with **[XX]+ years** orchestrating sustainable top-line growth, operational excellence, and enterprise valuation expansion across multinational corporations. Architect of global go-to-market strategies and post-merger integrations yielding **$[XXX]M+ in enterprise value**.]
+
+---
+
+## ⚡ Core Executive Competencies
+
+| Strategic Vision & P&L | Operational Excellence | Stakeholder Governance |
+| :--- | :--- | :--- |
+| • Global P&L Management ($[XXX]M+) | • Operational Scaling & LEAN Delivery | • Board of Directors Advisory & Reporting |
+| • Mergers & Acquisitions (M&A) Due Diligence | • Supply Chain & Digital Automation | • Investor Relations & Venture Capital |
+| • Enterprise Market Expansion & GTM | • Culture Transformation & Talent Retention | • Regulatory Compliance & Enterprise Risk |
+
+---
+
+## 💼 Executive Leadership Experience
+
+### **[Chief Operating Officer / Vice President]** | [Multinational Enterprise Corporation]
+*[City, Country] • [Month, Year] – Present*
+* Stewarded enterprise operations and full P&L accountability for **$[XXX]M** annual operating budget across 5 global regions with **[X,XXX]+ personnel**.
+* Delivered **[XX]% EBITDA margin expansion** in 24 months by restructuring procurement contracts and deploying automated cloud enterprise resource planning.
+* Led operational integration of a **$[XX]M strategic acquisition**, capturing **$[XX]M in annualized synergies** 4 months ahead of schedule.
+* Reduced voluntary high-performer turnover from **[XX]% to [X]%** by engineering a transparent merit-based equity compensation framework.
+
+### **[Managing Director / Senior Vice President]** | [High-Growth Enterprise Firm]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Scaled business unit revenue from **$[XX]M to $[XXX]M** over 4 years through systematic geographic expansion and strategic tier-1 enterprise partnerships.
+* Chaired Executive Risk and Capital Allocation Committees, sanctioning multi-million dollar R&D and capital expenditure initiatives.
+
+---
+
+## 🎓 Executive Education & Board Credentials
+
+| Credential / Program | Institution | Year |
+| :--- | :--- | :--- |
+| **Master of Business Administration (MBA)** | [Prestigious Business School, e.g. Harvard / Wharton / INSEAD] | [Year] |
+| **Certified Corporate Director (Governance)** | [Institute of Corporate Directors / NACD] | [Year] |
+| **Bachelor of Science (B.Sc.) in Engineering / Economics** | [University Name] | [Year] |`,
+    aiPrompt: 'You are an elite executive search partner at Spencer Stuart. Draft a boardroom-ready Executive Leadership Resume emphasizing multi-million dollar P&L scale, EBITDA margin expansion, M&A integration, and governance.'
+  },
+
+  'tech-software-resume': {
+    id: 'tech-software-resume',
+    title: '💻 Modern Tech & Software Engineer CV',
+    category: 'career',
+    badge: 'Tech',
+    desc: 'Modern technical resume with two-column skills matrix (Languages, Cloud, System Design), high-scale architectural impact, and open-source contributions.',
+    sections: ['Header & Socials', 'Technical Summary', 'Skills & Infrastructure Matrix', 'Software Engineering Experience', 'System Architecture Highlights', 'Education & Cloud Certifications'],
+    skeleton: `# [DEVELOPER FULL NAME]
+**Staff / Senior Full Stack Software Engineer & Cloud Architect**
+\`📧 [dev@domain.com]\` • \`📱 [+1 (555) 782-9341]\` • \`📍 [City, State / Country]\` • \`💻 [github.com/profile]\` • \`🔗 [linkedin.com/in/profile]\`
+
+---
+
+## Technical Profile
+[Forward-thinking Senior Software Engineer with **[X]+ years** architecting distributed, fault-tolerant cloud systems handling **[XX]M+ daily active requests**. Deep expertise across modern JavaScript/TypeScript, Python, Go, microservices, containerization, and enterprise cloud infrastructure (AWS/GCP).]
+
+---
+
+## 🛠️ Technical Skills & Infrastructure Matrix
+
+| Category | Core Competencies & Technologies |
+| :--- | :--- |
+| **Programming Languages** | TypeScript, JavaScript (ESNext), Python, Go, SQL, HTML5/CSS3 |
+| **Frameworks & Libraries** | React.js, Next.js, Node.js, Express, FastAPI, Django, TailwindCSS |
+| **Databases & Caching** | PostgreSQL, MySQL, Redis, MongoDB, Elasticsearch, DynamoDB |
+| **Cloud & DevOps (CI/CD)** | AWS (ECS, Lambda, S3, RDS), Docker, Kubernetes, Terraform, GitHub Actions |
+| **Architecture & Testing** | Microservices, Event-Driven (Kafka/RabbitMQ), RESTful, GraphQL, Jest, Cypress |
+
+---
+
+## 💼 Software Engineering Experience
+
+### **[Senior Full Stack Engineer / Tech Lead]** | [Leading Tech Enterprise / SaaS Startup]
+*[City, Country] • [Month, Year] – Present*
+* Architected and delivered a distributed real-time messaging pipeline handling **[XX]K events/sec**, reducing API response latency by **[XX]% (from 420ms to 85ms)**.
+* Directed migration from legacy monolithic architecture to containerized microservices on AWS EKS, resulting in a **[XX]% reduction in monthly AWS cloud expenditure ($[XX]K/yr)**.
+* Spearheaded full-stack engineering for core customer portal serving **[XXX]K+ active users**, boosting user session retention by **[XX]%**.
+* Instituted automated CI/CD deployment gates and test suites (Jest/Cypress), elevating overall unit test coverage from **[XX]% to [XX]%**.
+
+### **[Software Engineer]** | [Technology Solutions Firm]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Developed high-throughput RESTful and GraphQL APIs in Node.js and PostgreSQL, achieving **99.99% uptime SLA**.
+* Designed caching tier with Redis, decreasing database read pressure by **[XX]%** during high-concurrency peak traffic periods.
+
+---
+
+## 🎓 Education & Cloud Certifications
+
+| Certification / Degree | Issuing Organization | Year |
+| :--- | :--- | :--- |
+| **AWS Certified Solutions Architect – Professional** | Amazon Web Services | [Year] |
+| **Certified Kubernetes Administrator (CKA)** | Linux Foundation / CNCF | [Year] |
+| **B.S. in Computer Science / Software Engineering** | [University Name, City] | [Year] |`,
+    aiPrompt: 'You are a Principal Software Engineer and tech hiring manager at Google. Write an elite Software Engineer Resume with quantified Google XYZ metric bullets (latency drops, scale, AWS cost savings), two-column skills matrix, and clean microservices engineering experience.'
+  },
+
+  'academic-scholar-cv': {
+    id: 'academic-scholar-cv',
+    title: '🎓 Academic Scholar & Faculty Curriculum Vitae',
+    category: 'career',
+    badge: 'Academic',
+    desc: 'Comprehensive academic curriculum vitae with research interests, peer-reviewed publications, research grants, teaching pedagogy, and international conference presentations.',
+    sections: ['Academic Header', 'Appointments & Education', 'Research Interests', 'Peer-Reviewed Publications', 'Funded Grants & Awards', 'Teaching Experience & Advising', 'Academic Service & References'],
+    skeleton: `# [SCHOLAR FULL NAME, Ph.D.]
+**Associate Professor of [Field / Department]**
+\`📧 [professor@university.edu]\` • \`📱 [+1 (555) 234-8891]\` • \`🏛️ [Department of X, University Name, City, Country]\` • \`🌐 [scholar.google.com/citations?user=xyz]\`
+
+---
+
+## Academic Appointments & Affiliations
+* **Associate Professor (Tenured):** Department of [Subject], [University Name] (*[Year] – Present*)
+* **Assistant Professor:** Department of [Subject], [University Name] (*[Year] – [Year]*)
+* **Postdoctoral Research Fellow:** [Laboratory / Institute Name], [University Name] (*[Year] – [Year]*)
+
+---
+
+## 🎓 Education
+* **Ph.D. in [Field / Subject]:** [University Name], [Year]
+  * *Dissertation:* "[Title of Doctoral Dissertation]"
+  * *Advisors:* Prof. [Advisor 1], Prof. [Advisor 2]
+* **M.Sc. in [Field / Subject]:** [University Name], [Year] (*First Class Honors*)
+* **B.Sc. in [Field / Subject]:** [University Name], [Year] (*Summa Cum Laude*)
+
+---
+
+## 🔬 Primary Research Interests
+[Theoretical and empirical exploration of **[Topic 1]**, **[Topic 2]**, and **[Topic 3]**, with specific focus on quantitative computational modeling and experimental validation.]
+
+---
+
+## 📚 Peer-Reviewed Journal Publications
+1. **[Candidate Name]**, [Co-Author 1], & [Co-Author 2] ([Year]). "[Title of Landmark Paper]". *Journal of Premier Scientific Research*, **[Vol]**([Issue]), [pp. XX–XX]. https://doi.org/10.xxxx/xxxx
+2. **[Candidate Name]** & [Co-Author] ([Year]). "[Title of Second Major Publication]". *International Review of [Discipline]*, **[Vol]**([Issue]), [pp. XX–XX].
+3. [Co-Author] & **[Candidate Name]** ([Year]). "[Title of Collaborative Empirical Study]". *Annals of [Discipline]*, **[Vol]**([Issue]), [pp. XX–XX].
+
+---
+
+## 💰 Funded Research Grants & Fellowships
+
+| Grant Title / Number | Funding Agency | Amount Awarded | Role & Tenure |
+| :--- | :--- | :--- | :--- |
+| *[Grant Name / Title of Research Project]* | National Science Foundation (NSF) | **$[XXX],000** | Principal Investigator (PI), [Year–Year] |
+| *[Interdisciplinary Collaborative Grant]* | European Research Council (ERC) | **€[XXX],000** | Co-Investigator (Co-PI), [Year–Year] |
+
+---
+
+## 👨‍🏫 University Teaching & Doctoral Mentorship
+* **Courses Taught:** Advanced [Course 1] (Graduate), Foundations of [Course 2] (Undergraduate).
+* **Doctoral Students Supervised:** Advised **[X] Ph.D. dissertations** and **[XX] Master's theses** to successful defense.`,
+    aiPrompt: 'You are an Ivy League academic dean. Write an elite, publication-rich Academic Scholar Curriculum Vitae (CV) with appointments, doctoral credentials, peer-reviewed journal articles in APA format, NSF/ERC research grants, and university teaching experience.'
+  },
+
+  'teaching-educator-resume': {
+    id: 'teaching-educator-resume',
+    title: '👩‍🏫 Teaching & Education Professional CV / Resume',
+    category: 'career',
+    badge: 'Education',
+    desc: 'Comprehensive CV for School Teachers, Lecturers, STEM Educators, and Department Chairs with pedagogy, curriculum design, student outcomes, and EdTech.',
+    sections: ['Educator Header & Contact Info', 'Teaching Philosophy & Profile', 'Core Educational Competencies Matrix', 'Teaching & Academic Leadership Experience', 'Standardized Outcomes & Student Achievements', 'Education & Teaching Certifications', 'Professional Affiliations & Workshops'],
+    skeleton: `# [EDUCATOR FULL NAME, M.Ed. / B.Ed.]
+**Senior STEM / Secondary Education Specialist & Curriculum Developer**
+\`📧 [educator@school.edu]\` • \`📱 [+1 (555) 381-9042]\` • \`📍 [City, State / Country]\` • \`🔗 [linkedin.com/in/educator]\`
+
+---
+
+## Teaching Philosophy & Professional Profile
+[Dedicated, student-centered educator with **[X]+ years** of classroom excellence fostering critical inquiry, academic rigor, and inclusive learning environments. Proven record designing differentiated curriculum frameworks, integrating educational technologies, and elevating standardized student assessment pass rates by **[XX]%** across diverse cohorts.]
+
+---
+
+## 📚 Core Educational Competencies & Pedagogical Expertise
+
+| Curriculum & Instructional Design | Classroom Leadership & Assessment | Educational Technology & LMS |
+| :--- | :--- | :--- |
+| • Differentiated Learning (IEP/504) | • Formative & Summative Evaluation | • Google Classroom & Canvas LMS |
+| • Backward Design (UbD Framework) | • Positive Behavioral Support (PBIS) | • Interactive Smartboard & EdTech Apps |
+| • Inquiry-Based STEM / STEAM Learning | • Rubric & Standardized Test Prep | • Student Performance Analytics |
+| • Cross-Disciplinary Project Delivery | • Parent-Teacher Communication Strategy | • Digital Hybrid & Blended Learning |
+
+---
+
+## 💼 Teaching & Academic Leadership Experience
+
+### **[Lead High School / Middle School Teacher]** | [School / College District Name]
+*[City, Country] • [Month, Year] – Present*
+* Delivered rigorous, standards-aligned instruction across **[Subject / Grade Level]** for **[XXX]+ students** annually, maintaining an average student satisfaction rating of **[XX]%**.
+* Advanced student mastery on state/national standardized assessments, raising cohort proficiency rates from **[XX]% to [XX]%** within two academic cycles.
+* Engineered and implemented **[X] innovative curriculum units** incorporating project-based learning and digital simulation tools, boosting classroom assignment completion by **[XX]%**.
+* Mentored **[X] student teachers and junior faculty members**, facilitating quarterly professional development seminars on data-driven formative assessment.
+* Partnered proactively with parents, counselors, and administrative staff to craft personalized academic intervention plans for **[XX]+ at-risk students**, recovering **[XX]%** to grade-level benchmark.
+
+### **[Subject Teacher / Educational Associate]** | [Academy / Preparatory School Name]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Taught foundational and honors curricula to classes of **[XX–XX] students**, fostering collaborative discussion and analytical writing skills.
+* Integrated digital gamification and adaptive learning software, increasing student homework submission consistency by **[XX]%**.
+
+---
+
+## 🎓 Academic Credentials & Teaching Licensure
+
+| Degree / Teaching Credential | Awarding Institution | Year Completed |
+| :--- | :--- | :--- |
+| **Master of Education (M.Ed.) in Curriculum & Instruction** | [University Name, City] | [Year] |
+| **State / National Professional Educator License ([Subject / Grades])** | [Department of Education] | [Valid through Year] |
+| **Advanced Placement (AP) / IB Certified Educator** | College Board / International Baccalaureate | [Year] |
+| **Bachelor of Science / Arts (B.S./B.A.) in [Subject Area]** | [University Name, City] | [Year] |
+
+---
+
+## 🏆 Honors, Grants & Committee Leadership
+* **Excellence in Teaching Award ([Year]):** Selected by peers and administration for transformative classroom impact and student mentorship.
+* **School District Innovation Grant ($[X],000):** Secured competitive district grant to establish a collaborative robotics / digital media laboratory.`,
+    aiPrompt: 'You are an education recruiter and school district superintendent. Write an inspiring, highly professional Teaching & Education CV/Resume emphasizing differentiated pedagogy, student test score gains, curriculum design, classroom leadership, and certified licensure credentials.'
+  },
+
+  'medical-healthcare-resume': {
+    id: 'medical-healthcare-resume',
+    title: '🏥 Healthcare, Nursing & Clinical Specialist CV',
+    category: 'career',
+    badge: 'Healthcare',
+    desc: 'Clinical CV for Doctors, Registered Nurses (RN/BSN), Healthcare Administrators, and Clinical Specialists with triage, patient outcomes, EHR systems, and HIPAA.',
+    sections: ['Clinical Header & Licensure', 'Clinical Practice Summary', 'Medical Competencies & Systems Matrix', 'Clinical Healthcare Experience', 'Patient Care & Quality Metrics', 'Education & Board Certifications', 'Life Support & Professional Credentials'],
+    skeleton: `# [CLINICAL PROFESSIONAL NAME, RN / BSN / MD]
+**Senior Clinical Nurse Specialist & Acute Patient Care Coordinator**
+\`📧 [nurse@hospital.org]\` • \`📱 [+1 (555) 712-4490]\` • \`📍 [City, State / Country]\` • \`🏥 [State License: RN-XXXXX]\`
+
+---
+
+## Clinical Practice Summary
+[Compassionate, board-certified clinical healthcare professional with **[X]+ years** of acute care, triage, and patient advocacy leadership across high-volume hospital trauma centers and intensive care units. Expertise administering advanced medical interventions, maintaining **100% Joint Commission / HIPAA compliance**, and mentoring nursing staff to optimize patient safety outcomes.]
+
+---
+
+## 🩺 Clinical Competencies & Hospital Systems
+
+| Patient Care & Acute Nursing | Clinical Governance & Safety | Medical Systems & EHR |
+| :--- | :--- | :--- |
+| • Emergency Triage & Trauma Resuscitation | • Joint Commission (JCAHO) Protocols | • Epic Systems (Inpatient / Ambulatory) |
+| • Hemodynamic & Vital Signs Monitoring | • Medication Reconciliation & Pyxis | • Cerner Millennium & Meditech |
+| • Post-Operative Critical Care Recovery | • Infection Control & Sterile Technique | • Automated IV Infusion & Telemetry |
+| • Patient & Family Discharge Education | • HIPAA Patient Confidentiality Safeguards | • Point-of-Care Diagnostic Testing |
+
+---
+
+## 💼 Clinical Healthcare Experience
+
+### **[Charge Nurse / Clinical Care Specialist]** | [Metropolitan General Hospital]
+*[City, Country] • [Month, Year] – Present*
+* Coordinated holistic bedside nursing care for **[XX] acute-care patient beds** in a high-acuity medical-surgical / ICU ward, achieving zero medication administration errors.
+* Reduced 30-day patient readmission rates by **[XX]%** through structured multi-lingual patient education and post-discharge continuity protocols.
+* Supervised and directed daily shift assignments for **[XX] registered nurses, licensed practical nurses, and certified nursing assistants**.
+* Participated as a core member of the Hospital Quality Improvement Committee, co-authoring infection reduction protocols that decreased central line infections by **[XX]%**.
+
+### **[Staff Registered Nurse]** | [Regional Healthcare Center]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Conducted rapid triage assessments, stabilized incoming trauma cases, and administered specialized IV pharmacotherapy under physician direction.
+* Documented comprehensive patient health histories and clinical assessments in Epic EHR with **100% timeliness and chart audit compliance**.
+
+---
+
+## 🎓 Medical Degrees & Professional Licensure
+
+| Licensure / Degree | Issuing Board / Institution | License # / Year |
+| :--- | :--- | :--- |
+| **Registered Nurse (RN) Multi-State Compact License** | State Board of Nursing | License #RN-[XXXXX] |
+| **Bachelor of Science in Nursing (BSN) / MSN** | [University School of Nursing, City] | [Year] |
+| **Basic Life Support (BLS) & Advanced Cardiac Life Support (ACLS)** | American Heart Association (AHA) | [Current / Renewal Year] |
+| **Pediatric Advanced Life Support (PALS)** | American Heart Association (AHA) | [Current / Renewal Year] |`,
+    aiPrompt: 'You are a Chief Nursing Officer and healthcare hiring director. Write a compassionate, clinical, and precise Healthcare & Registered Nurse Resume highlighting patient safety metrics, EHR charting (Epic), acute trauma triage, and clinical certifications.'
+  },
+
+  'accounting-finance-resume': {
+    id: 'accounting-finance-resume',
+    title: '📊 Accounting, Audit & Corporate Finance Resume',
+    category: 'career',
+    badge: 'Accounting',
+    desc: 'Executive resume for Certified Public Accountants (CPA/ACCA), Financial Controllers, Internal Auditors, and Tax Managers with GAAP/IFRS, SOX, and ERP.',
+    sections: ['Accounting Header', 'Executive Financial Summary', 'Core Accounting & Audit Competencies', 'Corporate Accounting Experience', 'Audit Readiness & SOX Metrics', 'Credentials (CPA, ACCA, CMA)', 'Education & Degrees'],
+    skeleton: `# [FINANCE PROFESSIONAL NAME, CPA / ACCA]
+**Senior Corporate Controller & Financial Audit Specialist**
+\`📧 [cpa@finance.com]\` • \`📱 [+1 (555) 832-1920]\` • \`📍 [City, State / Country]\` • \`🔗 [linkedin.com/in/cpa-profile]\`
+
+---
+
+## Executive Financial Profile
+[Strategic Certified Public Accountant (CPA) with **[X]+ years** leading corporate accounting, general ledger stewardship, financial statement reporting, and SOX internal control compliance for multinational enterprises. Championed enterprise ERP migrations, accelerated monthly financial closes from **10 to 4 days**, and saved **$[X.X]M** through automated audit workflows.]
+
+---
+
+## 📊 Core Accounting, Tax & Audit Competencies
+
+| Financial Accounting & Reporting | Audit, Risk & Compliance | ERP & Financial Systems |
+| :--- | :--- | :--- |
+| • US GAAP & IFRS Technical Accounting | • SOX 404 Internal Controls & Testing | • SAP S/4HANA (FI/CO Modules) |
+| • Month-End & Year-End Close Acceleration | • Big 4 External Audit Management | • Oracle NetSuite & Hyperion HFM |
+| • Balance Sheet Reconciliation & Accruals | • Corporate Tax Planning & Provisions | • Advanced Excel (VBA, Power Query, Macros) |
+| • Financial Statement Consolidation | • Cost Accounting & Variance Analysis | • BlackLine Account Reconciliation |
+
+---
+
+## 💼 Corporate Accounting Experience
+
+### **[Corporate Financial Controller / Accounting Manager]** | [Global Enterprise Corporation]
+*[City, Country] • [Month, Year] – Present*
+* Supervised end-to-end accounting operations and financial statement consolidations for **[X] international subsidiaries** generating **$[XXX]M in combined revenue**.
+* Streamlined the monthly financial close cadence, reducing turnaround duration from **10 business days to 4 business days** through automated ERP journal entries.
+* Managed relationships with external Big 4 auditing firms (PwC / EY / Deloitte / KPMG), achieving **100% clean audit opinions with zero material weaknesses** for 4 consecutive fiscal years.
+* Spearheaded corporate internal control overhaul under SOX 404 guidelines, mitigating enterprise risk exposure across **[XX]+ core business operational cycles**.
+
+### **[Senior Financial Auditor / Senior Accountant]** | [Public Accounting / Corporate Firm]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Planned and conducted comprehensive substantive testing, revenue recognition audits, and internal control reviews for commercial clients with revenues up to **$[XX]M**.
+* Identified and resolved complex GAAP discrepancies in lease accounting (ASC 842) and revenue contracts (ASC 606), preventing multi-million dollar reporting adjustments.
+
+---
+
+## 🎓 Professional Designations & Education
+
+| Certification / Degree | Awarding Organization | Year |
+| :--- | :--- | :--- |
+| **Certified Public Accountant (CPA)** | State Board of Accountancy | [Year] |
+| **Association of Chartered Certified Accountants (ACCA) / CMA** | Global Accounting Body | [Year] |
+| **Master of Accounting (MAcc) / B.S. in Accounting** | [University Name, City] | [Year] |`,
+    aiPrompt: 'You are an Audit Partner at a Big 4 accounting firm. Write an authoritative, meticulous Accounting & Corporate Controller Resume focusing on US GAAP/IFRS technical reporting, SOX 404 compliance, Big 4 audit readiness, and month-end close acceleration.'
+  },
+
+  'sales-marketing-resume': {
+    id: 'sales-marketing-resume',
+    title: '📢 Sales, Digital Marketing & Growth Resume',
+    category: 'career',
+    badge: 'Growth & Sales',
+    desc: 'High-converting resume for Enterprise Account Executives, VP of Sales, Digital Marketing Directors, and Growth Marketers with quota metrics, ARR, and ROI.',
+    sections: ['Revenue Leader Header', 'Commercial Growth Profile', 'Go-To-Market & Revenue Skills Table', 'Sales & Marketing Experience', 'Quantified Quota & ARR Achievements', 'Marketing Tech Stack & CRM', 'Education'],
+    skeleton: `# [COMMERCIAL LEADER FULL NAME]
+**Vice President of Sales & Global Revenue Growth**
+\`📧 [sales@growth.com]\` • \`📱 [+1 (555) 604-3319]\` • \`📍 [City, State / Country]\` • \`🔗 [linkedin.com/in/sales-leader]\`
+
+---
+
+## Commercial Growth & Revenue Profile
+[High-impact revenue generation leader with **[X]+ years** scaling enterprise B2B sales pipelines, architecting full-funnel digital marketing engines, and exceeding commercial targets across competitive technology and SaaS markets. Track record delivering **$[XX]M+ in net-new ARR**, maintaining **[XXX]% quota attainment**, and expanding enterprise contract values by **[XX]%**.]
+
+---
+
+## 📈 Sales, Marketing & GTM Competencies
+
+| Enterprise B2B Sales & Closing | Digital Marketing & Demand Gen | Sales Tech & CRM Platforms |
+| :--- | :--- | :--- |
+| • Enterprise SaaS Contract Closing ($[X]M+) | • Multi-Channel Paid Ads (Google, LinkedIn) | • Salesforce CRM & HubSpot Enterprise |
+| • Outbound Account-Based Selling (ABM) | • Inbound SEO & Content Demand Generation | • Outreach.io, Gong.io, Salesloft |
+| • MEDDPICC & Challenger Sales Methodology | • Customer Acquisition Cost (CAC) Optimization | • Google Analytics 4 & Mixpanel |
+| • High-Velocity Inside Sales Team Building | • Product-Led Growth (PLG) & Conversion Rate | • ZoomInfo & Apollo Lead Generation |
+
+---
+
+## 💼 Professional Sales & Marketing Experience
+
+### **[Director of Enterprise Sales / Head of Growth]** | [High-Growth SaaS Corporation]
+*[City, Country] • [Month, Year] – Present*
+* Generated **$[XX]M in net-new enterprise ARR** over 24 months, achieving **[XXX]% of assigned annual quota** and ranking in the top 1% of the global commercial organization.
+* Recruited, trained, and led a high-performing team of **[XX] Account Executives and SDRs**, accelerating median team quota attainment from **[XX]% to [XX]%**.
+* Closed company's largest flagship deal in history (**$[X.X]M multi-year contract**) through rigorous MEDDPICC stakeholder alignment and C-level executive sponsorship.
+* Redesigned digital customer acquisition funnel, reducing Customer Acquisition Cost (CAC) by **[XX]%** while increasing marketing-qualified leads (MQLs) by **[XX]%**.
+
+### **[Senior Enterprise Account Executive]** | [B2B Technology Solutions Provider]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Managed end-to-end sales cycles from prospecting through contract negotiation for Fortune 500 accounts, maintaining an average win rate of **[XX]%**.
+* Expanded existing customer annual contract value (ACV) by **[XX]%** through strategic cross-sell and upsell initiatives.
+
+---
+
+## 🎓 Education & Professional Accreditations
+* **Bachelor of Business Administration (BBA) in Marketing / Management:** [University Name], [Year]
+* **Certified Enterprise Sales Professional (MEDDPICC Accredited):** [Year]
+* **HubSpot Inbound & Google Ads Certified:** [Year]`,
+    aiPrompt: 'You are an executive revenue recruiter and Chief Commercial Officer. Write a high-converting Sales & Digital Marketing Resume packed with aggressive quota attainment percentages (140%+), net-new ARR numbers, CAC reductions, and enterprise deal closures.'
+  },
+
+  'project-product-resume': {
+    id: 'project-product-resume',
+    title: '🛠️ Product & Agile Project Manager Resume',
+    category: 'career',
+    badge: 'Product & Agile',
+    desc: 'Modern resume for Technical Product Managers, Scrum Masters, Agile Project Leads, and PMP professionals with sprint velocity, roadmap delivery, and user growth.',
+    sections: ['Product Leader Header', 'Product Strategy Summary', 'Product Management & Agile Matrix', 'Product Leadership Experience', 'Feature Launch & Adoption Metrics', 'Certifications (PMP, CSM, ACP)', 'Education'],
+    skeleton: `# [PRODUCT MANAGER FULL NAME, PMP / CSM]
+**Senior Technical Product Manager & Agile Delivery Lead**
+\`📧 [pm@product.io]\` • \`📱 [+1 (555) 921-7783]\` • \`📍 [City, State / Country]\` • \`🔗 [linkedin.com/in/product-lead]\`
+
+---
+
+## Product Leadership & Strategy Profile
+[Visionary Senior Product Manager with **[X]+ years** orchestrating the discovery, engineering delivery, and commercial scaling of cloud and mobile applications used by **[X]M+ monthly active users**. Expert at translating ambiguous user friction into prioritized product roadmaps, leading cross-functional engineering squads, and optimizing core retention KPIs.]
+
+---
+
+## 🛠️ Product Management & Delivery Competencies
+
+| Product Strategy & Discovery | Agile Execution & Engineering Delivery | Analytics, Data & UX |
+| :--- | :--- | :--- |
+| • Product Vision & Strategic Roadmapping | • Scrum, Kanban & Scaled Agile (SAFe) | • Product Analytics (Mixpanel, Amplitude) |
+| • User Journey Mapping & Persona Research | • Sprint Planning, Backlog Refinement | • A/B Testing & Multivariate Experiments |
+| • Customer Problem Discovery & Interviews | • Jira, Confluence, Linear, Asana | • Wireframing & Prototyping (Figma) |
+| • Feature Prioritization (RICE / MoSCoW) | • Technical Spec (PRD) Authoring | • SQL Data Extraction & Funnel Analysis |
+
+---
+
+## 💼 Product Leadership Experience
+
+### **[Lead Product Manager / Technical PM]** | [Leading Software & Technology Firm]
+*[City, Country] • [Month, Year] – Present*
+* Spearheaded end-to-end product strategy and delivery for flagship enterprise platform serving **[XXX]K+ daily enterprise users**, boosting Daily Active User (DAU) retention by **[XX]%**.
+* Authored **[XX]+ Product Requirement Documents (PRDs)** and user stories for a cross-functional squad of **[XX] software engineers, UX designers, and QA leads**.
+* Launched real-time collaboration feature that reduced user workflow drop-off by **[XX]%** and drove **$[X.X]M in annualized incremental upsell revenue**.
+* Increased engineering team sprint velocity by **[XX]%** by refining acceptance criteria and eliminating scope creep during sprint planning cycles.
+
+### **[Agile Project Manager / Scrum Master]** | [Digital Transformation Consultancy]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Managed simultaneous delivery of 4 multi-platform digital engineering initiatives on time and **[XX]% under allocated client budget**.
+* Facilitated daily standups, sprint retrospectives, and backlog grooming sessions, improving team story point delivery predictability to **95%**.
+
+---
+
+## 🎓 Product Accreditations & Education
+
+| Credential / Degree | Issuing Organization | Year |
+| :--- | :--- | :--- |
+| **Project Management Professional (PMP)** | Project Management Institute (PMI) | [Year] |
+| **Certified Scrum Product Owner (CSPO) / CSM** | Scrum Alliance | [Year] |
+| **B.S. in Information Systems / Software Engineering** | [University Name, City] | [Year] |`,
+    aiPrompt: 'You are a VP of Product at a Silicon Valley tech unicorn. Write a data-driven Product & Agile Project Manager Resume highlighting user adoption metrics, RICE feature prioritization, sprint velocity improvements, and PMP/CSM certifications.'
+  },
+
+  'legal-counsel-resume': {
+    id: 'legal-counsel-resume',
+    title: '⚖️ Legal Counsel & Corporate Attorney CV',
+    category: 'career',
+    badge: 'Legal Counsel',
+    desc: 'Distinguished CV for Corporate Attorneys, In-House Counsel, Commercial Litigators, and Compliance Directors with deal volume, contracts, and regulatory governance.',
+    sections: ['Attorney Header & Bar Admissions', 'Executive Legal Practice Summary', 'Core Legal Competencies & Practice Areas', 'Legal Practice Experience', 'High-Stakes Transactional & Litigation Milestones', 'Law Degrees (J.D. / LL.M.)', 'Bar Admissions & Memberships'],
+    skeleton: `# [ATTORNEY FULL NAME, ESQ. / LL.M.]
+**Senior Corporate Counsel & Regulatory Affairs Attorney**
+\`📧 [attorney@law.com]\` • \`📱 [+1 (555) 512-8874]\` • \`📍 [City, State / Country]\` • \`⚖️ [Bar Admission: Admitted in State/Court]\`
+
+---
+
+## Executive Legal Practice Summary
+[Distinguished corporate counsel with **[X]+ years** of high-stakes transactional, contract negotiation, and enterprise risk management experience representing Fortune 500 corporations and private equity sponsors. Negotiated and closed **$[XXX]M+ in complex commercial transactions**, managed outside litigation counsel, and ensured full regulatory alignment with SEC / FTC / GDPR / CCPA standards.]
+
+---
+
+## ⚖️ Legal Competencies & Areas of Practice
+
+| Corporate & Commercial Transactions | Regulatory Compliance & Governance | Intellectual Property & Litigation |
+| :--- | :--- | :--- |
+| • Commercial Contracts Drafting (MSA, SOW) | • Regulatory Affairs (SEC, FTC, DOJ) | • Trademark, Copyright & IP Licensing |
+| • Mergers & Acquisitions (M&A) Due Diligence | • Global Privacy & Data Governance (GDPR) | • Commercial Litigation Management |
+| • Strategic Joint Ventures & Partnership Deals | • Corporate Board Governance & Resolutions | • Employment Law & Executive Compensation |
+| • Cross-Border Vendor & Supply Agreements | • Internal Ethics Investigations & Audits | • Alternative Dispute Resolution (ADR) |
+
+---
+
+## 💼 Legal Practice Experience
+
+### **[Senior Corporate Counsel / Legal Director]** | [Global Corporation / Premier Law Firm]
+*[City, Country] • [Month, Year] – Present*
+* Drafted, negotiated, and successfully executed **[XXX]+ high-value commercial agreements** annually valued in excess of **$[XXX]M**, minimizing enterprise liability exposure.
+* Guided executive leadership through **$[XX]M M&A transaction**, conducting thorough legal due diligence, antitrust review, and definitive acquisition agreement negotiation.
+* Managed enterprise-wide data privacy and cyber governance compliance across 14 international jurisdictions under GDPR and state statutory frameworks.
+* Supervised outside litigation counsel across active commercial disputes, resolving **[XX]% of proceedings through favorable pre-trial settlement** and saving **$[X.X]M in legal fees**.
+
+### **[Associate Corporate Attorney]** | [Top-Tier National Law Firm]
+*[City, Country] • [Month, Year] – [Month, Year]*
+* Drafted governance documents, venture financing agreements, and SEC regulatory filings for institutional clients.
+* Conducted in-depth legal research and authored persuasive litigation briefs submitted before state and federal appellate courts.
+
+---
+
+## 🎓 Legal Education & Bar Admissions
+
+| Credential / Degree | Institution / Jurisdiction | Year |
+| :--- | :--- | :--- |
+| **Juris Doctor (J.D.) / Master of Laws (LL.M.)** | [Law School / University Name, City] | [Year] |
+| **State Bar Admission (Active License in Good Standing)** | Supreme Court of [State / National Bar Association] | [Bar #XXXXX, Year] |
+| **B.A. in Political Science / Economics / Philosophy** | [University Name, City] | [Summa Cum Laude, Year] |`,
+    aiPrompt: 'You are a General Counsel at a Fortune 100 enterprise. Write an authoritative Legal Counsel & Corporate Attorney CV highlighting multi-million dollar contract negotiations, M&A due diligence, regulatory compliance (SEC, GDPR), and active state bar credentials.'
   }
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { FRAMEWORK_DEFINITIONS };
+}

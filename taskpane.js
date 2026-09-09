@@ -523,19 +523,20 @@ function generateRedlineDiff(oldText, newText) {
 }
 
 function showOutput(text, rawOriginal) {
-  currentResultText = text;
+  const cleanText = cleanAIPreambleAndPostamble(text);
+  currentResultText = cleanText;
   const section = document.getElementById('output-section');
   const textEl = document.getElementById('output-text');
   const diffEl = document.getElementById('output-diff');
   const origEl = document.getElementById('sidebyside-original');
   const outEl  = document.getElementById('sidebyside-output');
 
-  textEl.innerHTML = '<p>' + markdownToHtml(text) + '</p>';
+  textEl.innerHTML = '<p>' + markdownToHtml(cleanText) + '</p>';
   diffEl.innerHTML = generateRedlineDiff(currentSourceContext, currentResultText);
   origEl.innerHTML = '<p>' + markdownToHtml(rawOriginal || currentSourceContext || '(No source context)') + '</p>';
-  outEl.innerHTML  = '<p>' + markdownToHtml(text) + '</p>';
+  outEl.innerHTML  = '<p>' + markdownToHtml(cleanText) + '</p>';
 
-  recordResponse(currentSourceContext.slice(0, 80) || 'Output', text);
+  recordResponse(currentSourceContext.slice(0, 80) || 'Output', cleanText);
   section.classList.remove('hidden');
 }
 
@@ -571,6 +572,8 @@ function markdownToRichWordHtml(markdown) {
   let listType = '';
   let inTable = false;
   let tableRows = [];
+  let inCodeBlock = false;
+  let codeBlockLines = [];
 
   function closeList() {
     if (inList) {
@@ -594,7 +597,8 @@ function markdownToRichWordHtml(markdown) {
         if (idx === 0) {
           html += `    <th style="background-color:#f1f5f9;font-weight:bold;text-align:left;padding:6pt 8pt;border:1px solid #cbd5e1;color:#0f172a;">${formatted}</th>\n`;
         } else {
-          html += `    <td style="padding:5pt 8pt;border:1px solid #cbd5e1;vertical-align:top;color:#1e293b;">${formatted}</td>\n`;
+          const bg = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
+          html += `    <td style="padding:5pt 8pt;border:1px solid #cbd5e1;vertical-align:top;background-color:${bg};color:#1e293b;">${formatted}</td>\n`;
         }
       });
       html += '  </tr>\n';
@@ -607,7 +611,6 @@ function markdownToRichWordHtml(markdown) {
   function formatInline(text) {
     if (!text) return '';
     const underscores = [];
-    // Protect signature underline lines like By: ___________________
     text = text.replace(/_{2,}/g, (m) => {
       underscores.push(m);
       return `@@USCORE${underscores.length - 1}@@`;
@@ -622,9 +625,8 @@ function markdownToRichWordHtml(markdown) {
       .replace(/__(.+?)__/g, '<strong>$1</strong>')
       .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
       .replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>')
-      .replace(/`([^`]+)`/g, '<code style="font-family:Consolas,monospace;background-color:#f1f5f9;padding:1pt 3pt;border-radius:2pt;font-size:9.5pt;">$1</code>');
+      .replace(/`([^`]+)`/g, '<code style="font-family:Consolas,monospace;background-color:#f1f5f9;padding:1pt 3pt;border-radius:2pt;font-size:9.5pt;color:#0f172a;">$1</code>');
 
-    // Restore signature lines
     underscores.forEach((u, idx) => {
       formatted = formatted.replace(`@@USCORE${idx}@@`, u);
     });
@@ -635,6 +637,25 @@ function markdownToRichWordHtml(markdown) {
   for (let i = 0; i < lines.length; i++) {
     const rawLine = lines[i];
     const trimmed = rawLine.trim();
+
+    // Multi-line code block fences
+    if (/^```/.test(trimmed)) {
+      closeList();
+      if (!inCodeBlock) {
+        inCodeBlock = true;
+        codeBlockLines = [];
+      } else {
+        inCodeBlock = false;
+        const codeEscaped = codeBlockLines.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n');
+        html += `<pre style="font-family:Consolas,monospace;background-color:#f8fafc;border:1px solid #e2e8f0;padding:8pt 10pt;border-radius:4pt;font-size:9.5pt;color:#0f172a;white-space:pre-wrap;margin-top:6pt;margin-bottom:10pt;"><code>${codeEscaped}</code></pre>\n`;
+        codeBlockLines = [];
+      }
+      continue;
+    }
+    if (inCodeBlock) {
+      codeBlockLines.push(rawLine);
+      continue;
+    }
 
     // Table Row
     if (/^\|.*\|$/.test(trimmed)) {
@@ -651,6 +672,14 @@ function markdownToRichWordHtml(markdown) {
       continue;
     }
 
+    // Blockquote
+    if (/^>\s+/.test(trimmed)) {
+      closeList();
+      const bqText = formatInline(trimmed.replace(/^>\s+/, ''));
+      html += `<blockquote style="border-left:3.5pt solid #3b82f6;background-color:#f8fafc;padding:6pt 10pt;margin:8pt 0;color:#334155;font-style:italic;font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10.5pt;border-radius:0 3pt 3pt 0;">${bqText}</blockquote>\n`;
+      continue;
+    }
+
     // Headings
     if (/^#\s+/.test(trimmed)) {
       closeList();
@@ -661,7 +690,7 @@ function markdownToRichWordHtml(markdown) {
     if (/^##\s+/.test(trimmed)) {
       closeList();
       const text = formatInline(trimmed.replace(/^##\s+/, ''));
-      html += `<h2 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:14.5pt;font-weight:bold;color:#1e40af;margin-top:14pt;margin-bottom:6pt;line-height:1.3;">${text}</h2>\n`;
+      html += `<h2 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:13.5pt;font-weight:bold;color:#1e40af;border-bottom:1.5pt solid #2563eb;padding-bottom:2.5pt;margin-top:14pt;margin-bottom:6pt;line-height:1.3;">${text}</h2>\n`;
       continue;
     }
     if (/^###\s+/.test(trimmed)) {
@@ -725,9 +754,10 @@ function markdownToRichWordHtml(markdown) {
 
 async function insertText(rawText, replace = false, insertAtEnd = false) {
   if (typeof Word === 'undefined') { showError('Word API not available.'); return; }
+  const clean = cleanAIPreambleAndPostamble(rawText);
   return Word.run(async (ctx) => {
     try {
-      const html = markdownToRichWordHtml(rawText);
+      const html = markdownToRichWordHtml(clean);
       if (insertAtEnd) {
         ctx.document.body.insertHtml(html, Word.InsertLocation.end);
       } else {
@@ -736,7 +766,7 @@ async function insertText(rawText, replace = false, insertAtEnd = false) {
       }
       await ctx.sync();
     } catch (htmlErr) {
-      await fallbackInsertParagraphs(ctx, rawText, replace, insertAtEnd);
+      await fallbackInsertParagraphs(ctx, clean, replace, insertAtEnd);
     }
   });
 }
@@ -862,16 +892,136 @@ function getPersonaInstruction() {
   return 'Adopt a polished, professional, and clear tone.';
 }
 
+// ─── CanvasGuard Pro: Zero-Filler In-Document Intelligence Engine ───────────
+
+const CanvasGuard = {
+  DIRECTIVE: `
+CRITICAL INSTRUCTION FOR MICROSOFT WORD CANVAS GENERATION:
+You are WordAI Pro, operating directly inside Microsoft Word as an executive in-document writing engine.
+Your output is injected directly onto the Microsoft Word document canvas.
+
+ABSOLUTE RULES:
+1. ZERO CONVERSATIONAL FILLER: Never output ANY conversational preamble, greetings, or introductory chatter (such as "Here is...", "Sure, here's...", "Certainly!", "I have generated...", "You can easily copy and paste this into Microsoft Word...").
+2. ZERO CLOSING REMARKS: Never output ANY concluding sign-offs, offers to help, or follow-up notes (such as "Hope this helps!", "Let me know if you need more...", "Feel free to ask...").
+3. ZERO CODE FENCES: Do not wrap the whole document in markdown code fences (\`\`\`markdown or \`\`\`).
+4. IMMEDIATE START: Begin immediately on line 1 with the document's main title (# Title) or the opening paragraph.
+5. DOCUMENT EXCELLENCE: Use authoritative, publication-quality formatting (Heading 1, Heading 2, structured bullet points, and clean Markdown tables).
+`.trim(),
+
+  sanitize(rawText) {
+    if (!rawText || typeof rawText !== 'string') return '';
+    let text = rawText.trim();
+
+    // 1. Strip reasoning traces (<think>...</think>) from DeepSeek R1, Groq R1, Qwen
+    text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    text = text.replace(/<think>[\s\S]*$/gi, '').trim();
+
+    // 2. Strip outer markdown code fences wrapping the entire document (```markdown ... ```)
+    const codeBlockMatch = text.match(/^```(?:markdown|html|text|doc)?\s*\n([\s\S]*?)\n```$/i);
+    if (codeBlockMatch && codeBlockMatch[1]) {
+      text = codeBlockMatch[1].trim();
+    }
+
+    // 3. Multi-paragraph conversational preamble detector
+    const paragraphs = text.split(/\n\s*\n/);
+    if (paragraphs.length > 1) {
+      const firstP = paragraphs[0].trim();
+      const isChatPreamble = (
+        /^(?:Here|Below)\s+(?:is|are|'s)\s+(?:a|an|the|your|this)\b/i.test(firstP) ||
+        /^(?:Sure|Certainly|Of course|Absolutely|Gladly)\s*[!.,]\s*(?:here|below|I|we|this)/i.test(firstP) ||
+        /^(?:I\s+(?:have|can|will|would\s+be\s+happy\s+to|have\s+prepared|have\s+drafted|have\s+created|have\s+provided))\b/i.test(firstP) ||
+        /^(?:As\s+requested|Based\s+on\s+your\s+request|In\s+response\s+to\s+your\s+request)[!.,]?/i.test(firstP) ||
+        /(?:copy\s*,?\s*paste|copy\s+and\s+paste|Microsoft\s+Word|Word\s+document|format\s+this\s+text\s+directly|insert\s+this\s+into)/i.test(firstP) ||
+        /^(?:As\s+an\s+AI|I\s+am\s+an\s+AI|As\s+your\s+writing\s+assistant)/i.test(firstP) ||
+        /^(?:Here(?:'s|\s+is)\s+(?:the|your)\s+[\w\s-]{0,40}?(?:text|content|version|draft|assignment|article|response):?)$/i.test(firstP) ||
+        /^(?:Bien\s+sûr|Voici|Claro|Aquí\s+tienes|Hier\s+ist|Gerne)\s*[!.,:]/i.test(firstP)
+      );
+
+      if (isChatPreamble) {
+        paragraphs.shift();
+        text = paragraphs.join('\n\n').trim();
+      }
+    }
+
+    // 4. Single-line intro chatter ending with colon
+    text = text.replace(/^(?:(?:Here|Below)\s+(?:is|are|'s)\s+(?:the|your|a|an)\s+[\w\s-]{0,50}?:)\s*\n+/i, '');
+    text = text.replace(/^(?:(?:Sure|Certainly|Of course|Absolutely)\s*[!.,]\s*[\w\s-]{0,50}?:)\s*\n+/i, '');
+    text = text.replace(/^(?:(?:Bien\s+sûr|Voici|Claro|Aquí\s+tienes|Hier\s+ist)\s*[!.,:]\s*[\w\s-]{0,50}?:?)\s*\n+/i, '');
+    text = text.replace(/^(?:(?:Draft|Generated)\s+Document:?\s*\n+)/i, '');
+
+    // 5. Strip closing conversational postambles / sign-offs / disclaimers
+    const outroPatterns = [
+      /\n+(?:(?:I\s+)?Hope\s+this\s+(?:helps|meets|assists)[\s\S]*)$/i,
+      /\n+(?:Let\s+me\s+know\s+if\s+you\s+(?:need|have|want|would\s+like|require)[\s\S]*)$/i,
+      /\n+(?:Feel\s+free\s+to\s+(?:ask|reach\s+out|request|modify)[\s\S]*)$/i,
+      /\n+(?:Good\s+luck\s+with\s+your\s+(?:assignment|paper|studies|research|project|presentation|document)!?[\s\S]*)$/i,
+      /\n+(?:If\s+you\s+need\s+(?:any\s+)?(?:further|more|additional)\s+(?:help|assistance|sections|details|revisions)[\s\S]*)$/i,
+      /\n+(?:\*{0,2}Disclaimer:?\*{0,2}\s+This\s+document\s+(?:is|was)\s+generated[\s\S]*)$/i,
+      /\n+(?:\*{0,2}Note:?\*{0,2}\s+(?:You\s+can|Please\s+remember\s+to|Be\s+sure\s+to\s+replace)[\s\S]*)$/i
+    ];
+
+    for (const pat of outroPatterns) {
+      text = text.replace(pat, '').trim();
+    }
+
+    // 6. Intelligent Title Elevation (e.g. ASSIGNMENT: Title -> # Title)
+    text = text.replace(/^(?:ASSIGNMENT|TITLE|DOCUMENT|REPORT|PROPOSAL):\s*([^\n]+)/i, (_, title) => '# ' + title.trim());
+
+    return text.trim();
+  },
+
+  enrichPrompt(rawPrompt, context) {
+    const p = rawPrompt.trim();
+    // Do not alter if user is working with focused selected text modifications
+    if (context && context.length > 50) return p;
+
+    const lower = p.toLowerCase();
+
+    // Academic Assignment / Paper Intent
+    if (/\b(?:assignment|essay|thesis|term\s+paper|dissertation|research\s+paper|literature\s+review)\b/i.test(lower)) {
+      return `${p}\n\n[DOCUMENT SPECIFICATION: Format as an authoritative academic submission. Include a professional academic title (# Title), student/course metadata block (Course, Date, Topic), executive introduction, logically sequenced sub-sections with rigorous academic depth, analytical synthesis, and a concluding evaluation.]`;
+    }
+
+    // Business Report / Plan / Proposal Intent
+    if (/\b(?:business\s+plan|proposal|pitch|executive\s+summary|white\s+paper|case\s+study|market\s+analysis|qbr)\b/i.test(lower)) {
+      return `${p}\n\n[DOCUMENT SPECIFICATION: Format as an executive business document. Include an official Title (# Title), Executive Summary, Strategic & Market Context, Core Analysis, Implementation Roadmap, and Financial/KPI Projections.]`;
+    }
+
+    // Legal / Contract / Policy Intent
+    if (/\b(?:nda|contract|agreement|terms\s+of\s+service|privacy\s+policy|mou|sla|by-laws)\b/i.test(lower)) {
+      return `${p}\n\n[DOCUMENT SPECIFICATION: Format as a formal legal instrument. Include Title (# Title), Parties / Effective Date, Recitals (WHEREAS), Operative Clauses with standard legal definitions, and Execution Signature blocks.]`;
+    }
+
+    // Standard Operating Procedure (SOP) / Guide Intent
+    if (/\b(?:sop|standard\s+operating\s+procedure|manual|playbook|checklist|guidelines)\b/i.test(lower)) {
+      return `${p}\n\n[DOCUMENT SPECIFICATION: Format as an enterprise SOP. Include Document Title (# Title), SOP Metadata (ID, Effective Date, Version), Purpose, Scope, Roles & Responsibilities, Step-by-Step Procedure, and Quality Assurance Checklist.]`;
+    }
+
+    return p;
+  }
+};
+
+function cleanAIPreambleAndPostamble(text) {
+  return CanvasGuard.sanitize(text);
+}
+
+function cleanDocumentContent(text) {
+  return CanvasGuard.sanitize(text);
+}
+
+const WORD_CANVAS_DIRECTIVE = CanvasGuard.DIRECTIVE;
+
 async function runAI(systemPrompt, userContent) {
   const lang = localStorage.getItem('wordai_language') || 'English';
   const personaInstruction = getPersonaInstruction();
   const messages = [
-    { role: 'system', content: `${systemPrompt} ${personaInstruction} Respond in ${lang}.` },
+    { role: 'system', content: `${systemPrompt} ${WORD_CANVAS_DIRECTIVE} ${personaInstruction} Respond in ${lang}.` },
     { role: 'user', content: userContent || '(no content provided)' },
   ];
   const { text } = await AIProvider.call(messages);
+  const cleanedText = CanvasGuard.sanitize(text);
   updateTokenDisplay();
-  return text;
+  return cleanedText;
 }
 
 function updateTokenDisplay() {
@@ -2522,6 +2672,24 @@ function bindCareerButtons() {
       await handleAIAction('You are a premier executive career strategist and talent acquisition expert.', userContent);
     });
   });
+
+  document.querySelectorAll('.btn-career-skeleton').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fwId = btn.dataset.id;
+      if (typeof FRAMEWORK_DEFINITIONS !== 'undefined' && FRAMEWORK_DEFINITIONS[fwId]) {
+        insertStructuredFramework(FRAMEWORK_DEFINITIONS[fwId].skeleton);
+      }
+    });
+  });
+
+  document.querySelectorAll('.btn-career-smartdraft').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fwId = btn.dataset.id;
+      if (typeof FRAMEWORK_DEFINITIONS !== 'undefined' && FRAMEWORK_DEFINITIONS[fwId]) {
+        openFrameworkDraftDrawer(FRAMEWORK_DEFINITIONS[fwId]);
+      }
+    });
+  });
 }
 
 // ─── Social Media Repurposing Mode ──────────────────────────────────────────
@@ -3131,9 +3299,10 @@ function triggerGenerate() {
   if (!prompt) return;
   const contextMode = document.getElementById('context-select').value;
   getContext(contextMode).then(context => {
-    const userContent = context ? `${prompt}\n\n${context}` : prompt;
+    const enrichedPrompt = CanvasGuard.enrichPrompt(prompt, context);
+    const userContent = context ? `${enrichedPrompt}\n\nContext:\n${context}` : enrichedPrompt;
     recordPrompt(prompt);
-    handleAIAction('You are a helpful AI writing assistant inside Microsoft Word.', userContent);
+    handleAIAction('You are WordAI Pro, an elite in-document writing engine operating directly inside Microsoft Word. Generate authoritative, polished, and structured document content ready for the Word page.', userContent);
   });
 }
 
@@ -3217,7 +3386,7 @@ async function handleAIActionWithImages(systemPrompt, userContent, images) {
     const lang = localStorage.getItem('wordai_language') || 'English';
     const personaInstruction = getPersonaInstruction();
     const messages = [
-      { role: 'system', content: `${systemPrompt} ${personaInstruction} Respond in ${lang}.` },
+      { role: 'system', content: `${systemPrompt} ${WORD_CANVAS_DIRECTIVE} ${personaInstruction} Respond in ${lang}.` },
       {
         role: 'user',
         content: [
@@ -3228,7 +3397,8 @@ async function handleAIActionWithImages(systemPrompt, userContent, images) {
     ];
     const { text } = await AIProvider.call(messages);
     updateTokenDisplay();
-    showOutput(text, userContent);
+    const cleaned = cleanAIPreambleAndPostamble(text);
+    showOutput(cleaned, userContent);
   } catch (_) {
     try {
       const result = await runAI(systemPrompt, userContent + '\n[Images attached but vision not supported by current model.]');
@@ -4139,36 +4309,143 @@ Format: ONLY valid JSON with no markdown wrapping.`;
 
 // ─── Feature: Text-to-Native Word Table Generator ────────────────────────────
 
+let currentTableStyle = 'colorful';
+let currentTableSourceContext = '';
+let currentTableHtml = '';
+
 function bindTableGenerator() {
-  // Handled through Quick Actions, Edit Tab, and Instant Popup
+  const card = document.getElementById('table-studio-card');
+  const btnClose = document.getElementById('btn-close-table-studio');
+  const btnReplace = document.getElementById('btn-table-replace');
+  const btnBelow = document.getElementById('btn-table-below');
+  const btnCopy = document.getElementById('btn-table-copy');
+
+  if (btnClose && card) {
+    btnClose.addEventListener('click', () => card.classList.add('hidden'));
+  }
+
+  document.querySelectorAll('.table-chip').forEach(chip => {
+    chip.addEventListener('click', async () => {
+      document.querySelectorAll('.table-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentTableStyle = chip.dataset.tstyle || 'colorful';
+      if (currentTableSourceContext) {
+        await runTableGeneratorFeature(currentTableSourceContext, currentTableStyle, true);
+      }
+    });
+  });
+
+  if (btnReplace) {
+    btnReplace.addEventListener('click', async () => {
+      if (!currentTableHtml) return;
+      if (typeof Word !== 'undefined') {
+        await Word.run(async (ctx) => {
+          const sel = ctx.document.getSelection();
+          sel.insertHtml(currentTableHtml, Word.InsertLocation.replace);
+          await ctx.sync();
+        });
+        docStatus('📊 Table replaced selection on canvas!');
+      } else {
+        insertToWordBody(currentTableHtml);
+      }
+    });
+  }
+
+  if (btnBelow) {
+    btnBelow.addEventListener('click', async () => {
+      if (!currentTableHtml) return;
+      if (typeof Word !== 'undefined') {
+        await Word.run(async (ctx) => {
+          const sel = ctx.document.getSelection();
+          sel.insertHtml(currentTableHtml, Word.InsertLocation.after);
+          await ctx.sync();
+        });
+        docStatus('📊 Inserted table below cursor on canvas!');
+      } else {
+        insertToWordBody(currentTableHtml);
+      }
+    });
+  }
+
+  if (btnCopy) {
+    btnCopy.addEventListener('click', () => {
+      if (!currentTableHtml) return;
+      navigator.clipboard.writeText(currentTableHtml);
+      docStatus('📋 Table HTML copied to clipboard!');
+    });
+  }
 }
 
-async function runTableGeneratorFeature(context) {
+async function runTableGeneratorFeature(context, style = currentTableStyle, keepCardOpen = false) {
   if (!context || context.trim().length < 5) {
     showError('Highlight some text or data to convert into a table.');
     return;
   }
+  currentTableSourceContext = context;
+  currentTableStyle = style;
   showLoading(true);
+
   try {
-    const prompt = `Convert the provided text, metrics, numbers, or comparison data into a clean, professional HTML table.
+    let styleInstructions = '';
+    if (style === 'simple') {
+      styleInstructions = `STYLE: Simple Academic (Zero Color / Classic Black & White):
+- <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:10pt;border-top:1.5pt solid #000000;border-bottom:1.5pt solid #000000;border-left:none;border-right:none;">
+- <thead> with <th style="background-color:#ffffff;color:#000000;font-weight:bold;text-align:left;padding:6pt 8pt;border-bottom:1.5pt solid #000000;border-top:none;border-left:none;border-right:none;">
+- <tbody> with <td style="background-color:#ffffff;color:#000000;padding:5pt 8pt;border-bottom:0.5pt solid #d1d5db;border-top:none;border-left:none;border-right:none;">
+- STRICT REQUIREMENT: NO colored backgrounds (#ffffff only), NO zebra striping, NO vertical borders. Clean standard academic/APA journal table.`;
+    } else if (style === 'navy') {
+      styleInstructions = `STYLE: Corporate Navy Blue:
+- <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:10pt;border:1px solid #93c5fd;">
+- <thead> with <th style="background-color:#1e40af;color:#ffffff;font-weight:bold;text-align:left;padding:6pt 8pt;border:1px solid #93c5fd;">
+- <tbody> with alternating rows background-color: #f0f7ff and #ffffff. Cell borders: 1px solid #bfdbfe. Text color: #0f172a.`;
+    } else if (style === 'emerald') {
+      styleInstructions = `STYLE: Finance & KPI Emerald Green:
+- <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:10pt;border:1px solid #a7f3d0;">
+- <thead> with <th style="background-color:#065f46;color:#ffffff;font-weight:bold;text-align:left;padding:6pt 8pt;border:1px solid #a7f3d0;">
+- <tbody> with alternating rows background-color: #ecfdf5 and #ffffff. Cell borders: 1px solid #d1fae5. Text color: #064e3b. Numerical data aligned to right.`;
+    } else if (style === 'minimal') {
+      styleInstructions = `STYLE: Minimal Slate:
+- <table border="0" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:10pt;border-bottom:1.5pt solid #64748b;">
+- <thead> with <th style="background-color:#f1f5f9;color:#0f172a;font-weight:bold;text-align:left;padding:6pt 8pt;border-bottom:1.5pt solid #64748b;border-top:none;border-left:none;border-right:none;">
+- <tbody> with <td style="background-color:#ffffff;color:#334155;padding:5pt 8pt;border-bottom:1px solid #e2e8f0;border-top:none;border-left:none;border-right:none;">`;
+    } else {
+      // Default 'colorful'
+      styleInstructions = `STYLE: Modern Colorful Indigo:
+- <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-family:'Segoe UI',Calibri,Arial,sans-serif;font-size:10pt;border:1px solid #cbd5e1;">
+- <thead> with <th style="background-color:#4f46e5;color:#ffffff;font-weight:bold;text-align:left;padding:6pt 8pt;border:1px solid #cbd5e1;">
+- <tbody> with alternating rows background-color: #f8fafc and #ffffff. Cell borders: 1px solid #e2e8f0. Text color: #1e293b.`;
+    }
+
+    const prompt = `Convert the provided text, metrics, numbers, or comparison data into a professional HTML table.
+${styleInstructions}
 Requirements:
-1. Include a <thead> with styled headers (background-color: #4f46e5; color: white; padding: 6px;).
-2. Include a <tbody> with alternating row background colors (#f8fafc and #ffffff) and clean border styling.
-3. Align numerical columns to the right, text to the left.
-4. Return ONLY the <table>...</table> HTML structure without markdown code blocks, preamble, or commentary.`;
+1. Align numerical columns and currency/percentages to the right, text columns to the left.
+2. Ensure every column header accurately summarizes the column contents.
+3. Return ONLY the <table>...</table> HTML structure without markdown backticks, preamble, or commentary.`;
 
     const tableHtml = await runAI(prompt, context);
     const cleanHtml = tableHtml.replace(/^```(?:html)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    currentTableHtml = cleanHtml;
 
-    if (typeof Word !== 'undefined') {
-      await Word.run(async (ctx) => {
-        const sel = ctx.document.getSelection();
-        sel.insertHtml(cleanHtml, Word.InsertLocation.replace);
-        await ctx.sync();
-      });
-      docStatus('📊 Inserted formatted table into Word canvas!');
-    } else {
-      showOutput(cleanHtml, context);
+    // Show preview in Table Studio Card
+    const card = document.getElementById('table-studio-card');
+    const preview = document.getElementById('table-result-preview');
+    if (card && preview) {
+      preview.innerHTML = cleanHtml;
+      card.classList.remove('hidden');
+    }
+
+    if (!keepCardOpen) {
+      if (typeof Word !== 'undefined') {
+        await Word.run(async (ctx) => {
+          const sel = ctx.document.getSelection();
+          sel.insertHtml(cleanHtml, Word.InsertLocation.replace);
+          await ctx.sync();
+        });
+        docStatus(`📊 Inserted ${style.toUpperCase()} table into Word canvas!`);
+      } else {
+        showOutput(cleanHtml, context);
+      }
     }
   } catch (e) {
     showError(e.message);

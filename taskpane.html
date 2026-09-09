@@ -195,6 +195,34 @@
           <button id="btn-humanize-copy" class="small-btn">📋 Copy</button>
         </div>
       </div>
+
+      <!-- Word Table Generator & Style Studio Card -->
+      <div id="table-studio-card" class="table-studio-card hidden">
+        <div class="table-studio-header">
+          <span style="font-weight:700;font-size:12px;color:var(--text);display:flex;align-items:center;gap:5px;">
+            <span>📊 Table Studio</span>
+            <span class="framework-badge badge-career" style="font-size:9.5px;">Native Word Tables</span>
+          </span>
+          <button id="btn-close-table-studio" class="icon-btn" style="font-size:11px;padding:2px 6px;">✕</button>
+        </div>
+        <div class="table-style-picker-row">
+          <div style="font-size:10.5px;color:var(--muted);margin-bottom:4px;font-weight:600;">Choose Table Style:</div>
+          <div class="table-style-chips">
+            <button class="table-chip active" data-tstyle="colorful">🎨 Colorful Indigo</button>
+            <button class="table-chip" data-tstyle="navy">🏦 Corporate Navy</button>
+            <button class="table-chip" data-tstyle="simple">📄 Simple (No Color)</button>
+            <button class="table-chip" data-tstyle="emerald">💵 Finance Green</button>
+            <button class="table-chip" data-tstyle="minimal">🔲 Minimal Slate</button>
+          </div>
+        </div>
+        <div id="table-result-preview" class="table-result-preview"></div>
+        <div class="table-studio-actions">
+          <button id="btn-table-replace" class="primary-btn">⚡ Replace in Canvas</button>
+          <button id="btn-table-below" class="small-btn">➕ Insert Below</button>
+          <button id="btn-table-copy" class="small-btn">📋 Copy</button>
+        </div>
+      </div>
+
       <div id="grammar-results" class="results-box hidden"></div>
       <div id="rewrite3-panel" class="rewrite3-panel hidden"></div>
     </div>
@@ -294,22 +322,23 @@
     <div class="tab-content" id="tab-templates">
       <div class="doc-section-label" style="display:flex;justify-content:space-between;align-items:center;">
         <span>📚 Document Framework Studio</span>
-        <span class="hint" style="font-size:10px;">18 Pro Frameworks</span>
+        <span class="hint" style="font-size:10px;">28 Pro Frameworks</span>
       </div>
       <p class="hint">Insert native Word heading structures, AI auto-draft complete documents, or audit existing drafts against frameworks:</p>
 
       <!-- Category Filter Pills -->
       <div class="framework-filter-bar">
-        <button class="filter-pill active" data-cat="all">All (18)</button>
+        <button class="filter-pill active" data-cat="all">All (28)</button>
         <button class="filter-pill" data-cat="academic">🎓 Academic (6)</button>
         <button class="filter-pill" data-cat="business">💼 Business (6)</button>
         <button class="filter-pill" data-cat="legal">⚖️ Legal (3)</button>
         <button class="filter-pill" data-cat="marketing">📢 Marketing (3)</button>
+        <button class="filter-pill" data-cat="career">🎯 Career &amp; CVs (10)</button>
       </div>
 
       <!-- Live Search Box -->
       <div class="framework-search-box">
-        <input type="text" id="framework-search-input" placeholder="🔍 Search frameworks (e.g. thesis, SOW, NDA, PR, SOP)..." />
+        <input type="text" id="framework-search-input" placeholder="🔍 Search frameworks (e.g. banking, teaching, resume, thesis, SOW, NDA)..." />
       </div>
 
       <!-- Framework Cards Container -->
@@ -326,6 +355,134 @@
         <button class="career-btn" data-career="star-answer">🎤 Behavioral Interview Answer (STAR Method)</button>
         <button class="career-btn" data-career="salary-negotiate">💰 Salary Negotiation &amp; Counter-Offer</button>
         <button class="career-btn" data-career="networking-inmail">🤝 Warm Networking InMail Pitch</button>
+      </div>
+
+      <div class="doc-section-label" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;">
+        <span>📄 1-Click Executive CV &amp; Resume Templates (10)</span>
+        <span class="hint" style="font-size:10px;">Styled Word Layouts</span>
+      </div>
+      <p class="hint">Insert formatted modern designer resumes directly onto your Word page body with colored banners, contact pills, and skills tables:</p>
+
+      <div class="career-resume-grid">
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">🏦 Banking &amp; Financial Services CV</span>
+            <span class="framework-badge badge-career">Banking</span>
+          </div>
+          <div class="career-resume-desc">Commercial Lending, Credit Risk Underwriting, AML/KYC, Core Banking (T24/Finacle), and Basel III portfolio metrics.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="banking-finance-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="banking-finance-resume" title="AI auto-draft tailored banking CV">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">👩‍🏫 Teaching &amp; Education Professional CV</span>
+            <span class="framework-badge badge-career">Teaching</span>
+          </div>
+          <div class="career-resume-desc">K-12 &amp; Higher Ed, Differentiated Pedagogy, IEP, EdTech LMS (Canvas/Google Classroom), and Student Standardized Testing Gains.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="teaching-educator-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="teaching-educator-resume" title="AI auto-draft tailored teaching CV">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">🏥 Healthcare &amp; Clinical Specialist CV</span>
+            <span class="framework-badge badge-career">Healthcare</span>
+          </div>
+          <div class="career-resume-desc">Patient Care, EMR/EHR Systems (Epic/Cerner), Clinical Protocol Compliance, ICU/ER, BLS/ACLS, and HIPAA patient advocacy.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="medical-healthcare-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="medical-healthcare-resume" title="AI auto-draft tailored healthcare CV">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">💻 Modern Tech &amp; Software Engineer CV</span>
+            <span class="framework-badge badge-career">Tech</span>
+          </div>
+          <div class="career-resume-desc">Full-Stack, Cloud Architecture (AWS/GCP), Distributed Microservices, CI/CD pipelines, and two-column technical skills matrix.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="tech-software-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="tech-software-resume" title="AI auto-draft tailored tech CV">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">💼 Executive Leadership &amp; Management Resume</span>
+            <span class="framework-badge badge-business">Executive</span>
+          </div>
+          <div class="career-resume-desc">Boardroom-ready CV for C-Suite, VP, and Directors with multi-million dollar P&amp;L scale, M&amp;A integration, and global operations.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="executive-leadership-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="executive-leadership-resume" title="AI auto-draft tailored executive resume">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">📊 Accounting, Audit &amp; Corporate Finance Resume</span>
+            <span class="framework-badge badge-business">Finance</span>
+          </div>
+          <div class="career-resume-desc">GAAP/IFRS compliance, Financial Modeling, SEC 10-K/10-Q reporting, external audit defense, and ERP (SAP/Oracle) stewardship.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="accounting-finance-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="accounting-finance-resume" title="AI auto-draft tailored accounting resume">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">📢 Sales, Digital Marketing &amp; Growth Resume</span>
+            <span class="framework-badge badge-marketing">Growth</span>
+          </div>
+          <div class="career-resume-desc">Revenue Pipeline Generation ($10M+ quota), CAC/LTV optimization, Multi-Channel SEO/PPC, CRM (HubSpot/Salesforce), and Enterprise Deals.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="sales-marketing-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="sales-marketing-resume" title="AI auto-draft tailored sales/marketing resume">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">🛠️ Product &amp; Agile Project Manager Resume</span>
+            <span class="framework-badge badge-career">Product</span>
+          </div>
+          <div class="career-resume-desc">Product Vision, PRDs, RICE prioritization, Agile Scrum/Kanban, Sprint Velocity, User Analytics (Amplitude/Mixpanel), and Wireframing.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="project-product-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="project-product-resume" title="AI auto-draft tailored product resume">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">⚖️ Legal Counsel &amp; Corporate Attorney CV</span>
+            <span class="framework-badge badge-legal">Legal</span>
+          </div>
+          <div class="career-resume-desc">Multi-Million Commercial Contracts, M&amp;A due diligence, GDPR/CCPA privacy compliance, Risk Mitigation, and State Bar credentials.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="legal-counsel-resume" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="legal-counsel-resume" title="AI auto-draft tailored legal CV">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
+
+        <div class="career-resume-card">
+          <div class="career-resume-header">
+            <span class="career-resume-title">🎓 Academic &amp; Research Scholar CV</span>
+            <span class="framework-badge badge-academic">Academic</span>
+          </div>
+          <div class="career-resume-desc">Exhaustive doctoral CV with peer-reviewed publications, NSF/ERC research grants, university teaching, and awards.</div>
+          <div class="career-resume-actions">
+            <button class="btn-career-skeleton" data-id="academic-scholar-cv" title="Insert formatted layout into Word body">Insert Skeleton ➕</button>
+            <button class="btn-career-smartdraft" data-id="academic-scholar-cv" title="AI auto-draft tailored academic CV">🤖 AI Smart-Draft</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -730,7 +887,10 @@
     <section id="output-section" class="hidden">
       <div class="output-header">
         <div class="output-header-top">
-          <span class="output-header-title">AI Response</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="output-header-title">AI Response</span>
+            <span class="badge-canvas-guard" title="CanvasGuard Active: 100% pure document content. Zero conversational chatter, preambles, or filler.">🛡️ Canvas-Safe</span>
+          </div>
           <div class="output-view-toggle">
             <button id="btn-view-preview" class="view-toggle-btn active">Preview</button>
             <button id="btn-view-diff" class="view-toggle-btn">Diff</button>

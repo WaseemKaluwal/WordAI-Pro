@@ -9,7 +9,7 @@
 
 **WordAI Pro** is an open-source, full-featured **AI Writing Assistant, Academic Research Copilot, and Document Automation Studio** that operates directly inside **Microsoft Word** (Word Online, Word for Windows Desktop, Word for Mac, and iPad). 
 
-Equipped with direct page canvas in-place editing, a native rich Word styling engine, multi-model support across **12 leading AI providers** (including GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, DeepSeek R1, and local offline Ollama), **18 pre-built document frameworks**, **48 curated prompts**, live citation discovery, and visual redline diff inspection—all with zero external servers and zero telemetry (100% client-side BYOK).
+Equipped with direct page canvas in-place editing, a native rich Word styling engine, multi-model support across **12 leading AI providers** (including GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, DeepSeek R1, and local offline Ollama), **28 pre-built document frameworks**, **48 curated prompts**, live citation discovery, and visual redline diff inspection—all with zero external servers and zero telemetry (100% client-side BYOK).
 
 <p align="center">
   <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
@@ -31,7 +31,7 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
    - [Direct In-Place Page Canvas Editing & Popup Copilot](#1-direct-in-place-page-canvas-editing--popup-copilot)
    - [Native Rich Word Formatting Engine (Zero Markdown Asterisks)](#2-native-rich-word-formatting-engine-zero-markdown-asterisks)
    - [Multi-Provider AI Suite (12 Providers — BYOK)](#3-multi-provider-ai-suite-12-providers--byok)
-   - [Document Frameworks Studio (18 Pre-built Scaffolds)](#4-document-frameworks-studio-18-pre-built-scaffolds)
+   - [Document Frameworks Studio (28 Pre-built Scaffolds)](#4-document-frameworks-studio-28-pre-built-scaffolds)
    - [Pre-built Strategic Prompts Studio (48 Expert Prompts)](#5-pre-built-strategic-prompts-studio-48-expert-prompts)
    - [Visual Redline Diff & Side-by-Side Evaluation](#6-visual-redline-diff--side-by-side-evaluation)
    - [The 6 Killer Features Suite (New in v1.0.1)](#7-the-6-killer-features-suite-new-in-v101)
@@ -63,7 +63,7 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
 | **Direct In-Place Editing** | Limited canvas suggestions | ✅ **Live highlighted text rewrite (`Ctrl+Shift+E`)** |
 | **Rich Word Formatting** | Inconsistent Markdown output | ✅ **Native Word HTML Engine (`<strong>`, Headings, Tables, Lists)** |
 | **Text to Word Tables** | Plain text tables | ✅ **Native Styled HTML & Word Table Generation** |
-| **Document Frameworks** | Generic empty drafts | ✅ **18 Full Industry Frameworks + Compliance Audit** |
+| **Document Frameworks** | Generic empty drafts | ✅ **28 Full Industry Frameworks + Compliance Audit** |
 | **Format-Safe Translator** | Strips formatting | ✅ **30+ Languages with Strict HTML & Markdown Tag Preservation** |
 | **Visual Redline Diff** | Standard Word track changes | ✅ **Interactive side-by-side & LCS visual redline diff viewer** |
 | **Data Privacy** | Enterprise cloud processing | ✅ **Zero server: All API calls go directly from your browser to the LLM** |
@@ -75,8 +75,8 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
 | 🎨 **AI Content Generation & In-Place Copilot** | 🔬 **Research Copilot & Academic Paper Discovery** |
 | :---: | :---: |
 | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-generate.png" width="100%" alt="AI Content Generation & In-Place Copilot" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-research.png" width="100%" alt="Research Copilot & Academic Paper Discovery" /> |
-| 📋 **18 Document Frameworks Studio** | ⚡ **48 Strategic Prompts Library** |
-| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-frameworks.png" width="100%" alt="18 Document Frameworks Studio" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-prompts.png" width="100%" alt="48 Strategic Prompts Library" /> |
+| 📋 **28 Document Frameworks Studio** | ⚡ **48 Strategic Prompts Library** |
+| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-frameworks.png" width="100%" alt="28 Document Frameworks Studio" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-prompts.png" width="100%" alt="48 Strategic Prompts Library" /> |
 
 ---
 
@@ -120,12 +120,23 @@ WordAI Pro connects directly to 12 frontier providers and local backends with li
    • Cohere (Command R+)
 ```
 
-### 4. Document Frameworks Studio (18 Pre-built Scaffolds)
-Comprehensive document engineering studio across 4 critical domains:
+### 4. Document Frameworks Studio (28 Pre-built Scaffolds)
+Comprehensive document engineering studio across 5 critical domains:
 - **🎓 Academic & Scientific (6):** *Research Proposal*, *Thesis (5 Chapters)*, *PRISMA Systematic Review*, *IMRaD Journal Article*, *Scientific Lab Report*, *Academic Case Study*.
 - **💼 Business & Strategy (6):** *Executive Business Plan*, *Harvard Business Case Analysis*, *Project Charter & SOW*, *Standard Operating Procedure (SOP)*, *Quarterly Business Review (QBR)*, *White Paper*.
 - **⚖️ Legal & Governance (3):** *Mutual Non-Disclosure Agreement (NDA)*, *Master Consulting Services Agreement (MSA)*, *Privacy Policy & GDPR/CCPA Notice*.
 - **📢 Marketing & PR (3):** *AP-Style Press Release*, *Go-To-Market (GTM) Launch Plan*, *Executive Crisis Communication Plan*.
+- **🎯 Career & Executive CV Studio (10):**
+  1. 🏦 **Banking & Financial Services CV / Resume:** Credit risk underwriting, Basel III capital ratios, AML/KYC regulatory compliance, and core banking platforms (T24, Finacle).
+  2. 👩‍🏫 **Teaching & Education Professional CV / Resume:** Differentiated learning (IEP/504), backward curriculum design (UbD), classroom leadership, EdTech LMS (Canvas, Google Classroom), and student testing gains.
+  3. 🏥 **Healthcare, Nursing & Clinical Specialist CV:** Acute patient care, triage protocols, EHR systems (Epic, Cerner), JCAHO standards, ICU/ER telemetry, and HIPAA advocacy.
+  4. 💻 **Modern Tech & Software Engineer CV:** Full-stack microservices, cloud infrastructure (AWS/GCP), distributed systems, CI/CD automation, and two-column technical skills matrix.
+  5. 💼 **Executive Leadership & Management Resume:** P&L stewardship ($50M+), cross-functional operations, enterprise digital transformation, M&A integration, and Board governance.
+  6. 📊 **Accounting, Audit & Corporate Finance Resume:** CPA/ACCA compliance, US GAAP/IFRS technical reporting, SOX 404 controls, external audit defense, and ERP (SAP S/4HANA, NetSuite).
+  7. 📢 **Sales, Digital Marketing & Growth Resume:** High-quota sales pipeline generation ($10M+), CAC/LTV payback optimization, multi-channel SEO/SEM, and enterprise CRM closing.
+  8. 🛠️ **Product & Agile Project Manager Resume:** Strategic product roadmaps, PRD authoring, RICE feature prioritization, Scrum/Kanban sprint velocity, and user funnel analytics.
+  9. ⚖️ **Legal Counsel & Corporate Attorney CV:** High-stakes commercial contracts, M&A due diligence, GDPR/privacy counseling, risk management, and active state bar credentials.
+  10. 🎓 **Academic Scholar & Faculty Curriculum Vitae:** Peer-reviewed publications in APA, NSF/ERC research grants ($1M+), doctoral mentorship, and university faculty appointments.
 
 <p align="center">
   <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
@@ -168,7 +179,7 @@ WordAI Pro v1.0.1 introduces six game-changing superpowers designed to surpass p
 |---|---|---|---|
 | **1** | **Plagiarism & Originality Highlighter** | High Priority | Flags clichéd/unoriginal phrasing with originality % and fresh academic rewrites. |
 | **2** | **AI Citation Finder** | High Priority | Suggests 3–5 real papers/books with direct links to Google Scholar, PubMed, and JSTOR. |
-| **3** | **Document Frameworks Studio** | High Priority | 18 full frameworks with skeleton insertion, smart drafting, and compliance audits. |
+| **3** | **Document Frameworks Studio** | High Priority | 28 full frameworks with skeleton insertion, smart drafting, and compliance audits. |
 | **4** | **Word Count Target Tracker** | High Priority | Monospace live word count, target goal progress bar, and percentage completion. |
 | **5** | **Reading Level Analyzer** | High Priority | Flesch Reading Ease, Flesch-Kincaid Grade Level, and estimated reading duration. |
 | **6** | **Research Gap Finder** | Research Copilot | Analyzes abstracts to identify unexamined populations and methodological gaps. |
@@ -232,6 +243,10 @@ WordAI Pro v1.0.1 introduces six game-changing superpowers designed to surpass p
 5. Browse and select [`manifest.xml`](manifest.xml) from this repository.
 6. The **WordAI Pro** icon will appear on your ribbon. Click it to launch the taskpane.
 7. Click **⚙️ Settings** in the add-in header $\rightarrow$ select your provider (e.g. Gemini, OpenAI, Groq, or Ollama) $\rightarrow$ enter your key $\rightarrow$ click **Save Settings**.
+
+<p align="center">
+  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-sideload.png" alt="Sideloading WordAI Pro manifest.xml directly into Microsoft Word" width="100%" />
+</p>
 
 ---
 
@@ -318,13 +333,14 @@ Highlight any sentence in your Word document and press **`Ctrl + Shift + E`**, o
 
 ```text
 WordAI Pro/
+├── screenshots/       # High-resolution UI showcase & sideloading screenshots
 ├── manifest.xml       # Office Add-in manifest configuration (Validated across all platforms)
 ├── package.json       # Dependencies, build scripts & dev cert utilities
 ├── README.md          # Comprehensive documentation, API guide & user manual
 ├── commands.html      # Office runtime command host
 ├── generate-icons.js  # Zero-dependency PNG icon generator
 ├── ai-provider.js     # Multi-provider AI communication engine (12 providers)
-├── frameworks-data.js # 18 Pre-built Document Frameworks with skeletons & audit specs
+├── frameworks-data.js # 28 Pre-built Document Frameworks with skeletons & audit specs
 ├── prompts-data.js    # 48 Curated Pre-built Strategic Prompts across 6 domains
 ├── popup-copilot.html # Detached floating in-place copilot dialog
 ├── taskpane.html      # Add-in UI structure (Modes, Framework Studio, History Drawer)
