@@ -1,7 +1,7 @@
 title: "WordAI Pro — Microsoft Word AI Copilot & Document Automation Studio"
 description: "Free, open-source AI Copilot for Microsoft Word. Connects directly to 12 LLMs (Gemini, Claude, GPT-4o, DeepSeek, Ollama), 28 document frameworks, in-place canvas rewriting, and 100% client-side zero-server privacy."
 url: "https://waseemkaluwal.github.io"
-baseurl: "/wordai-pro"
+baseurl: "/WordAI-Pro"
 theme: jekyll-theme-cayman
 plugins:
   - jekyll-seo-tag

@@ -1,13 +1,13 @@
 <p align="center">
-  <a href="https://waseemkaluwal.github.io/wordai-pro/">
-    <img src="https://waseemkaluwal.github.io/wordai-pro/assets/icon-80.png" width="72" height="72" alt="WordAI Pro Logo" style="border-radius: 18px; box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);" />
+  <a href="https://waseemkaluwal.github.io/WordAI-Pro/">
+    <img src="https://waseemkaluwal.github.io/WordAI-Pro/assets/icon-80.png" width="68" height="68" alt="WordAI Pro Logo" style="border-radius: 8px; box-shadow: 0 4px 14px rgba(92, 53, 245, 0.35);" />
   </a>
 </p>
 
-# <p align="center">WordAI Pro — Microsoft Word AI Copilot &amp; Research Assistant</p>
+# <p align="center"><img src="https://waseemkaluwal.github.io/WordAI-Pro/assets/icon-32.png" width="28" height="28" style="vertical-align: middle; border-radius: 4px;" /> WordAI Pro — Microsoft Word AI Copilot &amp; Research Assistant</p>
 
 <p align="center">
-  <a href="https://waseemkaluwal.github.io/wordai-pro/"><img src="https://img.shields.io/badge/Office_Add--in-Word_2016%2B_|_Online_|_Mac_|_iPad-0078d4?style=for-the-badge&logo=microsoftword&logoColor=white" alt="Office Add-in" /></a>
+  <a href="https://waseemkaluwal.github.io/WordAI-Pro/"><img src="https://img.shields.io/badge/Office_Add--in-Word_2016%2B_|_Online_|_Mac_|_iPad-0078d4?style=for-the-badge&logo=microsoftword&logoColor=white" alt="Office Add-in" /></a>
   <a href="manifest.xml"><img src="https://img.shields.io/badge/Manifest-100%25_Validated-10b981?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Manifest Validated" /></a>
   <a href="#-multi-provider-ai-suite-12-providers--byok"><img src="https://img.shields.io/badge/AI_Providers-12_Supported_(BYOK)-6366f1?style=for-the-badge&logo=openai&logoColor=white" alt="AI Providers" /></a>
   <a href="#-privacy--100-local-offline-ai-ollama"><img src="https://img.shields.io/badge/Local_AI-Ollama_|_LM_Studio-f97316?style=for-the-badge&logo=ollama&logoColor=white" alt="Local LLM Support" /></a>
@@ -20,13 +20,13 @@
 Equipped with direct page canvas in-place editing, a native rich Word styling engine, multi-model support across **12 leading AI providers** (including GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, DeepSeek R1, and local offline Ollama), **28 pre-built document frameworks**, **48 curated prompts**, live citation discovery, and visual redline diff inspection—all with zero external servers and zero telemetry (100% client-side BYOK).
 
 <p align="center">
-  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
+  <img src="https://waseemkaluwal.github.io/WordAI-Pro/screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
 </p>
 
 ---
 
 ### 🌐 Live Production Deployment
-- **Live Taskpane URL:** [https://waseemkaluwal.github.io/wordai-pro/taskpane.html](https://waseemkaluwal.github.io/wordai-pro/taskpane.html)
+- **Live Taskpane URL:** [https://waseemkaluwal.github.io/WordAI-Pro/taskpane.html](https://waseemkaluwal.github.io/WordAI-Pro/taskpane.html)
 - **Manifest File:** [`manifest.xml`](manifest.xml) (Ready for 1-click sideloading into Microsoft Word)
 - **Interactive In-Place Copilot:** Press `Ctrl + Shift + E` inside Microsoft Word
 
@@ -82,9 +82,9 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
 
 | 🎨 **AI Content Generation & In-Place Copilot** | 🔬 **Research Copilot & Academic Paper Discovery** |
 | :---: | :---: |
-| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-generate.png" width="100%" alt="AI Content Generation & In-Place Copilot" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-research.png" width="100%" alt="Research Copilot & Academic Paper Discovery" /> |
+| <img src="https://waseemkaluwal.github.io/WordAI-Pro/screenshots/screenshot-generate.png" width="100%" alt="AI Content Generation & In-Place Copilot" /> | <img src="https://waseemkaluwal.github.io/WordAI-Pro/screenshots/screenshot-research.png" width="100%" alt="Research Copilot & Academic Paper Discovery" /> |
 | 📋 **28 Document Frameworks Studio** | ⚡ **48 Strategic Prompts Library** |
-| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-frameworks.png" width="100%" alt="28 Document Frameworks Studio" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-prompts.png" width="100%" alt="48 Strategic Prompts Library" /> |
+| <img src="https://waseemkaluwal.github.io/WordAI-Pro/screenshots/screenshot-frameworks.png" width="100%" alt="28 Document Frameworks Studio" /> | <img src="https://waseemkaluwal.github.io/WordAI-Pro/screenshots/screenshot-prompts.png" width="100%" alt="48 Strategic Prompts Library" /> |
 
 ---
 
@@ -147,7 +147,7 @@ Comprehensive document engineering studio across 5 critical domains:
   10. 🎓 **Academic Scholar & Faculty Curriculum Vitae:** Peer-reviewed publications in APA, NSF/ERC research grants ($1M+), doctoral mentorship, and university faculty appointments.
 
 <p align="center">
-  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
+  <img src="https://waseemkaluwal.github.io/WordAI-Pro/screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
 </p>
 
 **⚡ 3 Capabilities Per Framework:**
@@ -253,7 +253,7 @@ WordAI Pro v1.0.1 introduces six game-changing superpowers designed to surpass p
 7. Click **⚙️ Settings** in the add-in header $\rightarrow$ select your provider (e.g. Gemini, OpenAI, Groq, or Ollama) $\rightarrow$ enter your key $\rightarrow$ click **Save Settings**.
 
 <p align="center">
-  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-sideload.png" alt="Sideloading WordAI Pro manifest.xml directly into Microsoft Word" width="100%" />
+  <img src="https://waseemkaluwal.github.io/WordAI-Pro/screenshots/screenshot-sideload.png" alt="Sideloading WordAI Pro manifest.xml directly into Microsoft Word" width="100%" />
 </p>
 
 ---
