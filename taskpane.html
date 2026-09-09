@@ -169,8 +169,12 @@
       </select>
       <label>API Key</label>
       <input type="password" id="api-key-input" placeholder="Paste your API key..." />
-      <label id="model-label">Model (optional)</label>
-      <input type="text" id="model-input" placeholder="e.g. gpt-4o, gemini-1.5-pro" />
+      <label id="model-label">Model</label>
+      <div style="display:flex;gap:6px">
+        <select id="model-select" style="flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12.5px;outline:none;background:var(--bg);"></select>
+        <button id="btn-fetch-models" class="small-btn" title="Fetch available models">🔄 Fetch</button>
+      </div>
+      <input type="text" id="model-input" placeholder="Or type custom model name..." />
       <label>Language</label>
       <select id="language-select">
         <option value="English">English</option>

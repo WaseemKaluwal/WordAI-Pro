@@ -385,10 +385,39 @@ function bindSettings() {
     document.getElementById('settings-panel').classList.add('hidden');
   });
 
+  document.getElementById('btn-fetch-models').addEventListener('click', async () => {
+    const provider = document.getElementById('provider-select').value;
+    const key = document.getElementById('api-key-input').value.trim();
+    if (!key) return alert('Enter your API key first.');
+    const btn = document.getElementById('btn-fetch-models');
+    btn.textContent = '⏳';
+    btn.disabled = true;
+    const models = await AIProvider.fetchModels(provider, key);
+    const select = document.getElementById('model-select');
+    select.innerHTML = '';
+    if (models.length === 0) {
+      select.innerHTML = '<option value="">No models found</option>';
+    } else {
+      models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        select.appendChild(opt);
+      });
+      // restore saved selection
+      const saved = localStorage.getItem('wordai_model');
+      if (saved) select.value = saved;
+    }
+    btn.textContent = '🔄 Fetch';
+    btn.disabled = false;
+  });
+
   document.getElementById('btn-save-settings').addEventListener('click', () => {
+    const selectedModel = document.getElementById('model-select').value ||
+                          document.getElementById('model-input').value;
     localStorage.setItem('wordai_provider', document.getElementById('provider-select').value);
     localStorage.setItem('wordai_api_key', document.getElementById('api-key-input').value);
-    localStorage.setItem('wordai_model', document.getElementById('model-input').value);
+    localStorage.setItem('wordai_model', selectedModel);
     localStorage.setItem('wordai_language', document.getElementById('language-select').value);
     document.getElementById('settings-panel').classList.add('hidden');
   });
@@ -409,5 +438,14 @@ function loadSettings() {
   document.getElementById('api-key-input').value = key;
   document.getElementById('model-input').value = model;
   document.getElementById('language-select').value = lang;
+
+  // populate model dropdown with saved model if exists
+  const select = document.getElementById('model-select');
+  if (model) {
+    select.innerHTML = `<option value="${model}">${model}</option>`;
+    select.value = model;
+  } else {
+    select.innerHTML = '<option value="">Click 🔄 Fetch to load models</option>';
+  }
   updateTokenDisplay();
 }

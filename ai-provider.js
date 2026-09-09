@@ -13,12 +13,17 @@ const AIProvider = (() => {
     },
     gemini: {
       url: (model, key) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-      defaultModel: 'gemini-1.5-flash',
+      defaultModel: 'gemini-2.0-flash',
       buildBody: (model, messages) => ({
-        contents: messages.map(m => ({
-          role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.content }]
-        }))
+        contents: messages
+          .filter(m => m.role !== 'system')
+          .map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }]
+          })),
+        systemInstruction: messages.find(m => m.role === 'system')
+          ? { parts: [{ text: messages.find(m => m.role === 'system').content }] }
+          : undefined,
       }),
       buildHeaders: () => ({ 'Content-Type': 'application/json' }),
       extractText: (data) => data.candidates[0].content.parts[0].text,
@@ -80,5 +85,42 @@ const AIProvider = (() => {
     return { text, tokens };
   }
 
-  return { call };
+  async function fetchModels(providerName, apiKey) {
+    try {
+      if (providerName === 'gemini') {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const data = await res.json();
+        return (data.models || [])
+          .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+          .map(m => m.name.replace('models/', ''));
+      }
+      if (providerName === 'openai') {
+        const res = await fetch('https://api.openai.com/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        const data = await res.json();
+        return (data.data || [])
+          .filter(m => m.id.startsWith('gpt'))
+          .map(m => m.id)
+          .sort();
+      }
+      if (providerName === 'groq') {
+        const res = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        const data = await res.json();
+        return (data.data || []).map(m => m.id).sort();
+      }
+      if (providerName === 'openrouter') {
+        const res = await fetch('https://openrouter.ai/api/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        const data = await res.json();
+        return (data.data || []).map(m => m.id).sort();
+      }
+    } catch (e) { return []; }
+    return [];
+  }
+
+  return { call, fetchModels };
 })();
