@@ -33,7 +33,256 @@
       <button class="tab" data-tab="chat">🤖 Chat</button>
       <button class="tab" data-tab="tone">🎭 Tone</button>
       <button class="tab" data-tab="research">🎓 Research</button>
+      <button class="tab" data-tab="document">📁 Document</button>
     </nav>
+
+    <!-- Tab: Document -->
+    <div class="tab-content" id="tab-document">
+
+      <!-- Sub-tabs -->
+      <div class="doc-subtabs">
+        <button class="doc-subtab active" data-subtab="info">📄 Info</button>
+        <button class="doc-subtab" data-subtab="format">🎨 Format</button>
+        <button class="doc-subtab" data-subtab="insert">➕ Insert</button>
+        <button class="doc-subtab" data-subtab="review">🔍 Review</button>
+        <button class="doc-subtab" data-subtab="layout">📐 Layout</button>
+      </div>
+
+      <!-- Sub: Info -->
+      <div class="doc-subpanel active" id="subpanel-info">
+        <div class="doc-section-label">📊 Statistics</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="wordcount">🔢 Word Count</button>
+          <button class="doc-btn" data-action="properties">📋 Properties</button>
+          <button class="doc-btn" data-action="outline">🗂️ Outline</button>
+          <button class="doc-btn" data-action="bookmarks">🔖 Bookmarks</button>
+          <button class="doc-btn" data-action="list-styles">🎨 List Styles</button>
+          <button class="doc-btn" data-action="list-fields">🏷️ List Fields</button>
+          <button class="doc-btn" data-action="footnotes">📎 Footnotes</button>
+          <button class="doc-btn" data-action="endnotes">📌 Endnotes</button>
+        </div>
+        <div class="doc-section-label">✏️ Find &amp; Replace</div>
+        <div class="doc-find-row">
+          <input type="text" id="find-input" placeholder="Find text..." />
+          <input type="text" id="replace-input" placeholder="Replace with..." />
+          <div class="doc-grid" style="grid-template-columns:1fr 1fr;margin-top:4px">
+            <button class="doc-btn" data-action="find">🔍 Find</button>
+            <button class="doc-btn" data-action="replace">🔄 Replace All</button>
+            <button class="doc-btn" data-action="find-clear">🚫 Clear Highlights</button>
+            <button class="doc-btn" data-action="find-regex">⚡ Regex Find</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub: Format -->
+      <div class="doc-subpanel" id="subpanel-format">
+        <div class="doc-section-label">🖊️ Font</div>
+        <div class="doc-font-row">
+          <select id="font-family-select">
+            <option>Times New Roman</option><option>Arial</option><option>Calibri</option>
+            <option>Georgia</option><option>Courier New</option><option>Verdana</option>
+            <option>Garamond</option><option>Trebuchet MS</option><option>Palatino</option>
+          </select>
+          <select id="font-size-select">
+            <option>8</option><option>9</option><option>10</option><option>11</option>
+            <option selected>12</option><option>14</option><option>16</option><option>18</option>
+            <option>20</option><option>24</option><option>28</option><option>36</option><option>48</option><option>72</option>
+          </select>
+        </div>
+        <div class="doc-grid" style="grid-template-columns:repeat(4,1fr)">
+          <button class="doc-btn fmt-btn" data-fmt="bold"><b>B</b></button>
+          <button class="doc-btn fmt-btn" data-fmt="italic"><i>I</i></button>
+          <button class="doc-btn fmt-btn" data-fmt="underline"><u>U</u></button>
+          <button class="doc-btn fmt-btn" data-fmt="strike">S̶</button>
+          <button class="doc-btn fmt-btn" data-fmt="superscript">x²</button>
+          <button class="doc-btn fmt-btn" data-fmt="subscript">x₂</button>
+          <button class="doc-btn fmt-btn" data-fmt="allcaps">ABC</button>
+          <button class="doc-btn fmt-btn" data-fmt="smallcaps">Abc</button>
+        </div>
+        <div class="doc-section-label">🎨 Color</div>
+        <div class="doc-color-row">
+          <label>Font Color</label>
+          <input type="color" id="font-color-input" value="#000000" />
+          <button class="doc-btn" data-action="apply-font-color" style="flex:1">Apply</button>
+        </div>
+        <div class="doc-color-row">
+          <label>Highlight</label>
+          <select id="highlight-color-select">
+            <option value="Yellow">Yellow</option><option value="Cyan">Cyan</option>
+            <option value="Magenta">Pink</option><option value="Green">Green</option>
+            <option value="Blue">Blue</option><option value="Red">Red</option>
+            <option value="DarkBlue">Dark Blue</option><option value="None">None (Remove)</option>
+          </select>
+          <button class="doc-btn" data-action="apply-highlight" style="flex:1">Apply</button>
+        </div>
+        <div class="doc-section-label">¶ Paragraph</div>
+        <div class="doc-grid" style="grid-template-columns:repeat(4,1fr)">
+          <button class="doc-btn" data-action="align-left">⬅</button>
+          <button class="doc-btn" data-action="align-center">↔</button>
+          <button class="doc-btn" data-action="align-right">➡</button>
+          <button class="doc-btn" data-action="align-justify">☰</button>
+        </div>
+        <div class="doc-color-row">
+          <label>Line Spacing</label>
+          <select id="line-spacing-select">
+            <option value="1">Single</option><option value="1.15">1.15</option>
+            <option value="1.5">1.5</option><option value="2">Double</option>
+            <option value="2.5">2.5</option><option value="3">Triple</option>
+          </select>
+          <button class="doc-btn" data-action="apply-spacing" style="flex:1">Apply</button>
+        </div>
+        <div class="doc-section-label">🎨 Paragraph Style</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="apply-heading1">H1</button>
+          <button class="doc-btn" data-action="apply-heading2">H2</button>
+          <button class="doc-btn" data-action="apply-heading3">H3</button>
+          <button class="doc-btn" data-action="apply-heading4">H4</button>
+          <button class="doc-btn" data-action="apply-normal">¶ Normal</button>
+          <button class="doc-btn" data-action="apply-quote">❝ Quote</button>
+          <button class="doc-btn" data-action="apply-intense-quote">❞ Intense</button>
+          <button class="doc-btn" data-action="apply-code">💻 Code</button>
+          <button class="doc-btn" data-action="apply-title">🏷️ Title</button>
+          <button class="doc-btn" data-action="apply-subtitle">📝 Subtitle</button>
+        </div>
+        <div class="doc-section-label">🧹 Clear</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="clear-format">🧹 Clear Formatting</button>
+          <button class="doc-btn" data-action="clear-highlight">🚫 Remove Highlight</button>
+        </div>
+      </div>
+
+      <!-- Sub: Insert -->
+      <div class="doc-subpanel" id="subpanel-insert">
+        <div class="doc-section-label">📋 Tables</div>
+        <div class="doc-color-row">
+          <label>Rows</label>
+          <input type="number" id="table-rows" value="3" min="1" max="20" style="width:50px;border:1px solid var(--border);border-radius:var(--radius);padding:5px;font-size:12px;" />
+          <label>Cols</label>
+          <input type="number" id="table-cols" value="3" min="1" max="10" style="width:50px;border:1px solid var(--border);border-radius:var(--radius);padding:5px;font-size:12px;" />
+          <button class="doc-btn" data-action="insert-table" style="flex:1">Insert</button>
+        </div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="table-add-row">➕ Add Row</button>
+          <button class="doc-btn" data-action="table-add-col">➕ Add Col</button>
+          <button class="doc-btn" data-action="table-delete-row">➖ Del Row</button>
+          <button class="doc-btn" data-action="table-delete-col">➖ Del Col</button>
+          <button class="doc-btn" data-action="table-style-grid">🔲 Grid Style</button>
+          <button class="doc-btn" data-action="table-style-plain">⬜ Plain Style</button>
+        </div>
+        <div class="doc-section-label">🔗 Links &amp; References</div>
+        <div class="doc-find-row">
+          <input type="text" id="hyperlink-text" placeholder="Display text..." />
+          <input type="text" id="hyperlink-url" placeholder="https://..." />
+          <button class="doc-btn" data-action="insert-hyperlink" style="margin-top:4px">🔗 Insert Hyperlink</button>
+        </div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="insert-footnote">📎 Footnote</button>
+          <button class="doc-btn" data-action="insert-endnote">📌 Endnote</button>
+          <button class="doc-btn" data-action="insert-pagebreak">⏎ Page Break</button>
+          <button class="doc-btn" data-action="insert-section-break">📄 Section Break</button>
+          <button class="doc-btn" data-action="insert-toc">📚 TOC</button>
+          <button class="doc-btn" data-action="insert-date">📅 Date/Time</button>
+        </div>
+        <div class="doc-section-label">📝 Header &amp; Footer</div>
+        <div class="doc-find-row">
+          <input type="text" id="header-text" placeholder="Header text..." />
+          <input type="text" id="footer-text" placeholder="Footer text..." />
+          <div class="doc-grid" style="grid-template-columns:1fr 1fr;margin-top:4px">
+            <button class="doc-btn" data-action="set-header">📝 Set Header</button>
+            <button class="doc-btn" data-action="set-footer">📝 Set Footer</button>
+            <button class="doc-btn" data-action="get-header">👁️ View Header</button>
+            <button class="doc-btn" data-action="get-footer">👁️ View Footer</button>
+          </div>
+        </div>
+        <div class="doc-section-label">🔖 Bookmarks</div>
+        <div class="doc-find-row">
+          <input type="text" id="bookmark-name" placeholder="Bookmark name..." />
+          <div class="doc-grid" style="grid-template-columns:1fr 1fr;margin-top:4px">
+            <button class="doc-btn" data-action="add-bookmark">➕ Add</button>
+            <button class="doc-btn" data-action="goto-bookmark">➡️ Go To</button>
+            <button class="doc-btn" data-action="delete-bookmark">🗑️ Delete</button>
+            <button class="doc-btn" data-action="bookmarks">📋 List All</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub: Review -->
+      <div class="doc-subpanel" id="subpanel-review">
+        <div class="doc-section-label">💬 Comments</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="add-comment">➕ Add</button>
+          <button class="doc-btn" data-action="list-comments">📋 List All</button>
+          <button class="doc-btn" data-action="resolve-comments">✅ Resolve All</button>
+          <button class="doc-btn" data-action="delete-comments">🗑️ Delete All</button>
+        </div>
+        <div class="doc-section-label">🔍 Track Changes</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="accept-all">✅ Accept All</button>
+          <button class="doc-btn" data-action="reject-all">❌ Reject All</button>
+          <button class="doc-btn" data-action="list-changes">📋 List Changes</button>
+          <button class="doc-btn" data-action="accept-selection">✅ Accept Sel.</button>
+        </div>
+        <div class="doc-section-label">🔒 Protection</div>
+        <div class="doc-find-row">
+          <input type="password" id="protect-password" placeholder="Password (optional)..." />
+          <div class="doc-grid" style="grid-template-columns:1fr 1fr;margin-top:4px">
+            <button class="doc-btn" data-action="protect-doc">🔒 Protect</button>
+            <button class="doc-btn" data-action="unprotect-doc">🔓 Unprotect</button>
+          </div>
+        </div>
+        <div class="doc-section-label">📊 Document</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="wordcount">🔢 Word Count</button>
+          <button class="doc-btn" data-action="properties">📋 Properties</button>
+          <button class="doc-btn" data-action="outline">🗂️ Outline</button>
+          <button class="doc-btn" data-action="compare-clipboard">📋 Compare Clipboard</button>
+        </div>
+      </div>
+
+      <!-- Sub: Layout -->
+      <div class="doc-subpanel" id="subpanel-layout">
+        <div class="doc-section-label">📐 Page Orientation</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="page-portrait">📄 Portrait</button>
+          <button class="doc-btn" data-action="page-landscape">🖼️ Landscape</button>
+        </div>
+        <div class="doc-section-label">📏 Margins (cm)</div>
+        <div class="doc-margin-grid">
+          <div></div>
+          <div><label>Top</label><input type="number" id="margin-top" value="2.54" step="0.1" min="0" /></div>
+          <div></div>
+          <div><label>Left</label><input type="number" id="margin-left" value="2.54" step="0.1" min="0" /></div>
+          <div><button class="doc-btn" data-action="apply-margins" style="font-size:10px">Apply</button></div>
+          <div><label>Right</label><input type="number" id="margin-right" value="2.54" step="0.1" min="0" /></div>
+          <div></div>
+          <div><label>Bottom</label><input type="number" id="margin-bottom" value="2.54" step="0.1" min="0" /></div>
+          <div></div>
+        </div>
+        <div class="doc-section-label">📄 Paper Size</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="paper-a4">A4</button>
+          <button class="doc-btn" data-action="paper-letter">Letter</button>
+          <button class="doc-btn" data-action="paper-a3">A3</button>
+          <button class="doc-btn" data-action="paper-legal">Legal</button>
+        </div>
+        <div class="doc-section-label">📑 Columns</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="cols-1">1 Column</button>
+          <button class="doc-btn" data-action="cols-2">2 Columns</button>
+          <button class="doc-btn" data-action="cols-3">3 Columns</button>
+          <button class="doc-btn" data-action="cols-reset">Reset</button>
+        </div>
+        <div class="doc-section-label">🔢 Page Numbers</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="pagenumber-bottom">Bottom Center</button>
+          <button class="doc-btn" data-action="pagenumber-top">Top Right</button>
+          <button class="doc-btn" data-action="pagenumber-remove">Remove</button>
+          <button class="doc-btn" data-action="get-pagecount">📊 Page Count</button>
+        </div>
+      </div>
+
+      <div id="doc-status" class="doc-status hidden"></div>
+    </div>
 
     <!-- Tab: Generate -->
     <div class="tab-content active" id="tab-generate">

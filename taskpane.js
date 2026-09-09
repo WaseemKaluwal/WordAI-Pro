@@ -12,6 +12,7 @@ function initApp() {
   bindOutputActions();
   bindSettings();
   bindResearchButtons();
+  bindDocumentButtons();
 }
 
 if (typeof Office !== 'undefined') {
@@ -26,10 +27,40 @@ function showLoading(show) {
   document.getElementById('loading').classList.toggle('hidden', !show);
 }
 
+function markdownToHtml(text) {
+  return text
+    // Tables
+    .replace(/^\|(.+)\|$/gm, (row) => '<tr>' + row.slice(1,-1).split('|').map(c => `<td>${c.trim()}</td>`).join('') + '</tr>')
+    .replace(/(<tr>.*<\/tr>\n?)+/g, (t) => {
+      const rows = t.trim().split('\n');
+      const header = rows[0].replace(/<td>/g,'<th>').replace(/<\/td>/g,'</th>');
+      const body = rows.slice(2).join('\n');
+      return `<table>${header}${body}</table>`;
+    })
+    // Headings
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Bold + Italic
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // Horizontal rule
+    .replace(/^---+$/gm, '<hr>')
+    // Bullet lists
+    .replace(/^[*-] (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    // Numbered lists
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    // Line breaks
+    .replace(/\n{2,}/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+}
+
 function showOutput(text) {
   const section = document.getElementById('output-section');
   const el = document.getElementById('output-text');
-  el.textContent = text;
+  el.innerHTML = '<p>' + markdownToHtml(text) + '</p>';
   section.classList.remove('hidden');
 }
 
@@ -56,19 +87,147 @@ async function getContext(mode) {
   });
 }
 
-async function insertText(text, replace = false) {
-  if (typeof Word === 'undefined') {
-    showError('Word API not available in this context.');
-    return;
-  }
+async function insertText(rawText, replace = false) {
+  if (typeof Word === 'undefined') { showError('Word API not available.'); return; }
   return Word.run(async (ctx) => {
     const sel = ctx.document.getSelection();
-    if (replace) {
-      sel.insertText(text, Word.InsertLocation.replace);
-    } else {
-      sel.insertText('\n' + text, Word.InsertLocation.after);
+    if (replace) sel.insertText('', Word.InsertLocation.replace);
+    const insertRange = replace ? sel : sel.getRange(Word.RangeLocation.after);
+
+    // Parse markdown into blocks
+    const lines = rawText.split('\n');
+    const blocks = [];
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      // Table block
+      if (/^\|/.test(line)) {
+        const tableLines = [];
+        while (i < lines.length && /^\|/.test(lines[i])) { tableLines.push(lines[i]); i++; }
+        blocks.push({ type: 'table', lines: tableLines });
+        continue;
+      }
+      blocks.push({ type: 'line', text: line });
+      i++;
     }
+
+    let cursor = insertRange;
+
+    for (const block of blocks) {
+      if (block.type === 'table') {
+        const rows = block.lines.filter(l => !/^\|[-:\s|]+$/.test(l));
+        const parsed = rows.map(r => r.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()));
+        const colCount = Math.max(...parsed.map(r => r.length));
+        const table = cursor.insertTable(parsed.length, colCount, Word.InsertLocation.after, parsed);
+        table.styleBuiltIn = Word.Style.tableGrid;
+        // Bold header row
+        const headerRow = table.rows.getFirst();
+        headerRow.load('cells');
+        await ctx.sync();
+        headerRow.cells.items.forEach(cell => {
+          cell.body.paragraphs.getFirst().font.bold = true;
+        });
+        cursor = table.getRange(Word.RangeLocation.after);
+        await ctx.sync();
+        continue;
+      }
+
+      const text = block.text;
+
+      // Skip separator lines
+      if (/^[-*]{3,}$/.test(text.trim())) {
+        const p = cursor.insertParagraph('', Word.InsertLocation.after);
+        p.styleBuiltIn = Word.Style.normal;
+        p.font.size = 4;
+        cursor = p.getRange(Word.RangeLocation.after);
+        continue;
+      }
+
+      // Empty line
+      if (text.trim() === '') {
+        cursor = cursor.insertParagraph('', Word.InsertLocation.after).getRange(Word.RangeLocation.after);
+        continue;
+      }
+
+      // Headings
+      const h1 = text.match(/^# (.+)/);
+      const h2 = text.match(/^## (.+)/);
+      const h3 = text.match(/^### (.+)/);
+      if (h1 || h2 || h3) {
+        const content = (h1 || h2 || h3)[1].replace(/\*\*/g, '');
+        const p = cursor.insertParagraph(content, Word.InsertLocation.after);
+        p.styleBuiltIn = h1 ? Word.Style.heading1 : h2 ? Word.Style.heading2 : Word.Style.heading3;
+        cursor = p.getRange(Word.RangeLocation.after);
+        continue;
+      }
+
+      // Bullet list
+      const bullet = text.match(/^[*-] (.+)/);
+      if (bullet) {
+        const p = cursor.insertParagraph(stripInline(bullet[1]), Word.InsertLocation.after);
+        p.styleBuiltIn = Word.Style.listParagraph;
+        p.listItem.listLevelType = Word.ListLevelType.bullet;
+        applyInlineFormats(p, bullet[1]);
+        cursor = p.getRange(Word.RangeLocation.after);
+        continue;
+      }
+
+      // Numbered list
+      const numbered = text.match(/^\d+\. (.+)/);
+      if (numbered) {
+        const p = cursor.insertParagraph(stripInline(numbered[1]), Word.InsertLocation.after);
+        p.styleBuiltIn = Word.Style.listParagraph;
+        p.listItem.listLevelType = Word.ListLevelType.number;
+        applyInlineFormats(p, numbered[1]);
+        cursor = p.getRange(Word.RangeLocation.after);
+        continue;
+      }
+
+      // Normal paragraph
+      const p = cursor.insertParagraph(stripInline(text), Word.InsertLocation.after);
+      p.styleBuiltIn = Word.Style.normal;
+      applyInlineFormats(p, text);
+      cursor = p.getRange(Word.RangeLocation.after);
+    }
+
     await ctx.sync();
+  });
+}
+
+// Strip inline markdown markers for plain text insertion
+function stripInline(text) {
+  return text
+    .replace(/\*\*\*(.+?)\*\*\*/g, '$1')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/_(.+?)_/g, '$1');
+}
+
+// Apply bold/italic to a paragraph using Word search
+function applyInlineFormats(paragraph, rawText) {
+  // Bold+Italic
+  [...rawText.matchAll(/\*\*\*(.+?)\*\*\*/g)].forEach(m => {
+    try {
+      const r = paragraph.search(m[1], { matchCase: false });
+      r.load('items');
+      r.items.forEach(item => { item.font.bold = true; item.font.italic = true; });
+    } catch (_) {}
+  });
+  // Bold
+  [...rawText.matchAll(/\*\*(.+?)\*\*/g)].forEach(m => {
+    try {
+      const r = paragraph.search(m[1], { matchCase: false });
+      r.load('items');
+      r.items.forEach(item => { item.font.bold = true; });
+    } catch (_) {}
+  });
+  // Italic
+  [...rawText.matchAll(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g)].forEach(m => {
+    try {
+      const r = paragraph.search(m[1], { matchCase: false });
+      r.load('items');
+      r.items.forEach(item => { item.font.italic = true; });
+    } catch (_) {}
   });
 }
 
@@ -109,6 +268,286 @@ function bindTabs() {
       document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
     });
   });
+}
+
+// ─── Document Tab ───────────────────────────────────────────────────────────
+
+function docStatus(msg, isError) {
+  const el = document.getElementById('doc-status');
+  el.textContent = msg;
+  el.className = 'doc-status ' + (isError ? 'doc-status-error' : 'doc-status-ok');
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 4000);
+}
+
+function bindDocumentButtons() {
+  // Font family + size apply on change
+  document.getElementById('font-family-select').addEventListener('change', () => applyFontFormat());
+  document.getElementById('font-size-select').addEventListener('change', () => applyFontFormat());
+
+  // Inline format buttons
+  document.querySelectorAll('.fmt-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const fmt = btn.dataset.fmt;
+      if (typeof Word === 'undefined') return docStatus('Word API unavailable', true);
+      await Word.run(async ctx => {
+        const sel = ctx.document.getSelection();
+        sel.load('font');
+        await ctx.sync();
+        if (fmt === 'bold')      sel.font.bold      = !sel.font.bold;
+        if (fmt === 'italic')    sel.font.italic    = !sel.font.italic;
+        if (fmt === 'underline') sel.font.underline = sel.font.underline === 'None' ? 'Single' : 'None';
+        if (fmt === 'strike')    sel.font.strikeThrough = !sel.font.strikeThrough;
+        await ctx.sync();
+      });
+    });
+  });
+
+  // All data-action doc buttons
+  document.querySelectorAll('.doc-btn[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => handleDocAction(btn.dataset.action));
+  });
+}
+
+async function applyFontFormat() {
+  if (typeof Word === 'undefined') return;
+  const family = document.getElementById('font-family-select').value;
+  const size   = parseInt(document.getElementById('font-size-select').value);
+  await Word.run(async ctx => {
+    const sel = ctx.document.getSelection();
+    sel.font.name = family;
+    sel.font.size = size;
+    await ctx.sync();
+  });
+}
+
+async function handleDocAction(action) {
+  if (typeof Word === 'undefined') { docStatus('Word API unavailable', true); return; }
+  try {
+    await Word.run(async ctx => {
+
+      // ─ Word Count
+      if (action === 'wordcount') {
+        const body = ctx.document.body;
+        body.load('text');
+        await ctx.sync();
+        const text = body.text.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        const chars = text.length;
+        const paras = text.split(/\n+/).filter(Boolean).length;
+        docStatus(`🔢 Words: ${words} | Chars: ${chars} | Paragraphs: ${paras}`);
+        return;
+      }
+
+      // ─ Properties
+      if (action === 'properties') {
+        const props = ctx.document.properties;
+        props.load('title,author,subject,keywords,lastModifiedBy');
+        await ctx.sync();
+        docStatus(`📋 Title: ${props.title||'—'} | Author: ${props.author||'—'} | Modified by: ${props.lastModifiedBy||'—'}`);
+        return;
+      }
+
+      // ─ Outline (headings list)
+      if (action === 'outline') {
+        const paras = ctx.document.body.paragraphs;
+        paras.load('text,styleBuiltIn');
+        await ctx.sync();
+        const headings = paras.items
+          .filter(p => ['Heading1','Heading2','Heading3'].includes(p.styleBuiltIn))
+          .map(p => `${p.styleBuiltIn.replace('Heading','H')}: ${p.text.trim()}`)
+          .join('\n');
+        showOutput(headings || 'No headings found in document.');
+        return;
+      }
+
+      // ─ Bookmarks
+      if (action === 'bookmarks') {
+        const bms = ctx.document.bookmarks;
+        bms.load('items/name');
+        await ctx.sync();
+        const names = bms.items.map(b => b.name).join(', ');
+        docStatus(`🔖 Bookmarks: ${names || 'None found'}`);
+        return;
+      }
+
+      // ─ Find
+      if (action === 'find') {
+        const term = document.getElementById('find-input').value.trim();
+        if (!term) { docStatus('Enter text to find', true); return; }
+        const results = ctx.document.body.search(term, { matchCase: false, matchWholeWord: false });
+        results.load('items/text');
+        await ctx.sync();
+        results.items.forEach(r => { r.font.highlightColor = 'Yellow'; });
+        await ctx.sync();
+        docStatus(`🔍 Found ${results.items.length} match(es) — highlighted in yellow`);
+        return;
+      }
+
+      // ─ Replace All
+      if (action === 'replace') {
+        const find    = document.getElementById('find-input').value.trim();
+        const replace = document.getElementById('replace-input').value;
+        if (!find) { docStatus('Enter text to find', true); return; }
+        const results = ctx.document.body.search(find, { matchCase: false });
+        results.load('items/text');
+        await ctx.sync();
+        results.items.forEach(r => r.insertText(replace, Word.InsertLocation.replace));
+        await ctx.sync();
+        docStatus(`🔄 Replaced ${results.items.length} instance(s)`);
+        return;
+      }
+
+      // ─ Add Comment
+      if (action === 'add-comment') {
+        const sel = ctx.document.getSelection();
+        sel.load('text');
+        await ctx.sync();
+        if (!sel.text.trim()) { docStatus('Select text to comment on', true); return; }
+        const commentText = prompt('Enter comment:');
+        if (!commentText) return;
+        sel.insertComment(commentText);
+        await ctx.sync();
+        docStatus('✅ Comment added');
+        return;
+      }
+
+      // ─ List Comments
+      if (action === 'list-comments') {
+        const comments = ctx.document.body.getComments();
+        comments.load('items/authorName,items/content/text');
+        await ctx.sync();
+        const list = comments.items.map((c,i) => `${i+1}. [${c.authorName}]: ${c.content.text}`).join('\n');
+        showOutput(list || 'No comments found.');
+        return;
+      }
+
+      // ─ Delete All Comments
+      if (action === 'delete-comments') {
+        const comments = ctx.document.body.getComments();
+        comments.load('items');
+        await ctx.sync();
+        comments.items.forEach(c => c.delete());
+        await ctx.sync();
+        docStatus(`🗑️ Deleted ${comments.items.length} comment(s)`);
+        return;
+      }
+
+      // ─ Resolve All Comments
+      if (action === 'resolve-comments') {
+        const comments = ctx.document.body.getComments();
+        comments.load('items');
+        await ctx.sync();
+        comments.items.forEach(c => { c.resolved = true; });
+        await ctx.sync();
+        docStatus(`✅ Resolved ${comments.items.length} comment(s)`);
+        return;
+      }
+
+      // ─ Apply Styles
+      const styleMap = {
+        'apply-heading1': Word.Style.heading1,
+        'apply-heading2': Word.Style.heading2,
+        'apply-heading3': Word.Style.heading3,
+        'apply-normal':   Word.Style.normal,
+        'apply-quote':    Word.Style.quote,
+        'apply-code':     'Code',
+      };
+      if (styleMap[action]) {
+        const sel = ctx.document.getSelection();
+        const paras = sel.paragraphs;
+        paras.load('items');
+        await ctx.sync();
+        paras.items.forEach(p => {
+          try { p.styleBuiltIn = styleMap[action]; } catch(_) { p.style = styleMap[action]; }
+        });
+        await ctx.sync();
+        docStatus(`🎨 Style applied: ${action.replace('apply-','')}`);
+        return;
+      }
+
+      // ─ Alignment
+      const alignMap = { 'align-left': 'Left', 'align-center': 'Centered', 'align-right': 'Right' };
+      if (alignMap[action]) {
+        const sel = ctx.document.getSelection();
+        const paras = sel.paragraphs;
+        paras.load('items');
+        await ctx.sync();
+        paras.items.forEach(p => { p.alignment = alignMap[action]; });
+        await ctx.sync();
+        docStatus(`↔ Aligned: ${alignMap[action]}`);
+        return;
+      }
+
+      // ─ Page Orientation
+      if (action === 'page-portrait' || action === 'page-landscape') {
+        const sections = ctx.document.sections;
+        sections.load('items/body/parentSection');
+        await ctx.sync();
+        sections.items.forEach(s => {
+          s.pageSetup.orientation = action === 'page-landscape'
+            ? Word.PageOrientation.landscape
+            : Word.PageOrientation.portrait;
+        });
+        await ctx.sync();
+        docStatus(`📄 Page set to ${action === 'page-landscape' ? 'Landscape' : 'Portrait'}`);
+        return;
+      }
+
+      // ─ Page Break
+      if (action === 'insert-pagebreak') {
+        const sel = ctx.document.getSelection();
+        sel.insertBreak(Word.BreakType.page, Word.InsertLocation.after);
+        await ctx.sync();
+        docStatus('⏎ Page break inserted');
+        return;
+      }
+
+      // ─ Insert TOC placeholder
+      if (action === 'insert-toc') {
+        const sel = ctx.document.getSelection();
+        const p = sel.insertParagraph('TABLE OF CONTENTS', Word.InsertLocation.before);
+        p.styleBuiltIn = Word.Style.heading1;
+        const body = ctx.document.body;
+        const paras = body.paragraphs;
+        paras.load('items/text,items/styleBuiltIn');
+        await ctx.sync();
+        const headings = paras.items.filter(p =>
+          ['Heading1','Heading2','Heading3'].includes(p.styleBuiltIn)
+        );
+        let tocText = '';
+        headings.forEach(h => {
+          const indent = h.styleBuiltIn === 'Heading1' ? '' : h.styleBuiltIn === 'Heading2' ? '  ' : '    ';
+          tocText += `${indent}${h.text.trim()}\n`;
+        });
+        const tocPara = sel.insertParagraph(tocText || '(No headings found)', Word.InsertLocation.before);
+        tocPara.styleBuiltIn = Word.Style.normal;
+        await ctx.sync();
+        docStatus('📚 TOC inserted');
+        return;
+      }
+
+      // ─ Track Changes
+      if (action === 'accept-all') {
+        ctx.document.body.getTrackedChanges().load('items');
+        await ctx.sync();
+        ctx.document.body.getTrackedChanges().items.forEach(c => c.accept());
+        await ctx.sync();
+        docStatus('✅ All changes accepted');
+        return;
+      }
+      if (action === 'reject-all') {
+        ctx.document.body.getTrackedChanges().load('items');
+        await ctx.sync();
+        ctx.document.body.getTrackedChanges().items.forEach(c => c.reject());
+        await ctx.sync();
+        docStatus('❌ All changes rejected');
+        return;
+      }
+    });
+  } catch(err) {
+    docStatus(`⚠️ ${err.message}`, true);
+  }
 }
 
 // ─── Research Tab ────────────────────────────────────────────────────────────
@@ -363,17 +802,17 @@ async function handleAIAction(systemPrompt, userContent) {
 
 function bindOutputActions() {
   document.getElementById('btn-insert').addEventListener('click', async () => {
-    const text = document.getElementById('output-text').textContent;
+    const text = document.getElementById('output-text').innerText;
     await insertText(text, false);
   });
 
   document.getElementById('btn-replace').addEventListener('click', async () => {
-    const text = document.getElementById('output-text').textContent;
+    const text = document.getElementById('output-text').innerText;
     await insertText(text, true);
   });
 
   document.getElementById('btn-copy').addEventListener('click', () => {
-    const text = document.getElementById('output-text').textContent;
+    const text = document.getElementById('output-text').innerText;
     navigator.clipboard.writeText(text);
   });
 
