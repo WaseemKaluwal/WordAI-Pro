@@ -5,7 +5,7 @@
 [![AI Providers](https://img.shields.io/badge/AI_Providers-12_Supported_(BYOK)-6366f1?style=for-the-badge&logo=openai&logoColor=white)](#-multi-provider-ai-suite-12-providers--byok)
 [![Local LLM Support](https://img.shields.io/badge/Local_AI-Ollama_|_LM_Studio-f97316?style=for-the-badge&logo=ollama&logoColor=white)](#-privacy--100-local-offline-ai-ollama)
 [![Privacy First](https://img.shields.io/badge/Privacy-100%25_Client--Side-14b8a6?style=for-the-badge&logo=shield&logoColor=white)](#-privacy-architecture--security)
-[![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-Non--Commercial_(No--Resale)-8b5cf6?style=for-the-badge)](LICENSE)
 
 **WordAI Pro** is an open-source, full-featured **AI Writing Assistant, Academic Research Copilot, and Document Automation Studio** that operates directly inside **Microsoft Word** (Word Online, Word for Windows Desktop, Word for Mac, and iPad). 
 
@@ -300,7 +300,7 @@ WordAI Pro/
 
 Contributions, feature requests, and bug reports are warmly welcomed!
 - **Issues & Discussions:** [GitHub Issues](https://github.com/waseemkaluwal/wordai-pro/issues)
-- **License:** Distributed under the permissive **MIT License**. See `LICENSE` for details.
+- **License:** Free for personal, academic, and internal organizational use under the **WordAI Pro Non-Commercial License** (commercial resale or rebranding prohibited). See [`LICENSE`](LICENSE) for details.
 
 ---
 
