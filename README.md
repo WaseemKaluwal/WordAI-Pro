@@ -13,12 +13,33 @@ WordAI Pro is fully equipped with all 30 features requested by students, academi
 ### 🌟 1. High Priority (Most Requested by Students/Writers)
 1. **🔍 Plagiarism & Originality Highlighter:** Scans text to compute an originality score percentage, highlights unoriginal or clichéd phrases, explains stylistic weaknesses, and provides fresh 1-click academic rewrites.
 2. **📚 AI Citation Finder:** Enter any claim or topic $\rightarrow$ AI suggests 3–5 real seminal papers and books with direct, clickable search links to **Google Scholar**, **PubMed**, and **JSTOR**.
-3. **📋 Smart Templates Library:** 1-click structural generation directly into your document for:
-   - *Research Proposal* (Problem statement, hypotheses, methodology, work plan)
-   - *Thesis Chapter* (Chapter 3 methodology blueprint)
-   - *Lab Report* (Objectives, apparatus, data tables, percent error, discussion)
-   - *Executive Business Plan* (Value prop, TAM, competitor matrix, financials)
-   - *Press Release* (Standard PR distribution format with boilerplate & contact)
+3. **📋 Document Framework Studio (18 Pre-built Frameworks):** Advanced document scaffolding with **Native Word Heading/Table Insertion**, **🤖 AI Smart-Drafting**, and **📋 Document Compliance Auditing**:
+   - **🎓 Academic & Scientific Research (6):**
+     - *Academic Research Proposal* (PICO questions, methodology matrix, ethics, timeline)
+     - *Thesis / Dissertation (Full 5-Chapter Architecture)* (Intro, Lit Review, Methods, Results, Discussion)
+     - *Systematic Literature Review (PRISMA 2020)* (Eligibility criteria, search string syntax, data extraction table)
+     - *IMRaD Scientific Journal Article* (Structured abstract, methods, statistical results, discussion)
+     - *Scientific Lab Investigation Report* (Equipment tolerances, raw data trials, error propagation, percent error)
+     - *Academic Case Study & Qualitative Analysis* (Triangulation matrix, thematic coding, pedagogical questions)
+   - **💼 Business, Strategy & Management (6):**
+     - *Comprehensive Executive Business Plan* (TAM/SAM/SOM, competitor matrix, unit economics, 3-yr financials)
+     - *Case Study Analysis (Harvard Business Format)* (Porter's 5 Forces, root cause analysis, strategic options, 90-day plan)
+     - *Project Charter & Scope of Work (SOW)* (Boundaries in/out table, deliverables, RACI matrix, risk register)
+     - *Standard Operating Procedure (SOP)* (Governance standards, role qualifications, step-by-step matrix, failure recovery)
+     - *Quarterly Business Review (QBR)* (OKR scorecard, financial variance, churn drivers, next quarter priorities)
+     - *Executive White Paper & Industry Report* (Megatrends, legacy bottlenecks, solution architecture, ROI benchmarks)
+   - **⚖️ Legal, Policy & Governance (3):**
+     - *Mutual Non-Disclosure Agreement (NDA)* (Duty of care, carve-outs, return of materials, governing jurisdiction)
+     - *Master Services & Consulting Agreement* (Work-for-hire IP assignment, invoicing schedule, liability caps)
+     - *Privacy Policy & GDPR/CCPA Notice* (Lawful bases, sub-processors table, cross-border transfers, user rights)
+   - **📢 Marketing, PR & Communications (3):**
+     - *Official AP-Style Press Release* (FOR IMMEDIATE RELEASE, dateline, quotes, impact table, boilerplate)
+     - *Go-To-Market (GTM) Product Launch Plan* (Positioning, ICP buyer personas, phased rollout, channel dashboard)
+     - *Executive Crisis Communication Plan* (Severity matrix, holding statements, stakeholder FAQ playbook, post-mortem)
+   - **⚡ 3 Power Capabilities Per Framework:**
+     - `Insert Skeleton ➕`: Formats into native Word `Title`, `Heading 1`, `Heading 2`, `Heading 3`, and styled tables.
+     - `🤖 AI Smart-Draft`: Context-aware generation tailoring the framework to your custom topic, depth, and tone.
+     - `📋 Audit Doc`: Real-time compliance scanner checking current document against required sections with a % completeness score and 1-click generation of missing sections.
 4. **🎯 Word Count Target Tracker:** Set word count goals (e.g. 5,000 words); live progress bar tracks real-time count, % completed, and remaining words needed.
 5. **📊 Reading Level Analyzer:** Flesch Reading Ease score, Flesch-Kincaid Grade Level, reading time estimate, syllable count, and target audience suitability.
 
@@ -116,17 +137,29 @@ WordAI Pro is fully equipped with all 30 features requested by students, academi
 
 ---
 
-### 🔑 Multi-Provider AI (BYOK)
-| Provider | Default Model | Get Key |
-|---|---|---|
-| OpenAI | gpt-4o | [platform.openai.com](https://platform.openai.com) |
-| Google Gemini | gemini-2.0-flash | [aistudio.google.com](https://aistudio.google.com) |
-| OpenRouter | openai/gpt-4o | [openrouter.ai](https://openrouter.ai) |
-| Groq | llama3-70b-8192 | [console.groq.com](https://console.groq.com) |
+### 🔑 Multi-Provider AI Suite (12 Supported Providers — BYOK)
 
-- **Auto-fetch models:** Click 🔄 Fetch in Settings to load all available models from your provider live.
-- **Resilient Fallback Chains:** Automatically tries backup models if a model is unavailable or rate-limited.
-- **Token Tracker:** Built-in token counter persisted in browser storage.
+WordAI Pro supports 12 industry-leading AI providers, cloud aggregators, and private local/offline LLMs with zero server dependencies:
+
+| Provider | Default Model | Fallback Chain | Get API Key |
+|---|---|---|---|
+| **OpenAI** | `gpt-4o` | `gpt-4o-mini`, `o3-mini`, `o1-mini`, `gpt-4-turbo` | [platform.openai.com](https://platform.openai.com/api-keys) |
+| **Anthropic** | `claude-3-5-sonnet` | `claude-3-5-haiku`, `claude-3-opus` | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
+| **Google Gemini** | `gemini-2.0-flash` | `gemini-1.5-flash`, `gemini-1.5-pro` | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| **DeepSeek** | `deepseek-chat` (V3) | `deepseek-reasoner` (R1 Reasoning) | [platform.deepseek.com](https://platform.deepseek.com/api_keys) |
+| **Groq** | `llama-3.3-70b-versatile` | `llama-3.1-8b-instant`, `mixtral-8x7b` | [console.groq.com](https://console.groq.com/keys) |
+| **Mistral AI** | `mistral-large-latest` | `mistral-small-latest`, `codestral` | [console.mistral.ai](https://console.mistral.ai/api-keys) |
+| **OpenRouter** | `openai/gpt-4o` | `claude-3.5-sonnet`, `deepseek-r1`, `llama-3.3` | [openrouter.ai](https://openrouter.ai/keys) |
+| **Together AI** | `Llama-3.3-70B-Turbo` | `DeepSeek-R1`, `DeepSeek-V3`, `Qwen-2.5-72B` | [api.together.xyz](https://api.together.xyz/settings/api-keys) |
+| **Perplexity AI** | `sonar` | `sonar-pro`, `sonar-reasoning` | [perplexity.ai](https://www.perplexity.ai/settings/api) |
+| **Cohere** | `command-r-plus` | `command-r-08-2024`, `command-r` | [dashboard.cohere.com](https://dashboard.cohere.com/api-keys) |
+| **Ollama (Local / Offline)** | `llama3.2` | `llama3.1`, `deepseek-r1`, `mistral`, `qwen2.5` | **Zero API Key Needed** (Runs 100% locally on your machine) |
+| **Custom Endpoint** | `default` | User configurable | Compatible with LM Studio, vLLM, LocalAI, Azure OpenAI |
+
+- **🔄 Live Model Fetching:** Click **🔄 Fetch Models** in Settings to dynamically populate all available models from your provider's live API.
+- **⚡ Resilient Fallback Chains:** If a model experiences rate limits or server quotas, WordAI Pro automatically fails over to backup models without interrupting your workflow.
+- **🔒 Privacy & Offline Local AI (Ollama):** Switch provider to **Ollama** and enter your local endpoint (e.g. `http://localhost:11434/v1`) to run completely free, confidential AI with zero data leaving your computer.
+- **📊 Token Tracker:** Real-time token counter persisted locally in browser storage.
 
 ---
 
@@ -160,8 +193,9 @@ WordAI Pro/
 ├── README.md          # Comprehensive documentation & 30-feature manual
 ├── commands.html      # Office runtime command host
 ├── generate-icons.js  # Zero-dependency PNG icon generator
-├── ai-provider.js     # Multi-provider AI communication & model fetching
-├── taskpane.html      # Add-in UI structure (Modes, History Drawer, Output Switcher)
+├── ai-provider.js     # Multi-provider AI communication (12 leading providers)
+├── frameworks-data.js # 18 Pre-built Document Frameworks with skeletons & audit specs
+├── taskpane.html      # Add-in UI structure (Modes, Framework Studio, History Drawer)
 ├── taskpane.css       # Complete design system, dark mode & component styling
 ├── taskpane.js        # Core logic, Word.run bridge, NLP tools, shortcuts & storage
 └── assets/            # Add-in icons (16x16, 32x32, 80x80)

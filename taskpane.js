@@ -26,9 +26,10 @@ function initApp() {
   bindCareerButtons();
   bindSocialButtons();
   bindSlidesButtons();
-  bindTemplatesButtons();
+  bindFrameworkStudio();
   bindHistoryDrawer();
   bindKeyboardShortcuts();
+  bindInstantSelectionCopilot();
 }
 
 if (typeof Office !== 'undefined') {
@@ -121,6 +122,166 @@ function toggleDarkMode() {
   localStorage.setItem('wordai_dark', dark ? '1' : '0');
   const btn = document.getElementById('btn-darkmode');
   if (btn) btn.textContent = dark ? '☀️' : '🌙';
+}
+
+// ─── Instant Selection Floating Copilot (Direct In-Place Mode) ──────────
+
+let currentSelectedBodyText = '';
+let lastReplacedOriginalText = '';
+let isInstantProcessing = false;
+let selectionPollInterval = null;
+
+function bindInstantSelectionCopilot() {
+  const bar = document.getElementById('instant-selection-bar');
+  const countBadge = document.getElementById('instant-sel-count');
+  const snippet = document.getElementById('instant-sel-snippet');
+  const input = document.getElementById('instant-instruction-input');
+  const execBtn = document.getElementById('btn-instant-exec');
+  const undoBtn = document.getElementById('btn-instant-undo');
+  const closeBtn = document.getElementById('btn-close-instant-bar');
+  const statusEl = document.getElementById('instant-status');
+  if (!bar) return;
+
+  if (typeof Word !== 'undefined') {
+    Word.run(async (context) => {
+      context.document.onSelectionChanged.add(checkWordSelection);
+      await context.sync();
+    }).catch(() => {});
+
+    clearInterval(selectionPollInterval);
+    selectionPollInterval = setInterval(checkWordSelection, 2000);
+  }
+
+  async function checkWordSelection() {
+    if (isInstantProcessing || typeof Word === 'undefined') return;
+    try {
+      await Word.run(async (context) => {
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const text = (selection.text || '').trim();
+        if (text.length >= 3 && text !== currentSelectedBodyText) {
+          currentSelectedBodyText = text;
+          const words = text.split(/\s+/).filter(Boolean).length;
+          countBadge.textContent = `${words} word${words === 1 ? '' : 's'}`;
+          snippet.textContent = `"${text.slice(0, 80)}${text.length > 80 ? '…' : ''}"`;
+          bar.classList.remove('hidden');
+        }
+      });
+    } catch (_) {}
+  }
+
+  async function runDirectReplace(instructionType, customInstruction = '') {
+    if (isInstantProcessing) return;
+    const targetText = currentSelectedBodyText;
+    if (!targetText || targetText.length < 2) {
+      setInstantStatus('⚠️ Highlight text in Word body first.', true);
+      return;
+    }
+
+    let prompt = '';
+    switch (instructionType) {
+      case 'rewrite':
+        prompt = 'Rewrite this text to be clearer, more engaging, and professionally polished. Return ONLY the final replacement text without any conversational preamble or markdown commentary.';
+        break;
+      case 'improve':
+        prompt = 'Improve the flow, vocabulary, and sentence variety of this text while preserving its exact factual meaning. Return ONLY the improved replacement text.';
+        break;
+      case 'grammar':
+        prompt = 'Fix all spelling, punctuation, grammar, and phrasing errors in this text. Return ONLY the corrected replacement text.';
+        break;
+      case 'shorten':
+        prompt = 'Make this text significantly more concise, punchy, and direct without losing critical details. Return ONLY the shortened replacement text.';
+        break;
+      case 'expand':
+        prompt = 'Elaborate on this text with deeper explanation, supporting detail, and professional depth. Return ONLY the expanded replacement text.';
+        break;
+      case 'formal':
+        prompt = 'Rewrite this text in an authoritative, formal, and polished executive/academic tone. Return ONLY the formal replacement text.';
+        break;
+      case 'casual':
+        prompt = 'Rewrite this text in a warm, conversational, friendly, and natural tone. Return ONLY the casual replacement text.';
+        break;
+      case 'custom':
+      default:
+        prompt = `${customInstruction}. Return ONLY the direct replacement text to be inserted in the document.`;
+        break;
+    }
+
+    isInstantProcessing = true;
+    execBtn.disabled = true;
+    execBtn.textContent = '⏳ Replacing...';
+    setInstantStatus('⚡ Generating & directly replacing in Word body...');
+
+    try {
+      const replacement = await runAI(prompt, targetText);
+      if (!replacement || replacement.trim() === '') {
+        throw new Error('AI returned an empty response.');
+      }
+      lastReplacedOriginalText = targetText;
+      await insertText(replacement.trim(), true);
+      currentSelectedBodyText = replacement.trim();
+      snippet.textContent = `"${replacement.trim().slice(0, 80)}${replacement.trim().length > 80 ? '…' : ''}"`;
+      undoBtn.classList.remove('hidden');
+      setInstantStatus('✅ Replaced directly in Word body!', false);
+      input.value = '';
+    } catch (err) {
+      setInstantStatus(`❌ ${err.message}`, true);
+    } finally {
+      isInstantProcessing = false;
+      execBtn.disabled = false;
+      execBtn.textContent = 'Replace ⚡';
+    }
+  }
+
+  function setInstantStatus(msg, isError = false) {
+    statusEl.textContent = msg;
+    statusEl.style.color = isError ? 'var(--danger)' : 'var(--primary)';
+    statusEl.classList.remove('hidden');
+    setTimeout(() => {
+      if (statusEl.textContent === msg) statusEl.classList.add('hidden');
+    }, 4500);
+  }
+
+  execBtn.addEventListener('click', () => {
+    const val = input.value.trim();
+    if (!val) {
+      runDirectReplace('rewrite');
+    } else {
+      runDirectReplace('custom', val);
+    }
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      execBtn.click();
+    }
+  });
+
+  document.querySelectorAll('.instant-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const act = chip.getAttribute('data-instant');
+      runDirectReplace(act);
+    });
+  });
+
+  undoBtn.addEventListener('click', async () => {
+    if (!lastReplacedOriginalText) return;
+    try {
+      await insertText(lastReplacedOriginalText, true);
+      currentSelectedBodyText = lastReplacedOriginalText;
+      snippet.textContent = `"${lastReplacedOriginalText.slice(0, 80)}${lastReplacedOriginalText.length > 80 ? '…' : ''}"`;
+      setInstantStatus('↩️ Restored original text!', false);
+      undoBtn.classList.add('hidden');
+    } catch (err) {
+      setInstantStatus(`❌ Undo failed: ${err.message}`, true);
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    bar.classList.add('hidden');
+  });
 }
 
 // ─── Helpers & Formatting ───────────────────────────────────────────────────
@@ -410,9 +571,33 @@ function updateTokenDisplay() {
   if (el) el.textContent = localStorage.getItem('wordai_tokens') || '0';
   const working = localStorage.getItem('wordai_working_model');
   const model = localStorage.getItem('wordai_model');
+  const provider = localStorage.getItem('wordai_provider') || 'openai';
   const status = document.getElementById('fetch-status');
   if (status && model === '__auto__' && working) {
     status.textContent = `⚡ Using: ${working}`;
+  }
+
+  const badge = document.getElementById('header-model-badge');
+  if (badge) {
+    let label = provider.toUpperCase();
+    const activeModel = (model && model !== '__auto__') ? model : (working || '');
+    if (activeModel) {
+      if (/gpt-4o/i.test(activeModel)) label = 'GPT-4o';
+      else if (/o3-mini/i.test(activeModel)) label = 'o3-mini';
+      else if (/claude-3-5-sonnet/i.test(activeModel)) label = 'Claude 3.5';
+      else if (/claude-3-5-haiku/i.test(activeModel)) label = 'Claude Haiku';
+      else if (/gemini-2/i.test(activeModel)) label = 'Gemini 2.0';
+      else if (/deepseek/i.test(activeModel)) label = 'DeepSeek';
+      else if (/llama-3/i.test(activeModel)) label = 'Llama 3.3';
+      else if (/mistral/i.test(activeModel)) label = 'Mistral';
+      else if (/command-r/i.test(activeModel)) label = 'Cohere';
+      else if (activeModel.length <= 12) label = activeModel;
+      else label = provider.charAt(0).toUpperCase() + provider.slice(1);
+    } else {
+      label = provider.charAt(0).toUpperCase() + provider.slice(1);
+    }
+    badge.textContent = label;
+    badge.title = `Active AI Provider: ${provider.toUpperCase()}${activeModel ? ` (${activeModel})` : ''}`;
   }
 }
 
@@ -1627,170 +1812,342 @@ function bindGenerateButtons() {
   });
 }
 
-// ─── Smart Templates Library ─────────────────────────────────────────────────
+// ─── Advanced Document Framework Studio ─────────────────────────────────────
 
-function bindTemplatesButtons() {
-  const templates = {
-    'research-proposal': `# Title of Research Proposal
-## Abstract
-[Brief 150-word overview of project, aims, and anticipated impact]
+let activeDraftFramework = null;
+let activeAuditFramework = null;
+let currentMissingSections = [];
 
-## 1. Background & Rationale
-[Provide the broader context, theoretical framework, and societal/scientific significance]
+async function insertStructuredFramework(markdownText) {
+  if (typeof Word === 'undefined') {
+    await insertText(markdownText, false);
+    docStatus('📚 Framework inserted into editor');
+    return;
+  }
+  showLoading(true);
+  try {
+    await Word.run(async (ctx) => {
+      const body = ctx.document.body;
+      const lines = markdownText.split('\n');
+      let tableLines = [];
+      let inTable = false;
 
-## 2. Problem Statement
-[Precisely state the specific problem or research gap this study addresses]
+      const flushTable = async () => {
+        if (!tableLines.length) return;
+        const rows = tableLines
+          .filter(l => !l.trim().match(/^\|?[-:\s|]+\|?$/))
+          .map(l => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()));
+        if (rows.length && rows[0].length) {
+          const numCols = rows[0].length;
+          const cleanRows = rows.map(r => {
+            const rowCopy = [...r];
+            while (rowCopy.length < numCols) rowCopy.push('');
+            return rowCopy.slice(0, numCols);
+          });
+          const table = body.insertTable(cleanRows.length, numCols, Word.InsertLocation.end, cleanRows);
+          try { table.styleBuiltIn = Word.Style.gridTable4_Accent1; } catch (_) {}
+        }
+        tableLines = [];
+        inTable = false;
+      };
 
-## 3. Research Questions & Hypotheses
-* **RQ1:** [Primary Research Question]
-* **RQ2:** [Secondary Research Question]
-* **H1:** [Testable Hypothesis]
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
 
-## 4. Proposed Methodology
-* **Research Design:** [Qualitative / Quantitative / Mixed Methods]
-* **Target Population & Sampling:** [Sample size, criteria, recruitment]
-* **Data Collection Protocol:** [Instruments, procedures, timelines]
-* **Data Analysis Plan:** [Statistical models or thematic coding approach]
+        if (line.startsWith('|') && line.endsWith('|')) {
+          inTable = true;
+          tableLines.push(line);
+          continue;
+        } else if (inTable) {
+          await flushTable();
+        }
 
-## 5. Ethical Considerations
-[IRB approval, informed consent, data protection]
+        if (!line) continue;
 
-## 6. Work Plan & Schedule
-| Phase | Key Milestone | Target Date |
-|---|---|---|
-| Phase 1 | Literature Review & Ethics Approval | Month 1-2 |
-| Phase 2 | Field Data Collection | Month 3-4 |
-| Phase 3 | Analysis & Final Report | Month 5-6 |
+        if (line.startsWith('# ')) {
+          const p = body.insertParagraph(line.replace(/^#\s+/, ''), Word.InsertLocation.end);
+          try { p.styleBuiltIn = Word.Style.title; } catch (_) {
+            try { p.styleBuiltIn = Word.Style.heading1; } catch (_) {}
+          }
+        } else if (line.startsWith('## ')) {
+          const p = body.insertParagraph(line.replace(/^##\s+/, ''), Word.InsertLocation.end);
+          try { p.styleBuiltIn = Word.Style.heading1; } catch (_) {}
+        } else if (line.startsWith('### ')) {
+          const p = body.insertParagraph(line.replace(/^###\s+/, ''), Word.InsertLocation.end);
+          try { p.styleBuiltIn = Word.Style.heading2; } catch (_) {}
+        } else if (line.startsWith('#### ')) {
+          const p = body.insertParagraph(line.replace(/^####\s+/, ''), Word.InsertLocation.end);
+          try { p.styleBuiltIn = Word.Style.heading3; } catch (_) {}
+        } else if (line.startsWith('* ') || line.startsWith('- ')) {
+          const p = body.insertParagraph('• ' + line.replace(/^[*\-]\s+/, ''), Word.InsertLocation.end);
+          try { p.styleBuiltIn = Word.Style.normal; } catch (_) {}
+        } else {
+          const p = body.insertParagraph(line, Word.InsertLocation.end);
+          try { p.styleBuiltIn = Word.Style.normal; } catch (_) {}
+        }
+      }
 
-## References
-[List key foundational literature in standard format]`,
+      if (inTable) {
+        await flushTable();
+      }
 
-    'thesis-chapter': `# Chapter 3: Research Methodology
-
-## 3.1 Chapter Overview
-[Outline the structure and purpose of this chapter]
-
-## 3.2 Research Philosophy & Epistemology
-[Justify epistemological stance: Positivism / Interpretivism / Pragmatism]
-
-## 3.3 Research Design
-[Detail chosen strategy: Experimental, Case Study, Survey, Grounded Theory]
-
-## 3.4 Sampling Strategy & Participant Demographics
-[Define sample size, power analysis, inclusion and exclusion criteria]
-
-## 3.5 Instrumentation & Data Collection
-[Describe reliability and validity of measures or interview protocols]
-
-## 3.6 Data Analysis Procedures
-[Step-by-step statistical methods or qualitative thematic synthesis]
-
-## 3.7 Methodological Limitations & Delimitations
-[Acknowledge boundary conditions and constraints]
-
-## 3.8 Summary
-[Synthesize chapter conclusions and lead into the Results chapter]`,
-
-    'lab-report': `# Laboratory Investigation Report: [Experiment Title]
-
-## Abstract
-[Summary of hypothesis, experimental procedure, quantitative findings, and percent error]
-
-## 1. Introduction & Objectives
-* **Objective:** [State clear purpose of experiment]
-* **Theoretical Background:** [Key scientific equations and underlying principles]
-
-## 2. Apparatus & Materials
-* Material A (Specification/Precision)
-* Material B (Specification/Precision)
-
-## 3. Experimental Procedure
-1. [Step 1 of laboratory methodology]
-2. [Step 2 of laboratory methodology]
-3. [Safety precautions and control parameters]
-
-## 4. Experimental Data & Observations
-| Trial # | Independent Variable | Dependent Variable | Raw Measurement |
-|---|---|---|---|
-| 1 | Value A | Result 1 | Obs 1 |
-| 2 | Value B | Result 2 | Obs 2 |
-| 3 | Value C | Result 3 | Obs 3 |
-
-## 5. Calculations & Error Analysis
-* Formula applied: [Equation]
-* Experimental Value vs. Accepted Theoretical Value
-* **Percent Error:** [% calculation]
-
-## 6. Discussion & Scientific Conclusions
-[Interpret physical phenomena, identify experimental sources of error, and propose improvements]`,
-
-    'business-plan': `# Executive Business Plan: [Company / Venture Name]
-
-## 1. Executive Summary
-* **Mission Statement:** [One-sentence clear purpose]
-* **The Problem:** [Market pain point]
-* **The Solution:** [Product or service offering]
-* **Financial Overview:** [Key projections and funding requirements]
-
-## 2. Company Description & Value Proposition
-[Detail company ownership, competitive advantage, and customer value]
-
-## 3. Market & Competitive Analysis
-* **Total Addressable Market (TAM):** [$ Amount]
-* **Target Customer Persona:** [Demographics, behaviors, needs]
-* **Competitive Matrix:**
-| Competitor | Strengths | Weaknesses | Our Advantage |
-|---|---|---|---|
-| Competitor A | Market share | Legacy tech | 10x faster deployment |
-| Competitor B | Low price | Weak support | Premium white-glove service |
-
-## 4. Product & Service Line
-[Lifecycle, IP/patents, R&D roadmap]
-
-## 5. Marketing & Sales Strategy
-* Customer Acquisition Channels
-* Unit Economics (CAC, LTV, Payback Period)
-
-## 6. Financial Plan & Projections
-| Year | Revenue | Operating Expenses | EBITDA |
-|---|---|---|---|
-| Year 1 | $X | $Y | $Z |
-| Year 2 | $X | $Y | $Z |
-| Year 3 | $X | $Y | $Z |`,
-
-    'press-release': `FOR IMMEDIATE RELEASE
-
-# [HEADLINE: Strong, Active Verb Announcing Newsworthy Development]
-### [Sub-headline: Supporting Detail Expanding on the Value Proposition]
-
-**[CITY, STATE/COUNTRY] — [DATE]** — [Lead Paragraph: Who, what, when, where, and why in 2-3 compelling sentences].
-
-"[Insert quote from CEO, Founder, or Lead Executive emphasizing strategic vision and customer transformation]," said [Executive Name], [Title] at [Company Name]. "[Second sentence of quote adding future-looking excitement]."
-
-## Key Highlights & Innovations:
-* **[Key Benefit 1]:** [Supporting evidence or customer impact metric]
-* **[Key Benefit 2]:** [Technical accomplishment or breakthrough]
-* **[Key Benefit 3]:** [Availability, pricing, or rollout schedule]
-
-"[Insert quote from partner, customer, or industry analyst validating the milestone]," stated [Partner Name], [Title].
-
-## About [Company Name]
-[Boilerplate: 2-3 sentences describing what the company does, founded date, headquarters, and web presence]. For more information, visit [Website URL].
-
-### Media Relations Contact:
-* **Name:** [Press Contact Name]
-* **Email:** press@company.com
-* **Phone:** (555) 000-0000`
-  };
-
-  document.querySelectorAll('.btn-insert-template').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const templateId = btn.dataset.template;
-      const content = templates[templateId];
-      if (!content) return;
-      await insertText(content, false);
-      docStatus('📚 Inserted complete document template into Word!');
+      await ctx.sync();
+      docStatus('📚 Framework inserted with native Word headings & tables!');
     });
+  } catch (_) {
+    await insertText(markdownText, false);
+    docStatus('📚 Framework inserted into Word!');
+  } finally {
+    showLoading(false);
+  }
+}
+
+function openFrameworkDraftDrawer(fw) {
+  activeDraftFramework = fw;
+  const drawer = document.getElementById('framework-draft-drawer');
+  document.getElementById('draft-drawer-title').textContent = `⚡ Draft: ${fw.title}`;
+  document.getElementById('draft-drawer-desc').textContent = fw.desc;
+  document.getElementById('draft-topic-input').value = '';
+  drawer.classList.remove('hidden');
+}
+
+async function auditDocumentAgainstFramework(frameworkId) {
+  if (typeof FRAMEWORK_DEFINITIONS === 'undefined') return;
+  const fw = FRAMEWORK_DEFINITIONS[frameworkId];
+  if (!fw) return;
+  activeAuditFramework = fw;
+
+  const drawer = document.getElementById('framework-audit-drawer');
+  drawer.classList.remove('hidden');
+
+  document.getElementById('audit-framework-name').textContent = fw.title;
+  document.getElementById('audit-stats').textContent = 'Scanning document headings and paragraphs...';
+  const checklistEl = document.getElementById('audit-checklist');
+  checklistEl.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px;">Analyzing document structure...</div>';
+
+  let docText = '';
+  let docHeadings = [];
+
+  if (typeof Word !== 'undefined') {
+    try {
+      await Word.run(async (ctx) => {
+        const body = ctx.document.body;
+        const paras = body.paragraphs;
+        paras.load('items/text,items/styleBuiltIn');
+        await ctx.sync();
+        docText = paras.items.map(p => p.text).join('\n');
+        docHeadings = paras.items
+          .filter(p => ['Heading1','Heading2','Heading3','Title'].includes(p.styleBuiltIn) || p.text.trim().startsWith('#'))
+          .map(p => p.text.trim().toLowerCase());
+      });
+    } catch (_) {
+      docText = await getContext('document');
+    }
+  } else {
+    docText = await getContext('document');
+  }
+
+  const fullTextLower = (docText || '').toLowerCase();
+  currentMissingSections = [];
+  let foundCount = 0;
+
+  checklistEl.innerHTML = '';
+
+  fw.sections.forEach(sec => {
+    const secClean = sec.replace(/^Chapter\s*\d+:?\s*/i, '').toLowerCase();
+    const keywords = secClean.split(/[\s/&]+/).filter(w => w.length > 3);
+
+    const inHeading = docHeadings.some(h => keywords.some(k => h.includes(k)));
+    const inTextOccurrences = keywords.filter(k => fullTextLower.includes(k)).length;
+
+    let status = 'missing';
+    if (inHeading) {
+      status = 'found';
+      foundCount++;
+    } else if (inTextOccurrences >= 2 || (keywords.length === 1 && inTextOccurrences >= 1)) {
+      status = 'weak';
+      foundCount += 0.5;
+    } else {
+      currentMissingSections.push(sec);
+    }
+
+    const card = document.createElement('div');
+    card.className = `audit-check-card ${status}`;
+
+    let statusBadge = '';
+    let actionBtn = '';
+    if (status === 'found') {
+      statusBadge = '<span style="color:#059669;font-weight:700;">✅ Found</span>';
+    } else if (status === 'weak') {
+      statusBadge = '<span style="color:#d97706;font-weight:700;">⚠️ Brief / Mentioned</span>';
+    } else {
+      statusBadge = '<span style="color:var(--danger);font-weight:700;">❌ Missing</span>';
+      actionBtn = `<button class="small-btn btn-draft-single-sec" data-sec="${encodeURIComponent(sec)}" style="font-size:9.5px;padding:2px 6px;">Draft ⚡</button>`;
+    }
+
+    card.innerHTML = `
+      <div style="flex:1;">
+        <div style="font-weight:600;">${escapeHtml(sec)}</div>
+        <div style="font-size:10px;color:var(--muted);">${status === 'found' ? 'Properly structured in document' : status === 'weak' ? 'Referenced in text, but lacks distinct heading section' : 'Not identified in document'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        ${statusBadge}
+        ${actionBtn}
+      </div>
+    `;
+
+    const draftBtn = card.querySelector('.btn-draft-single-sec');
+    if (draftBtn) {
+      draftBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        drawer.classList.add('hidden');
+        const secName = decodeURIComponent(draftBtn.dataset.sec);
+        const prompt = `Write a comprehensive, professional "${secName}" section for a ${fw.title}.\nEnsure full narrative depth, rigorous analysis, and appropriate formatting.`;
+        recordPrompt(`Draft ${secName} (${fw.title})`);
+        await handleAIAction(prompt, `Document Context:\n${docText ? docText.slice(0, 2500) : 'Create new section'}`);
+      });
+    }
+
+    checklistEl.appendChild(card);
+  });
+
+  const total = fw.sections.length;
+  const scorePct = Math.round((foundCount / total) * 100);
+
+  document.getElementById('audit-score-badge').textContent = `${scorePct}% Complete`;
+  document.getElementById('audit-progress-fill').style.width = `${scorePct}%`;
+  document.getElementById('audit-stats').textContent = `${Math.floor(foundCount)} of ${total} required sections present. ${currentMissingSections.length} section(s) need drafting.`;
+}
+
+function renderFrameworks(filterCat = 'all', searchQuery = '') {
+  const container = document.getElementById('frameworks-container');
+  if (!container) return;
+  if (typeof FRAMEWORK_DEFINITIONS === 'undefined') {
+    container.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px;">Frameworks loading...</div>';
+    return;
+  }
+
+  const query = (searchQuery || '').toLowerCase().trim();
+  const list = Object.values(FRAMEWORK_DEFINITIONS).filter(fw => {
+    const matchesCat = filterCat === 'all' || fw.category === filterCat;
+    const matchesSearch = !query ||
+      fw.title.toLowerCase().includes(query) ||
+      fw.desc.toLowerCase().includes(query) ||
+      (fw.sections || []).some(s => s.toLowerCase().includes(query));
+    return matchesCat && matchesSearch;
+  });
+
+  if (!list.length) {
+    container.innerHTML = '<div style="font-size:11.5px;color:var(--muted);padding:12px;text-align:center;">No frameworks matching criteria.</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  list.forEach(fw => {
+    const card = document.createElement('div');
+    card.className = 'template-card';
+    card.innerHTML = `
+      <div class="template-header">
+        <span class="template-title">${escapeHtml(fw.title)}</span>
+        <span class="framework-badge badge-${fw.category}">${fw.badge}</span>
+      </div>
+      <div class="template-desc">${escapeHtml(fw.desc)}</div>
+      <div class="template-sections-preview">📑 ${fw.sections.length} Core Sections: ${escapeHtml(fw.sections.slice(0, 3).join(' • '))}…</div>
+      <div class="framework-actions">
+        <button class="btn-fw-skeleton" data-id="${fw.id}" title="Insert heading structure & tables into Word">Insert Skeleton ➕</button>
+        <button class="btn-fw-smartdraft" data-id="${fw.id}" title="Use AI to generate a complete custom draft">🤖 AI Smart-Draft</button>
+        <button class="btn-fw-audit" data-id="${fw.id}" title="Scan active document against this framework">📋 Audit Doc</button>
+      </div>
+    `;
+
+    card.querySelector('.btn-fw-skeleton').addEventListener('click', () => {
+      insertStructuredFramework(fw.skeleton);
+    });
+
+    card.querySelector('.btn-fw-smartdraft').addEventListener('click', () => {
+      openFrameworkDraftDrawer(fw);
+    });
+
+    card.querySelector('.btn-fw-audit').addEventListener('click', () => {
+      auditDocumentAgainstFramework(fw.id);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+function bindFrameworkStudio() {
+  renderFrameworks('all', '');
+
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const cat = pill.dataset.cat;
+      const query = document.getElementById('framework-search-input')?.value || '';
+      renderFrameworks(cat, query);
+    });
+  });
+
+  const searchInput = document.getElementById('framework-search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const activePill = document.querySelector('.filter-pill.active');
+      const cat = activePill ? activePill.dataset.cat : 'all';
+      renderFrameworks(cat, e.target.value);
+    });
+  }
+
+  const draftDrawer = document.getElementById('framework-draft-drawer');
+  document.getElementById('btn-close-draft-drawer').addEventListener('click', () => {
+    draftDrawer.classList.add('hidden');
+  });
+
+  document.getElementById('btn-draft-from-doc').addEventListener('click', async () => {
+    const docText = await getContext('document');
+    if (!docText) return showError('No text found in document to summarize.');
+    document.getElementById('draft-topic-input').value = docText.slice(0, 1200);
+  });
+
+  document.getElementById('btn-draft-from-sel').addEventListener('click', async () => {
+    const selText = await getContext('selection');
+    if (!selText) return showError('Please select text in your document first.');
+    document.getElementById('draft-topic-input').value = selText;
+  });
+
+  document.getElementById('btn-run-smart-draft').addEventListener('click', async () => {
+    if (!activeDraftFramework) return;
+    const topic = document.getElementById('draft-topic-input').value.trim();
+    if (!topic) return showError('Please describe your document topic or project context.');
+
+    const depth = document.getElementById('draft-depth-select').value;
+    const rigor = document.getElementById('draft-rigor-select').value;
+    draftDrawer.classList.add('hidden');
+
+    const depthInstruction = depth === 'in-depth'
+      ? 'Produce a comprehensive, publication-grade, fully fleshed-out draft with extensive narrative depth, data tables, and specific analytical elaboration for EVERY section.'
+      : depth === 'executive'
+      ? 'Produce an executive-level synthesized draft with bulleted key takeaways, core financial/empirical data, and actionable strategic directives.'
+      : 'Produce a structured blueprint scaffold with introductory narrative in each section and explicit [ADD EVIDENCE HERE] or [DATA PLACEHOLDER] guidance.';
+
+    const systemPrompt = `${activeDraftFramework.aiPrompt}\nTone: ${rigor}.\nDepth Requirement: ${depthInstruction}\nEnsure every required framework section is clearly headed and thoroughly addressed.`;
+
+    recordPrompt(`Smart-Draft: ${activeDraftFramework.title}`);
+    await handleAIAction(systemPrompt, `Topic / Project Context:\n${topic}`);
+  });
+
+  const auditDrawer = document.getElementById('framework-audit-drawer');
+  document.getElementById('btn-close-audit-drawer').addEventListener('click', () => {
+    auditDrawer.classList.add('hidden');
+  });
+
+  document.getElementById('btn-draft-missing-sections').addEventListener('click', async () => {
+    if (!activeAuditFramework || !currentMissingSections.length) return;
+    auditDrawer.classList.add('hidden');
+    const docText = await getContext('document');
+    const prompt = `You are a document integrity specialist. The current document is missing these required sections for a complete ${activeAuditFramework.title}:\n\n${currentMissingSections.map(s => `• ${s}`).join('\n')}\n\nDraft ONLY the missing sections with full professional depth, matching the existing document context.`;
+    recordPrompt(`Draft Missing Sections for ${activeAuditFramework.title}`);
+    await handleAIAction(prompt, docText ? `Existing Document Content:\n${docText.slice(0, 3000)}` : 'Draft baseline content for these sections.');
   });
 }
 
@@ -2486,13 +2843,15 @@ function bindDiffToggle() {
 
 function bindOutputActions() {
   document.getElementById('btn-insert').addEventListener('click', async () => {
-    const text = document.getElementById('output-text').innerText;
+    const text = currentResultText || document.getElementById('output-text').innerText;
     await insertText(text, false);
+    docStatus('✅ Inserted directly into document');
   });
 
   document.getElementById('btn-replace').addEventListener('click', async () => {
-    const text = document.getElementById('output-text').innerText;
+    const text = currentResultText || document.getElementById('output-text').innerText;
     await insertText(text, true);
+    docStatus('🔄 Replaced selection in document');
   });
 
   document.getElementById('btn-copy').addEventListener('click', () => {
@@ -2742,6 +3101,50 @@ Write a concise 2-sentence persona instruction describing how to write in this e
   });
 }
 
+const providerUrls = {
+  openai:     { keyUrl: 'https://platform.openai.com/api-keys', name: 'OpenAI' },
+  anthropic:  { keyUrl: 'https://console.anthropic.com/settings/keys', name: 'Anthropic' },
+  gemini:     { keyUrl: 'https://aistudio.google.com/app/apikey', name: 'Google AI Studio' },
+  deepseek:   { keyUrl: 'https://platform.deepseek.com/api_keys', name: 'DeepSeek' },
+  groq:       { keyUrl: 'https://console.groq.com/keys', name: 'Groq' },
+  mistral:    { keyUrl: 'https://console.mistral.ai/api-keys', name: 'Mistral AI' },
+  openrouter: { keyUrl: 'https://openrouter.ai/keys', name: 'OpenRouter' },
+  together:   { keyUrl: 'https://api.together.xyz/settings/api-keys', name: 'Together AI' },
+  perplexity: { keyUrl: 'https://www.perplexity.ai/settings/api', name: 'Perplexity' },
+  cohere:     { keyUrl: 'https://dashboard.cohere.com/api-keys', name: 'Cohere' },
+  ollama:     { keyUrl: '', name: 'Ollama' },
+  custom:     { keyUrl: '', name: 'Custom' }
+};
+
+function updateProviderUI(provider) {
+  const baseUrlGroup = document.getElementById('base-url-group');
+  const baseUrlInput = document.getElementById('api-base-url-input');
+  const baseUrlHint = document.getElementById('base-url-hint');
+  const keyInput = document.getElementById('api-key-input');
+  const keyLink = document.getElementById('provider-key-link');
+
+  if (provider === 'ollama') {
+    baseUrlGroup.classList.remove('hidden');
+    baseUrlHint.textContent = 'Default: http://localhost:11434/v1';
+    if (!baseUrlInput.value) baseUrlInput.value = 'http://localhost:11434/v1';
+    keyInput.placeholder = 'Optional (not required for local Ollama)';
+    keyLink.style.display = 'none';
+  } else if (provider === 'custom') {
+    baseUrlGroup.classList.remove('hidden');
+    baseUrlHint.textContent = 'e.g. http://localhost:1234/v1 (LM Studio)';
+    if (!baseUrlInput.value) baseUrlInput.value = 'http://localhost:1234/v1';
+    keyInput.placeholder = 'API Key or bearer token (optional if local)';
+    keyLink.style.display = 'none';
+  } else {
+    baseUrlGroup.classList.add('hidden');
+    keyInput.placeholder = 'Paste your API key...';
+    keyLink.style.display = 'inline';
+    const info = providerUrls[provider] || { keyUrl: '', name: 'API' };
+    keyLink.href = info.keyUrl;
+    keyLink.textContent = `Get ${info.name} Key ↗`;
+  }
+}
+
 function bindSettings() {
   document.getElementById('btn-settings').addEventListener('click', () => {
     document.getElementById('settings-panel').classList.remove('hidden');
@@ -2751,20 +3154,28 @@ function bindSettings() {
     document.getElementById('settings-panel').classList.add('hidden');
   });
 
+  document.getElementById('provider-select').addEventListener('change', (e) => {
+    updateProviderUI(e.target.value);
+  });
+
   document.getElementById('btn-fetch-models').addEventListener('click', async () => {
     const provider = document.getElementById('provider-select').value;
     const key = document.getElementById('api-key-input').value.trim();
+    const baseUrl = document.getElementById('api-base-url-input').value.trim();
     const status = document.getElementById('fetch-status');
-    if (!key) { status.textContent = '⚠️ Enter your API key first.'; return; }
+    if (!key && provider !== 'ollama' && provider !== 'custom') {
+      status.textContent = '⚠️ Enter your API key first.';
+      return;
+    }
     const btn = document.getElementById('btn-fetch-models');
     btn.textContent = '⏳ Fetching...';
     btn.disabled = true;
     status.textContent = '';
-    const models = await AIProvider.fetchModels(provider, key);
+    const models = await AIProvider.fetchModels(provider, key, baseUrl);
     const select = document.getElementById('model-select');
     select.innerHTML = '';
     if (models.length === 0) {
-      select.innerHTML = '<option value="__auto__">🤖 Auto (fallback)</option><option value="">No models found — check your API key</option>';
+      select.innerHTML = '<option value="__auto__">🤖 Auto (fallback)</option><option value="">No models found</option>';
       status.textContent = '❌ Could not load models.';
     } else {
       select.innerHTML = '<option value="__auto__">🤖 Auto (try best available)</option>';
@@ -2777,7 +3188,7 @@ function bindSettings() {
       if (saved && [...select.options].some(o => o.value === saved)) {
         select.value = saved;
       }
-      status.textContent = `✅ ${models.length} models loaded.`;
+      status.textContent = `✅ ${models.length} models available.`;
     }
     btn.textContent = '🔄 Fetch Models';
     btn.disabled = false;
@@ -2785,11 +3196,15 @@ function bindSettings() {
 
   document.getElementById('btn-save-settings').addEventListener('click', () => {
     const model = document.getElementById('model-select').value;
-    localStorage.setItem('wordai_provider', document.getElementById('provider-select').value);
-    localStorage.setItem('wordai_api_key', document.getElementById('api-key-input').value);
+    const provider = document.getElementById('provider-select').value;
+    localStorage.setItem('wordai_provider', provider);
+    localStorage.setItem('wordai_api_key', document.getElementById('api-key-input').value.trim());
+    localStorage.setItem('wordai_base_url', document.getElementById('api-base-url-input').value.trim());
     localStorage.setItem('wordai_model', model);
     localStorage.setItem('wordai_language', document.getElementById('language-select').value);
     document.getElementById('settings-panel').classList.add('hidden');
+    updateTokenDisplay();
+    docStatus(`⚙️ Saved settings (${provider.toUpperCase()})`);
   });
 
   document.getElementById('btn-reset-tokens').addEventListener('click', () => {
@@ -2801,12 +3216,16 @@ function bindSettings() {
 function loadSettings() {
   const provider = localStorage.getItem('wordai_provider') || 'openai';
   const key = localStorage.getItem('wordai_api_key') || '';
+  const baseUrl = localStorage.getItem('wordai_base_url') || '';
   const model = localStorage.getItem('wordai_model') || '';
   const lang = localStorage.getItem('wordai_language') || 'English';
 
   document.getElementById('provider-select').value = provider;
   document.getElementById('api-key-input').value = key;
+  document.getElementById('api-base-url-input').value = baseUrl;
   document.getElementById('language-select').value = lang;
+
+  updateProviderUI(provider);
 
   const select = document.getElementById('model-select');
   if (model && model !== '__auto__') {

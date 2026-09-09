@@ -6,20 +6,60 @@
   <title>WordAI Pro</title>
   <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="taskpane.css" />
 </head>
 <body>
   <div id="app">
 
-    <!-- Header -->
-    <header>
-      <div class="logo">⚡ WordAI Pro</div>
-      <div style="display:flex;gap:4px">
+    <!-- Premium Header -->
+    <header class="app-header">
+      <div class="logo-wrapper">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <span class="brand-name">WordAI</span>
+          <span class="brand-pro">PRO</span>
+        </div>
+        <span class="model-pill-badge" id="header-model-badge" title="Active AI Provider">Online</span>
+      </div>
+      <div class="header-actions">
         <button id="btn-history" class="icon-btn" title="Prompt History &amp; Saved Outputs (Ctrl+Shift+H)">🕒</button>
         <button id="btn-darkmode" class="icon-btn" title="Toggle Dark Mode (Ctrl+Shift+D)">🌙</button>
         <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
       </div>
     </header>
+
+    <!-- Instant Selection Floating Copilot (Direct In-Place Replace & Instruction) -->
+    <div id="instant-selection-bar" class="instant-selection-bar hidden">
+      <div class="instant-bar-header">
+        <div class="instant-bar-title">
+          <span class="instant-pulse-dot"></span>
+          <span class="instant-title-text">Direct In-Place Copilot</span>
+          <span id="instant-sel-count" class="instant-count-badge">0 words</span>
+        </div>
+        <div class="instant-bar-actions">
+          <button id="btn-instant-undo" class="instant-btn-undo hidden" title="Undo Last In-Place Replace">↩️ Undo</button>
+          <button id="btn-close-instant-bar" class="instant-btn-close" title="Dismiss">✕</button>
+        </div>
+      </div>
+      <div id="instant-sel-snippet" class="instant-sel-snippet">"Highlight text in your Word document..."</div>
+      <div class="instant-input-row">
+        <input type="text" id="instant-instruction-input" placeholder="⚡ Type instruction to direct replace in body (e.g. rewrite formally, simplify)..." />
+        <button id="btn-instant-exec" class="primary-btn instant-exec-btn" title="Execute & Replace directly in Word body">Replace ⚡</button>
+      </div>
+      <div class="instant-quick-chips">
+        <button class="instant-chip" data-instant="rewrite">✏️ Rewrite</button>
+        <button class="instant-chip" data-instant="improve">✨ Improve</button>
+        <button class="instant-chip" data-instant="grammar">🔍 Fix Grammar</button>
+        <button class="instant-chip" data-instant="shorten">➖ Shorten</button>
+        <button class="instant-chip" data-instant="expand">➕ Expand</button>
+        <button class="instant-chip" data-instant="formal">💼 Formal</button>
+        <button class="instant-chip" data-instant="casual">☕ Casual</button>
+      </div>
+      <div id="instant-status" class="instant-status hidden"></div>
+    </div>
 
     <!-- Word Count Tracker -->
     <div id="wc-tracker" class="wc-tracker hidden">
@@ -162,47 +202,30 @@
       <div class="research-hint">💡 Tip: Use "Entire Document" context for best results on existing drafts.</div>
     </div>
 
-    <!-- Tab: Smart Templates Library -->
+    <!-- Tab: Smart Templates & Document Framework Studio -->
     <div class="tab-content" id="tab-templates">
-      <div class="doc-section-label">📚 Pre-built Document Frameworks</div>
-      <p class="hint">1-click inserts a professional, fully structured document skeleton with headings directly into Word:</p>
-      <div class="template-list">
-        <div class="template-card">
-          <div class="template-info">
-            <div class="template-title">🎓 Academic Research Proposal</div>
-            <div class="template-desc">Title, Abstract, Background, Problem, Objectives, Methodology, Timeline &amp; References.</div>
-          </div>
-          <button class="small-btn primary-btn btn-insert-template" data-template="research-proposal">Insert ➕</button>
-        </div>
-        <div class="template-card">
-          <div class="template-info">
-            <div class="template-title">📖 Thesis / Dissertation Chapter</div>
-            <div class="template-desc">Chapter Overview, Theoretical Framework, Empirical Analysis, Critical Discussion &amp; Conclusion.</div>
-          </div>
-          <button class="small-btn primary-btn btn-insert-template" data-template="thesis-chapter">Insert ➕</button>
-        </div>
-        <div class="template-card">
-          <div class="template-info">
-            <div class="template-title">🔬 Scientific Lab Report</div>
-            <div class="template-desc">Objective, Theoretical Background, Apparatus, Procedure, Data Table, Calculations &amp; Error Analysis.</div>
-          </div>
-          <button class="small-btn primary-btn btn-insert-template" data-template="lab-report">Insert ➕</button>
-        </div>
-        <div class="template-card">
-          <div class="template-info">
-            <div class="template-title">💼 Comprehensive Business Plan</div>
-            <div class="template-desc">Executive Summary, Company Profile, Market &amp; Competitor Analysis, Marketing Strategy &amp; Financial Plan.</div>
-          </div>
-          <button class="small-btn primary-btn btn-insert-template" data-template="business-plan">Insert ➕</button>
-        </div>
-        <div class="template-card">
-          <div class="template-info">
-            <div class="template-title">📰 Official Press Release (AP Style)</div>
-            <div class="template-desc">Headline, Dateline, Hook Paragraph, Executive Quotes, Key Details, Boilerplate &amp; Media Contact.</div>
-          </div>
-          <button class="small-btn primary-btn btn-insert-template" data-template="press-release">Insert ➕</button>
-        </div>
+      <div class="doc-section-label" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>📚 Document Framework Studio</span>
+        <span class="hint" style="font-size:10px;">18 Pro Frameworks</span>
       </div>
+      <p class="hint">Insert native Word heading structures, AI auto-draft complete documents, or audit existing drafts against frameworks:</p>
+
+      <!-- Category Filter Pills -->
+      <div class="framework-filter-bar">
+        <button class="filter-pill active" data-cat="all">All (18)</button>
+        <button class="filter-pill" data-cat="academic">🎓 Academic (6)</button>
+        <button class="filter-pill" data-cat="business">💼 Business (6)</button>
+        <button class="filter-pill" data-cat="legal">⚖️ Legal (3)</button>
+        <button class="filter-pill" data-cat="marketing">📢 Marketing (3)</button>
+      </div>
+
+      <!-- Live Search Box -->
+      <div class="framework-search-box">
+        <input type="text" id="framework-search-input" placeholder="🔍 Search frameworks (e.g. thesis, SOW, NDA, PR, SOP)..." />
+      </div>
+
+      <!-- Framework Cards Container -->
+      <div class="template-list" id="frameworks-container"></div>
     </div>
 
     <!-- Tab: Career & Job Mode -->
@@ -652,6 +675,68 @@
       </div>
     </div>
 
+    <!-- Framework Smart-Draft Studio Drawer -->
+    <div id="framework-draft-drawer" class="panel hidden">
+      <div class="panel-header">
+        <h3 id="draft-drawer-title">⚡ AI Smart-Draft Framework</h3>
+        <button id="btn-close-draft-drawer" class="icon-btn">✕</button>
+      </div>
+      <div id="draft-drawer-desc" style="font-size:11.5px;color:var(--muted);margin-bottom:6px;line-height:1.4;"></div>
+
+      <label>Document Subject / Research Topic / Core Context</label>
+      <textarea id="draft-topic-input" rows="3" placeholder="Describe the topic, case, or problem (e.g. 'Adoption of AI in higher education: a multi-university case study')..."></textarea>
+
+      <div style="display:flex;gap:6px;margin:4px 0;">
+        <button id="btn-draft-from-doc" class="small-btn" style="flex:1;padding:5px;">📄 Fill from Document</button>
+        <button id="btn-draft-from-sel" class="small-btn" style="flex:1;padding:5px;">✂️ Fill from Selection</button>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <div style="flex:1;">
+          <label>Drafting Depth</label>
+          <select id="draft-depth-select">
+            <option value="in-depth">In-Depth Full Content</option>
+            <option value="scaffold">Scaffolding + Guidance</option>
+            <option value="executive">Executive Summary Tier</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <label>Tone &amp; Rigor</label>
+          <select id="draft-rigor-select">
+            <option value="academic">Academic / Rigorous</option>
+            <option value="executive">Executive / Business</option>
+            <option value="technical">Technical / Engineering</option>
+            <option value="legal">Formal Legal</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btn-run-smart-draft" class="primary-btn" style="width:100%;margin-top:10px;padding:8px;">⚡ Generate Complete Document</button>
+    </div>
+
+    <!-- Framework Audit Drawer -->
+    <div id="framework-audit-drawer" class="panel hidden">
+      <div class="panel-header">
+        <h3 id="audit-drawer-title">📋 Framework Compliance Audit</h3>
+        <button id="btn-close-audit-drawer" class="icon-btn">✕</button>
+      </div>
+      <div class="audit-summary-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:700;font-size:13px;" id="audit-framework-name">Framework Name</span>
+          <span id="audit-score-badge" class="audit-score-pill">--% Complete</span>
+        </div>
+        <div class="audit-progress-track">
+          <div id="audit-progress-fill"></div>
+        </div>
+        <div id="audit-stats" style="font-size:11px;color:var(--muted);margin-top:4px;">Scanning document sections...</div>
+      </div>
+      <div class="doc-section-label" style="margin-top:10px;">Section Compliance Checklist</div>
+      <div id="audit-checklist" class="drawer-item-list" style="max-height:280px;"></div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button id="btn-draft-missing-sections" class="primary-btn" style="flex:1;padding:8px;">⚡ Draft Missing Sections with AI</button>
+      </div>
+    </div>
+
     <!-- Settings Panel -->
     <div id="settings-panel" class="panel hidden">
       <div class="panel-header">
@@ -660,12 +745,30 @@
       </div>
       <label>AI Provider</label>
       <select id="provider-select">
-        <option value="openai">OpenAI (GPT-4)</option>
-        <option value="gemini">Google Gemini</option>
-        <option value="openrouter">OpenRouter</option>
-        <option value="groq">Groq</option>
+        <option value="openai">OpenAI (GPT-4o, o3-mini)</option>
+        <option value="anthropic">Anthropic (Claude 3.5 Sonnet &amp; Haiku)</option>
+        <option value="gemini">Google Gemini (Gemini 2.0 Flash)</option>
+        <option value="deepseek">DeepSeek (V3 &amp; R1 Reasoning)</option>
+        <option value="groq">Groq (Ultra-Fast Llama 3.3)</option>
+        <option value="mistral">Mistral AI (Mistral Large &amp; Codestral)</option>
+        <option value="openrouter">OpenRouter (Unified Multi-Model)</option>
+        <option value="together">Together AI (Llama 3.3, Qwen, DeepSeek)</option>
+        <option value="perplexity">Perplexity AI (Sonar &amp; Search)</option>
+        <option value="cohere">Cohere (Command R+ Enterprise)</option>
+        <option value="ollama">Ollama (Local / Free / 100% Offline)</option>
+        <option value="custom">Custom (LM Studio, vLLM, OpenAI Proxy)</option>
       </select>
-      <label>API Key</label>
+      <div id="base-url-group" class="hidden" style="margin-top:6px;">
+        <label style="display:flex;justify-content:space-between;align-items:center;">
+          <span>API Base URL / Endpoint</span>
+          <span class="hint" id="base-url-hint" style="font-size:10px;">http://localhost:11434/v1</span>
+        </label>
+        <input type="text" id="api-base-url-input" placeholder="http://localhost:11434/v1" />
+      </div>
+      <label id="api-key-label" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>API Key</span>
+        <a id="provider-key-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--primary);text-decoration:none;">Get API Key ↗</a>
+      </label>
       <input type="password" id="api-key-input" placeholder="Paste your API key..." />
       <label>Model</label>
       <select id="model-select" style="width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12.5px;outline:none;background:var(--bg);margin-bottom:4px;"><option value="">— click Fetch Models —</option></select>
@@ -713,6 +816,7 @@
   </div>
 
   <script src="ai-provider.js"></script>
+  <script src="frameworks-data.js"></script>
   <script src="taskpane.js"></script>
 </body>
 </html>
