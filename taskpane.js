@@ -588,17 +588,17 @@ function markdownToRichWordHtml(markdown) {
     const cleanRows = tableRows.filter(r => !/^\|?[-:\s|]+\|?$/.test(r.trim()));
     if (!cleanRows.length) { tableRows = []; inTable = false; return; }
 
-    html += '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;border:1px solid #cbd5e1;margin-top:10pt;margin-bottom:12pt;font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10.5pt;">\n';
+    html += '<table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;width:100%;border:1px solid #cbd5e1;margin-top:4pt;margin-bottom:6pt;font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:9.5pt;line-height:1.3;">\n';
     cleanRows.forEach((rowStr, idx) => {
       const cells = rowStr.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
       html += '  <tr>\n';
       cells.forEach(cell => {
         const formatted = formatInline(cell);
         if (idx === 0) {
-          html += `    <th style="background-color:#f1f5f9;font-weight:bold;text-align:left;padding:6pt 8pt;border:1px solid #cbd5e1;color:#0f172a;">${formatted}</th>\n`;
+          html += `    <th style="background-color:#f1f5f9;font-weight:bold;text-align:left;padding:3.5pt 6pt;border:1px solid #cbd5e1;color:#0f172a;">${formatted}</th>\n`;
         } else {
           const bg = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
-          html += `    <td style="padding:5pt 8pt;border:1px solid #cbd5e1;vertical-align:top;background-color:${bg};color:#1e293b;">${formatted}</td>\n`;
+          html += `    <td style="padding:3pt 6pt;border:1px solid #cbd5e1;vertical-align:top;background-color:${bg};color:#1e293b;">${formatted}</td>\n`;
         }
       });
       html += '  </tr>\n';
@@ -647,7 +647,7 @@ function markdownToRichWordHtml(markdown) {
       } else {
         inCodeBlock = false;
         const codeEscaped = codeBlockLines.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n');
-        html += `<pre style="font-family:Consolas,monospace;background-color:#f8fafc;border:1px solid #e2e8f0;padding:8pt 10pt;border-radius:4pt;font-size:9.5pt;color:#0f172a;white-space:pre-wrap;margin-top:6pt;margin-bottom:10pt;"><code>${codeEscaped}</code></pre>\n`;
+        html += `<pre style="font-family:Consolas,monospace;background-color:#f8fafc;border:1px solid #e2e8f0;padding:6pt 8pt;border-radius:3pt;font-size:9pt;color:#0f172a;white-space:pre-wrap;margin-top:4pt;margin-bottom:6pt;"><code>${codeEscaped}</code></pre>\n`;
         codeBlockLines = [];
       }
       continue;
@@ -676,7 +676,7 @@ function markdownToRichWordHtml(markdown) {
     if (/^>\s+/.test(trimmed)) {
       closeList();
       const bqText = formatInline(trimmed.replace(/^>\s+/, ''));
-      html += `<blockquote style="border-left:3.5pt solid #3b82f6;background-color:#f8fafc;padding:6pt 10pt;margin:8pt 0;color:#334155;font-style:italic;font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10.5pt;border-radius:0 3pt 3pt 0;">${bqText}</blockquote>\n`;
+      html += `<blockquote style="border-left:3pt solid #3b82f6;background-color:#f8fafc;padding:4pt 8pt;margin:6pt 0;color:#334155;font-style:italic;font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10pt;border-radius:0 2pt 2pt 0;">${bqText}</blockquote>\n`;
       continue;
     }
 
@@ -684,32 +684,43 @@ function markdownToRichWordHtml(markdown) {
     if (/^#\s+/.test(trimmed)) {
       closeList();
       const text = formatInline(trimmed.replace(/^#\s+/, ''));
-      html += `<h1 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:20pt;font-weight:bold;color:#0f172a;margin-top:18pt;margin-bottom:8pt;line-height:1.25;">${text}</h1>\n`;
+      html += `<h1 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:18pt;font-weight:bold;color:#0f172a;margin-top:8pt;margin-bottom:3pt;line-height:1.2;">${text}</h1>\n`;
       continue;
     }
     if (/^##\s+/.test(trimmed)) {
       closeList();
       const text = formatInline(trimmed.replace(/^##\s+/, ''));
-      html += `<h2 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:13.5pt;font-weight:bold;color:#1e40af;border-bottom:1.5pt solid #2563eb;padding-bottom:2.5pt;margin-top:14pt;margin-bottom:6pt;line-height:1.3;">${text}</h2>\n`;
+      html += `<h2 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:12.5pt;font-weight:bold;color:#1e40af;border-bottom:1.5pt solid #2563eb;padding-bottom:2pt;margin-top:9pt;margin-bottom:4pt;line-height:1.25;">${text}</h2>\n`;
       continue;
     }
     if (/^###\s+/.test(trimmed)) {
       closeList();
       const text = formatInline(trimmed.replace(/^###\s+/, ''));
-      html += `<h3 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:12.5pt;font-weight:bold;color:#334155;margin-top:10pt;margin-bottom:4pt;line-height:1.3;">${text}</h3>\n`;
+      html += `<h3 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;font-weight:bold;color:#334155;margin-top:6pt;margin-bottom:2pt;line-height:1.25;">${text}</h3>\n`;
       continue;
     }
     if (/^####\s+/.test(trimmed)) {
       closeList();
       const text = formatInline(trimmed.replace(/^####\s+/, ''));
-      html += `<h4 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;font-weight:bold;color:#475569;margin-top:8pt;margin-bottom:3pt;">${text}</h4>\n`;
+      html += `<h4 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10pt;font-weight:bold;color:#475569;margin-top:4pt;margin-bottom:2pt;">${text}</h4>\n`;
       continue;
     }
 
-    // Horizontal Rule
+    // Horizontal Rule (Skip if directly followed by a heading to avoid redundant double dividers & huge blank gaps)
     if (/^[-*_]{3,}$/.test(trimmed)) {
       closeList();
-      html += '<hr style="border:none;border-top:1px solid #cbd5e1;margin-top:12pt;margin-bottom:12pt;" />\n';
+      let nextIsHeading = false;
+      for (let j = i + 1; j < lines.length; j++) {
+        const nt = lines[j].trim();
+        if (!nt) continue;
+        if (/^#{1,3}\s+/.test(nt)) {
+          nextIsHeading = true;
+        }
+        break;
+      }
+      if (!nextIsHeading) {
+        html += '<hr style="border:none;border-top:1px solid #cbd5e1;margin-top:5pt;margin-bottom:6pt;" />\n';
+      }
       continue;
     }
 
@@ -719,10 +730,10 @@ function markdownToRichWordHtml(markdown) {
         closeList();
         inList = true;
         listType = 'ul';
-        html += '<ul style="margin-top:4pt;margin-bottom:8pt;padding-left:18pt;">\n';
+        html += '<ul style="margin-top:2pt;margin-bottom:5pt;padding-left:16pt;">\n';
       }
       const itemText = formatInline(trimmed.replace(/^[*\-]\s+/, ''));
-      html += `  <li style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;line-height:1.55;margin-bottom:4pt;color:#1e293b;">${itemText}</li>\n`;
+      html += `  <li style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10pt;line-height:1.38;margin-bottom:2.5pt;color:#1e293b;">${itemText}</li>\n`;
       continue;
     }
 
@@ -733,17 +744,17 @@ function markdownToRichWordHtml(markdown) {
         closeList();
         inList = true;
         listType = 'ol';
-        html += '<ol style="margin-top:4pt;margin-bottom:8pt;padding-left:18pt;">\n';
+        html += '<ol style="margin-top:2pt;margin-bottom:5pt;padding-left:16pt;">\n';
       }
       const itemText = formatInline(numMatch[2]);
-      html += `  <li style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;line-height:1.55;margin-bottom:4pt;color:#1e293b;">${itemText}</li>\n`;
+      html += `  <li style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10pt;line-height:1.38;margin-bottom:2.5pt;color:#1e293b;">${itemText}</li>\n`;
       continue;
     }
 
     // Normal Paragraph
     closeList();
     const pText = formatInline(trimmed);
-    html += `<p style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;line-height:1.55;margin-top:0pt;margin-bottom:8pt;color:#1e293b;">${pText}</p>\n`;
+    html += `<p style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10.5pt;line-height:1.4;margin-top:0pt;margin-bottom:4pt;color:#1e293b;">${pText}</p>\n`;
   }
 
   closeList();
