@@ -12,7 +12,7 @@
 Equipped with direct page canvas in-place editing, a native rich Word styling engine, multi-model support across **12 leading AI providers** (including GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, DeepSeek R1, and local offline Ollama), **18 pre-built document frameworks**, **48 curated prompts**, live citation discovery, and visual redline diff inspection—all with zero external servers and zero telemetry (100% client-side BYOK).
 
 <p align="center">
-  <img src="screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
+  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
 </p>
 
 ---
@@ -72,16 +72,11 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
 
 ## 📸 Visual Tour & Interface Showcase
 
-<p align="center">
-  <img src="screenshots/screenshot-generate.png" width="48%" alt="AI Content Generation & In-Place Copilot" />
-  &nbsp;
-  <img src="screenshots/screenshot-research.png" width="48%" alt="Research Copilot & Academic Paper Discovery" />
-</p>
-<p align="center">
-  <img src="screenshots/screenshot-frameworks.png" width="48%" alt="18 Document Frameworks Studio" />
-  &nbsp;
-  <img src="screenshots/screenshot-prompts.png" width="48%" alt="48 Strategic Prompts Library" />
-</p>
+| 🎨 **AI Content Generation & In-Place Copilot** | 🔬 **Research Copilot & Academic Paper Discovery** |
+| :---: | :---: |
+| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-generate.png" width="100%" alt="AI Content Generation & In-Place Copilot" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-research.png" width="100%" alt="Research Copilot & Academic Paper Discovery" /> |
+| 📋 **18 Document Frameworks Studio** | ⚡ **48 Strategic Prompts Library** |
+| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-frameworks.png" width="100%" alt="18 Document Frameworks Studio" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-prompts.png" width="100%" alt="48 Strategic Prompts Library" /> |
 
 ---
 
@@ -133,7 +128,7 @@ Comprehensive document engineering studio across 4 critical domains:
 - **📢 Marketing & PR (3):** *AP-Style Press Release*, *Go-To-Market (GTM) Launch Plan*, *Executive Crisis Communication Plan*.
 
 <p align="center">
-  <img src="screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
+  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
 </p>
 
 **⚡ 3 Capabilities Per Framework:**
