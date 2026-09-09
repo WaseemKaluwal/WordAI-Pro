@@ -17,6 +17,27 @@
   --shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
+body.dark {
+  --bg: #0f0f14;
+  --surface: #1a1a24;
+  --border: #2e2e3e;
+  --primary: #7c7fff;
+  --primary-hover: #6466f1;
+  --text: #e8e8f0;
+  --muted: #8888a8;
+  --danger: #f87171;
+  --shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+body.dark .output-header { background: #1e1e2e; }
+body.dark .output-text th { background: #1e1e2e; }
+body.dark .research-hint { background: #1e1a0e; border-color: #5a4a10; color: #c9a84c; }
+body.dark .doc-status-ok { background: #0d2018; border-color: #1a5c38; color: #4ade80; }
+body.dark .doc-status-error { background: #200d0d; border-color: #5c1a1a; color: #f87171; }
+body.dark .upload-area.drag-over { background: #1a1030; }
+body.dark .upload-file-tag { background: #1e1e30; border-color: #3a3a6a; }
+body.dark .msg-ai { background: #1e1e2e; }
+body.dark select, body.dark input, body.dark textarea { color: var(--text); background: var(--surface); }
+
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 13px;
@@ -33,6 +54,68 @@ body {
   padding: 10px;
   min-height: 100vh;
 }
+
+.wc-tracker {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wc-tracker-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+#wc-live { font-weight: 700; color: var(--primary); }
+#wc-target-label { font-size: 11px; color: var(--muted); }
+.wc-settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.wc-settings-btn:hover { background: var(--border); }
+.wc-bar-bg {
+  height: 6px;
+  background: var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.wc-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--primary);
+  border-radius: 10px;
+  transition: width 0.4s ease, background 0.3s;
+}
+.wc-bar.done { background: #22c55e; }
+.wc-bar-label {
+  font-size: 10.5px;
+  color: var(--muted);
+  text-align: right;
+}
+.wc-setup {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.wc-setup input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 12px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+}
+.wc-setup input:focus { border-color: var(--primary); }
 
 /* Header */
 header {
@@ -487,6 +570,78 @@ header {
 }
 
 .hidden { display: none !important; }
+
+/* Research Tab */
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 8px;
+  background: var(--surface);
+  transition: border-color 0.15s;
+  position: relative;
+}
+.upload-area.drag-over {
+  border-color: #7c3aed;
+  background: #f5f0ff;
+}
+.upload-area input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  pointer-events: none;
+}
+.upload-hint {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.upload-file-list {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.upload-file-tag {
+  background: #f0f0ff;
+  border: 1px solid #c7c7ff;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  color: var(--primary);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-file-tag.error { background: #fef2f2; border-color: #fca5a5; color: var(--danger); }
+.upload-clear {
+  margin-top: 6px;
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  z-index: 2;
+  position: relative;
+}
+.upload-clear:hover { color: var(--danger); }
 
 /* Research Tab */
 .research-topic-row {

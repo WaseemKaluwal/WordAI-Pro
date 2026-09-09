@@ -13,12 +13,99 @@ function initApp() {
   bindSettings();
   bindResearchButtons();
   bindDocumentButtons();
+  bindFileUpload();
+  bindDarkMode();
+  bindWordCountTracker();
 }
 
 if (typeof Office !== 'undefined') {
   Office.onReady(() => initApp());
 } else {
   document.addEventListener('DOMContentLoaded', initApp);
+}
+
+// ─── Word Count Tracker ──────────────────────────────────────────────────
+
+let wcInterval = null;
+
+function bindWordCountTracker() {
+  const goal = parseInt(localStorage.getItem('wordai_wc_goal') || '0');
+  if (goal > 0) showWcTracker(goal);
+
+  document.getElementById('btn-wc-settings').addEventListener('click', () => {
+    const setup = document.getElementById('wc-setup');
+    setup.classList.toggle('hidden');
+    if (!setup.classList.contains('hidden'))
+      document.getElementById('wc-goal-input').focus();
+  });
+
+  document.getElementById('btn-wc-save').addEventListener('click', () => {
+    const val = parseInt(document.getElementById('wc-goal-input').value);
+    if (!val || val < 1) return;
+    localStorage.setItem('wordai_wc_goal', val);
+    document.getElementById('wc-setup').classList.add('hidden');
+    showWcTracker(val);
+  });
+
+  document.getElementById('btn-wc-clear').addEventListener('click', () => {
+    localStorage.removeItem('wordai_wc_goal');
+    clearInterval(wcInterval);
+    document.getElementById('wc-tracker').classList.add('hidden');
+    document.getElementById('wc-setup').classList.add('hidden');
+    document.getElementById('wc-goal-input').value = '';
+  });
+
+  // Show setup if no goal set yet — show a subtle hint button in header
+  if (!goal) {
+    document.getElementById('wc-setup').classList.remove('hidden');
+  }
+}
+
+function showWcTracker(goal) {
+  document.getElementById('wc-tracker').classList.remove('hidden');
+  document.getElementById('wc-goal-display').textContent = goal.toLocaleString();
+  updateWcBar(goal);
+  clearInterval(wcInterval);
+  wcInterval = setInterval(() => updateWcBar(goal), 3000);
+}
+
+async function updateWcBar(goal) {
+  if (typeof Word === 'undefined') {
+    document.getElementById('wc-live').textContent = '— words';
+    return;
+  }
+  try {
+    const text = await Word.run(async ctx => {
+      const body = ctx.document.body;
+      body.load('text');
+      await ctx.sync();
+      return body.text.trim();
+    });
+    const count = text ? text.split(/\s+/).filter(Boolean).length : 0;
+    const pct = Math.min(100, Math.round((count / goal) * 100));
+    const remaining = Math.max(0, goal - count);
+
+    document.getElementById('wc-live').textContent = count.toLocaleString() + ' words';
+    const bar = document.getElementById('wc-bar');
+    bar.style.width = pct + '%';
+    bar.classList.toggle('done', count >= goal);
+    document.getElementById('wc-bar-label').textContent =
+      count >= goal ? '🎉 Goal reached!' : `${remaining.toLocaleString()} words to go (${pct}%)`;
+  } catch (_) {}
+}
+
+// ─── Dark Mode ─────────────────────────────────────────────────────────────
+
+function bindDarkMode() {
+  const btn = document.getElementById('btn-darkmode');
+  const isDark = localStorage.getItem('wordai_dark') === '1';
+  if (isDark) document.body.classList.add('dark');
+  btn.textContent = isDark ? '☀️' : '🌙';
+  btn.addEventListener('click', () => {
+    const dark = document.body.classList.toggle('dark');
+    localStorage.setItem('wordai_dark', dark ? '1' : '0');
+    btn.textContent = dark ? '☀️' : '🌙';
+  });
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -550,6 +637,117 @@ async function handleDocAction(action) {
   }
 }
 
+// ─── File Upload ─────────────────────────────────────────────────────────────
+
+let uploadedFilesContent = []; // { name, text, isImage, base64, mimeType }
+
+function bindFileUpload() {
+  const input = document.getElementById('research-file-input');
+  const area  = document.getElementById('upload-area');
+  const clearBtn = document.getElementById('btn-clear-uploads');
+
+  input.addEventListener('change', () => processFiles(input.files));
+
+  area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
+  area.addEventListener('drop', e => {
+    e.preventDefault();
+    area.classList.remove('drag-over');
+    processFiles(e.dataTransfer.files);
+  });
+
+  clearBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    uploadedFilesContent = [];
+    input.value = '';
+    document.getElementById('upload-file-list').innerHTML = '';
+    document.getElementById('upload-file-list').classList.add('hidden');
+    clearBtn.classList.add('hidden');
+    document.getElementById('upload-label').querySelector('span').textContent = 'PDF, Word, Image, TXT, CSV, JSON\u2026';
+  });
+}
+
+async function processFiles(files) {
+  if (!files || !files.length) return;
+  const list = document.getElementById('upload-file-list');
+  const clearBtn = document.getElementById('btn-clear-uploads');
+  list.classList.remove('hidden');
+  clearBtn.classList.remove('hidden');
+
+  for (const file of files) {
+    const tag = document.createElement('span');
+    tag.className = 'upload-file-tag';
+    tag.textContent = '⏳ ' + file.name;
+    list.appendChild(tag);
+
+    try {
+      const result = await readFile(file);
+      uploadedFilesContent.push({ name: file.name, ...result });
+      tag.textContent = '✅ ' + file.name;
+    } catch (err) {
+      tag.className = 'upload-file-tag error';
+      tag.textContent = '❌ ' + file.name;
+    }
+  }
+
+  const label = document.getElementById('upload-label').querySelector('span');
+  label.textContent = `${uploadedFilesContent.length} file(s) loaded`;
+}
+
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const name = file.name.toLowerCase();
+    const isImage = /\.(png|jpe?g|gif|webp|bmp)$/.test(name);
+
+    if (isImage) {
+      const reader = new FileReader();
+      reader.onload = e => resolve({ isImage: true, base64: e.target.result, mimeType: file.type, text: '' });
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    if (name.endsWith('.pdf')) {
+      const reader = new FileReader();
+      reader.onload = async e => {
+        try {
+          const pdfjsLib = window['pdfjs-dist/build/pdf'];
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(e.target.result) }).promise;
+          let text = '';
+          for (let i = 1; i <= Math.min(pdf.numPages, 30); i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            text += content.items.map(s => s.str).join(' ') + '\n';
+          }
+          resolve({ isImage: false, text: text.trim() });
+        } catch (err) { reject(err); }
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+      return;
+    }
+
+    // All text-based files (txt, csv, json, xml, md, rtf, docx raw, etc.)
+    const reader = new FileReader();
+    reader.onload = e => resolve({ isImage: false, text: e.target.result });
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+}
+
+function getUploadedContext() {
+  if (!uploadedFilesContent.length) return '';
+  return uploadedFilesContent.map(f => {
+    if (f.isImage) return `[Image file: ${f.name} — attached as vision input]`;
+    return `--- File: ${f.name} ---\n${f.text.slice(0, 8000)}`;
+  }).join('\n\n');
+}
+
+function getUploadedImages() {
+  return uploadedFilesContent.filter(f => f.isImage);
+}
+
 // ─── Research Tab ────────────────────────────────────────────────────────────
 
 function bindResearchButtons() {
@@ -561,7 +759,6 @@ function bindResearchButtons() {
       const contextMode = document.getElementById('context-select').value;
       const docText = await getContext(contextMode === 'none' ? 'document' : contextMode);
       const topicLine = topic ? `Research topic: "${topic}"` : '';
-      const docLine = docText ? `\n\nDocument content:\n${docText.slice(0, 6000)}` : '';
 
       const prompts = {
         planner: `You are an expert academic research advisor. Given the research topic, generate:
@@ -623,8 +820,17 @@ Use formal academic language appropriate for a PhD thesis.`,
 Also list 5 highly relevant real journals/databases where the student should search for sources on this topic.`,
       };
 
-      const userContent = [topicLine, docLine].filter(Boolean).join('') || 'No topic or document provided. Please enter a research topic above.';
-      await handleAIAction(prompts[action], userContent);
+      const uploadedCtx = getUploadedContext();
+      const uploadedImgs = getUploadedImages();
+      const docLine = docText ? `\n\nDocument content:\n${docText.slice(0, 4000)}` : '';
+      const uploadLine = uploadedCtx ? `\n\nUploaded files:\n${uploadedCtx}` : '';
+      const userContent = [topicLine, docLine, uploadLine].filter(Boolean).join('') || 'No topic or document provided.';
+
+      if (uploadedImgs.length) {
+        await handleAIActionWithImages(prompts[action], userContent, uploadedImgs);
+      } else {
+        await handleAIAction(prompts[action], userContent);
+      }
     });
   });
 }
@@ -793,6 +999,35 @@ async function handleAIAction(systemPrompt, userContent) {
     showOutput(result);
   } catch (err) {
     showError(err.message);
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function handleAIActionWithImages(systemPrompt, userContent, images) {
+  showLoading(true);
+  hideOutput();
+  try {
+    const lang = localStorage.getItem('wordai_language') || 'English';
+    const messages = [
+      { role: 'system', content: `${systemPrompt} Respond in ${lang}.` },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: userContent || '(no content provided)' },
+          ...images.map(img => ({ type: 'image_url', image_url: { url: img.base64 } }))
+        ]
+      }
+    ];
+    const { text } = await AIProvider.call(messages);
+    updateTokenDisplay();
+    showOutput(text);
+  } catch (_) {
+    // Fallback: vision not supported, send as text-only
+    try {
+      const result = await runAI(systemPrompt, userContent + '\n[Images attached but vision not supported by current model.]');
+      showOutput(result);
+    } catch (err) { showError(err.message); }
   } finally {
     showLoading(false);
   }

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WordAI Pro</title>
   <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <link rel="stylesheet" href="taskpane.css" />
 </head>
 <body>
@@ -13,8 +14,27 @@
     <!-- Header -->
     <header>
       <div class="logo">⚡ WordAI Pro</div>
-      <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
+      <div style="display:flex;gap:4px">
+        <button id="btn-darkmode" class="icon-btn" title="Toggle Dark Mode">🌙</button>
+        <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
+      </div>
     </header>
+
+    <!-- Word Count Tracker -->
+    <div id="wc-tracker" class="wc-tracker hidden">
+      <div class="wc-tracker-top">
+        <span id="wc-live">0 words</span>
+        <span id="wc-target-label">Goal: <strong id="wc-goal-display">—</strong></span>
+        <button id="btn-wc-settings" class="wc-settings-btn">⚙️</button>
+      </div>
+      <div class="wc-bar-bg"><div id="wc-bar" class="wc-bar"></div></div>
+      <div id="wc-bar-label" class="wc-bar-label"></div>
+    </div>
+    <div id="wc-setup" class="wc-setup hidden">
+      <input type="number" id="wc-goal-input" placeholder="Set word goal (e.g. 5000)" min="1" />
+      <button id="btn-wc-save" class="primary-btn">Set Goal</button>
+      <button id="btn-wc-clear" class="small-btn">Clear</button>
+    </div>
 
     <!-- Quick Actions -->
     <section class="quick-actions">
@@ -309,6 +329,7 @@
         <button class="edit-btn" data-action="passive">🔄 Fix Passive Voice</button>
         <button class="edit-btn" data-action="simplify">🧩 Simplify Language</button>
         <button class="edit-btn" data-action="score">📈 Writing Score</button>
+        <button class="edit-btn" data-action="readinglevel">📊 Reading Level</button>
       </div>
       <div id="grammar-results" class="results-box hidden"></div>
     </div>
@@ -347,6 +368,19 @@
 
     <!-- Tab: Research -->
     <div class="tab-content" id="tab-research">
+
+      <!-- File Upload -->
+      <div class="upload-area" id="upload-area">
+        <input type="file" id="research-file-input" multiple
+          accept=".txt,.pdf,.doc,.docx,.rtf,.csv,.json,.xml,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.xlsx,.pptx" />
+        <label for="research-file-input" class="upload-label" id="upload-label">
+          📎 Upload files for AI context
+          <span class="upload-hint">PDF, Word, Image, TXT, CSV, JSON…</span>
+        </label>
+        <div id="upload-file-list" class="upload-file-list hidden"></div>
+        <button id="btn-clear-uploads" class="upload-clear hidden">✕ Clear files</button>
+      </div>
+
       <div class="research-topic-row">
         <input type="text" id="research-topic" placeholder="Enter your research topic..." />
         <select id="research-citation-style">
