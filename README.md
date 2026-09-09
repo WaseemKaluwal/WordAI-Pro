@@ -11,6 +11,10 @@
 
 Equipped with direct page canvas in-place editing, a native rich Word styling engine, multi-model support across **12 leading AI providers** (including GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, DeepSeek R1, and local offline Ollama), **18 pre-built document frameworks**, **48 curated prompts**, live citation discovery, and visual redline diff inspection—all with zero external servers and zero telemetry (100% client-side BYOK).
 
+<p align="center">
+  <img src="screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
+</p>
+
 ---
 
 ### 🌐 Live Production Deployment
@@ -22,14 +26,16 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
 
 ## 📑 Table of Contents
 1. [Why WordAI Pro? (Comparison Matrix)](#-why-wordai-pro-vs-microsoft-copilot)
-2. [Core Architectural Highlights](#-core-architectural-highlights)
+2. [Visual Tour & Interface Showcase](#-visual-tour--interface-showcase)
+3. [Core Architectural Highlights](#-core-architectural-highlights)
    - [Direct In-Place Page Canvas Editing & Popup Copilot](#1-direct-in-place-page-canvas-editing--popup-copilot)
    - [Native Rich Word Formatting Engine (Zero Markdown Asterisks)](#2-native-rich-word-formatting-engine-zero-markdown-asterisks)
    - [Multi-Provider AI Suite (12 Providers — BYOK)](#3-multi-provider-ai-suite-12-providers--byok)
    - [Document Frameworks Studio (18 Pre-built Scaffolds)](#4-document-frameworks-studio-18-pre-built-scaffolds)
    - [Pre-built Strategic Prompts Studio (48 Expert Prompts)](#5-pre-built-strategic-prompts-studio-48-expert-prompts)
    - [Visual Redline Diff & Side-by-Side Evaluation](#6-visual-redline-diff--side-by-side-evaluation)
-3. [Complete 30-Feature Capabilities Matrix](#-complete-30-feature-capabilities-matrix)
+   - [The 6 Killer Features Suite (New in v1.0.1)](#7-the-6-killer-features-suite-new-in-v101)
+3. [Complete 36-Feature Capabilities Matrix](#-complete-36-feature-capabilities-matrix)
 4. [Keyboard Shortcuts Cheat Sheet](#-global-keyboard-shortcuts)
 5. [Installation & Sideloading Guide](#-installation--setup-guide)
    - [Method 1: Word Online (Free — 60 Seconds)](#method-1-word-online-free--60-seconds)
@@ -46,16 +52,36 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
 
 | Feature / Metric | Microsoft Copilot for M365 | WordAI Pro |
 | :--- | :--- | :--- |
-| **Subscription Cost** | **$30 / user / month** + M365 license | **100% Free & Open-Source** |
+| **Subscription Cost** | **$30 / user / month** + M365 license | **100% Free (Non-Commercial)** |
 | **AI Model Choice** | Locked to single OpenAI model | **12 Providers**: GPT-4o, Claude 3.5, Gemini 2.0, DeepSeek R1, Groq, Mistral, Ollama |
 | **Local / Offline AI** | ❌ Not supported (Cloud only) | ✅ **100% Offline with Ollama & LM Studio** |
 | **API Key Architecture** | Proprietary Microsoft billing | **BYOK (Bring Your Own Key)** — Pay fractions of a cent per prompt |
+| **Chat With Document** | Basic cloud search | ✅ **Full Document Q&A with Live Word Sync & 1-Click Canvas Insertion** |
+| **AI Humanizer Engine** | ❌ None (sounds robotic) | ✅ **Anti-AI Detector & Burstiness Polish with 98% Human Scorecard** |
+| **Academic Citations** | Hallucinated text references | ✅ **250M+ Real Papers (OpenAlex & Crossref) + Auto-Bibliography at Doc End** |
+| **Writing DNA Cloner** | ❌ Generic voice | ✅ **Personal Writing DNA Studio (Formality & Rhythm Profiling)** |
 | **Direct In-Place Editing** | Limited canvas suggestions | ✅ **Live highlighted text rewrite (`Ctrl+Shift+E`)** |
 | **Rich Word Formatting** | Inconsistent Markdown output | ✅ **Native Word HTML Engine (`<strong>`, Headings, Tables, Lists)** |
+| **Text to Word Tables** | Plain text tables | ✅ **Native Styled HTML & Word Table Generation** |
 | **Document Frameworks** | Generic empty drafts | ✅ **18 Full Industry Frameworks + Compliance Audit** |
-| **Academic Citations** | Hallucinated text references | ✅ **Live Google Scholar, PubMed, JSTOR & Semantic Scholar (200M+ papers)** |
+| **Format-Safe Translator** | Strips formatting | ✅ **30+ Languages with Strict HTML & Markdown Tag Preservation** |
 | **Visual Redline Diff** | Standard Word track changes | ✅ **Interactive side-by-side & LCS visual redline diff viewer** |
 | **Data Privacy** | Enterprise cloud processing | ✅ **Zero server: All API calls go directly from your browser to the LLM** |
+
+---
+
+## 📸 Visual Tour & Interface Showcase
+
+<p align="center">
+  <img src="screenshots/screenshot-generate.png" width="48%" alt="AI Content Generation & In-Place Copilot" />
+  &nbsp;
+  <img src="screenshots/screenshot-research.png" width="48%" alt="Research Copilot & Academic Paper Discovery" />
+</p>
+<p align="center">
+  <img src="screenshots/screenshot-frameworks.png" width="48%" alt="18 Document Frameworks Studio" />
+  &nbsp;
+  <img src="screenshots/screenshot-prompts.png" width="48%" alt="48 Strategic Prompts Library" />
+</p>
 
 ---
 
@@ -106,6 +132,10 @@ Comprehensive document engineering studio across 4 critical domains:
 - **⚖️ Legal & Governance (3):** *Mutual Non-Disclosure Agreement (NDA)*, *Master Consulting Services Agreement (MSA)*, *Privacy Policy & GDPR/CCPA Notice*.
 - **📢 Marketing & PR (3):** *AP-Style Press Release*, *Go-To-Market (GTM) Launch Plan*, *Executive Crisis Communication Plan*.
 
+<p align="center">
+  <img src="screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
+</p>
+
 **⚡ 3 Capabilities Per Framework:**
 1. `Insert Skeleton ➕`: Instantly writes formatted titles, headings, bullet checklists, and signature tables into the Word body.
 2. `🤖 AI Smart-Draft`: Context-aware generation tailoring the framework to your exact project parameters, depth, and tone.
@@ -125,9 +155,19 @@ A dedicated repository of 48 battle-tested prompts categorized across 6 domains:
 - **LCS Redline Diff Engine:** Highlights deleted phrases in red strikethrough and new content in emerald green.
 - **Side-by-Side Evaluator:** Two-column synchronized card comparing original text vs. AI revision with independent copy/insert controls.
 
+### 7. The 6 Killer Features Suite (New in v1.0.1)
+WordAI Pro v1.0.1 introduces six game-changing superpowers designed to surpass proprietary commercial tools:
+1. **💬 Chat With Your Document (Full Document Q&A):** Conversational assistant connected directly to the open Word document's full body text. Features real-time word count sync and 6 one-click deep-analysis chips (*Summarize*, *Risks & Gaps*, *Dates & Deadlines*, *Action Items*, *Exec Brief*, *Critical Review*). Every AI response includes a 1-click **"➕ Insert to Word"** button.
+2. **🪄 AI Humanizer & Anti-Robotic Polish Engine:** Targets and eliminates telltale AI transition clichés (*"delve into"*, *"testament to"*, *"rich tapestry"*, *"in conclusion"*, *"moreover"*). Optimizes sentence burstiness and presents an interactive **Originality Rating Card (98% Human Score)**.
+3. **🎓 1-Click Academic Citation & Auto-Bibliography Builder:** Formats citations in **APA 7th**, **MLA 9th**, **Chicago**, **Harvard**, and **IEEE**. Features automated **"Append to Bibliography"** which creates or locates the `# References` heading at the very end of the Word document and appends references with hanging indents.
+4. **🧬 Personal Writing DNA & Brand Voice Studio:** Analyzes writing samples to profile formality, sentence rhythm, and dominant authorial persona, saving a persistent voice profile that shapes all subsequent outputs.
+5. **📊 Text-to-Native Word Table Generator:** Automatically extracts unstructured text, metrics, or comparison data and inserts clean, styled Word tables with colored headers (`#4f46e5`) and alternating shaded rows (`#f8fafc`).
+6. **🌐 Format-Preserving Multi-Language Translator:** High-fidelity translation supporting 30+ languages that strictly retains all HTML and markdown formatting (bolding, italics, headings, bullet hierarchies, and tables).
+7. **🔍 Resilient Academic Search Engine:** Multi-tiered search querying **OpenAlex** (250M+ scholarly works) and **Crossref DOI Registry** with AI synthesis fallback, eliminating 429 rate limit and fetch errors.
+
 ---
 
-## 🚀 Complete 30-Feature Capabilities Matrix
+## 🚀 Complete 36-Feature Capabilities Matrix
 
 | # | Feature | Category | Description |
 |---|---|---|---|
@@ -161,6 +201,12 @@ A dedicated repository of 48 battle-tested prompts categorized across 6 domains:
 | **28** | **Auto-Save Session Log** | Power User | Persistent drawer storing the last 30 AI generations with 1-click reload and insert. |
 | **29** | **Global Keyboard Shortcuts** | Power User | Complete keyboard control (`Ctrl+Shift+E`, `R`, `S`, `I`, `G`, `D`, `H`). |
 | **30** | **Obsidian Dark Mode** | Power User | Midnight Obsidian theme (`#0b0d14`) with persistent theme state. |
+| **31** | **Chat With Document (Full Q&A)** | Killer Features | Conversational document analysis with real-time word count sync and 1-click canvas insertion. |
+| **32** | **AI Humanizer & Anti-Robotic Polish** | Killer Features | Eliminates AI clichés, optimizes sentence burstiness, and provides an interactive 98% Human Scorecard. |
+| **33** | **1-Click Auto-Bibliography Builder** | Killer Features | Formats APA, MLA, Harvard, IEEE citations and appends them to `# References` at the document end. |
+| **34** | **Personal Writing DNA Studio** | Killer Features | Extracts formality, sentence rhythm, and dominant author persona to match your exact writing style. |
+| **35** | **Text-to-Native Word Table** | Killer Features | Extracts data from paragraphs/lists and inserts styled Word tables with colored headers and alternating shading. |
+| **36** | **Format-Preserving Translator** | Killer Features | Translates into 30+ languages with strict preservation of all bold, italic, header, and table tags. |
 
 ---
 

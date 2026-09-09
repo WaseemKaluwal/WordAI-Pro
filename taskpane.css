@@ -2730,4 +2730,306 @@ body.dark .drawer-subtab.active {
   }
 }
 
+/* ─── 6 Killer Features Suite ────────────────────────────────────────────── */
 
+/* 1. Chat with Document Banner & Actions */
+.chat-doc-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin-bottom: 8px;
+}
+.chat-doc-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+}
+.chat-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  display: inline-block;
+  animation: pulse-green 2s infinite ease-in-out;
+}
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.2); }
+}
+.chat-refresh-btn {
+  font-size: 10px;
+  padding: 2px 7px;
+}
+.chat-msg-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px dashed var(--border);
+}
+.chat-action-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.15s ease;
+}
+.chat-action-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* 2. AI Humanizer Card */
+.quick-btn-humanize {
+  background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(236,72,153,0.12));
+  border-color: rgba(139,92,246,0.35);
+  font-weight: 700;
+}
+.humanizer-card {
+  background: var(--surface);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(139,92,246,0.08);
+}
+.humanizer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.humanizer-score-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.humanizer-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.h-metric {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 4px;
+  text-align: center;
+}
+.h-metric-val {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.h-metric-label {
+  font-size: 8.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.humanizer-result-preview {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text);
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+}
+.humanizer-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* 3. Citation & Auto-Bibliography Builder */
+.citation-builder-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-xs);
+}
+.citation-builder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.citation-builder-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+}
+.citation-style-pill {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 10px;
+  padding: 2px 7px;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+.citation-input-group input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.citation-action-btns {
+  display: flex;
+  gap: 5px;
+}
+.citation-btn {
+  flex: 1;
+  font-size: 11px;
+  padding: 6px 8px;
+}
+.citation-preview-box {
+  margin-top: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+}
+.citation-preview-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.4px;
+}
+.citation-preview-text {
+  font-size: 11px;
+  color: var(--text);
+  margin-top: 2px;
+  padding: 4px 6px;
+  background: var(--surface);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  user-select: all;
+}
+.citation-insert-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* 4. Writing DNA Studio */
+.dna-studio-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  margin-top: 12px;
+  box-shadow: var(--shadow-xs);
+}
+.dna-studio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dna-studio-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+}
+.dna-active-badge {
+  background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.15));
+  color: #8b5cf6;
+  border: 1px solid rgba(139,92,246,0.3);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+.dna-action-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+.dna-btn {
+  flex: 1;
+  font-size: 10.5px;
+  padding: 6px 6px;
+}
+.dna-sample-input-box textarea {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+}
+.dna-metrics-display {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 6px;
+}
+.dna-metric-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.dna-metric-name {
+  color: var(--muted);
+  font-weight: 500;
+}
+.dna-metric-val {
+  font-weight: 700;
+  color: var(--text);
+}
+.dna-preview-instruction {
+  margin-top: 6px;
+  padding: 5px 6px;
+  font-size: 10px;
+  font-style: italic;
+  color: var(--muted);
+  background: var(--surface);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.dna-status {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 4px 6px;
+  margin-top: 5px;
+  border-radius: 4px;
+}

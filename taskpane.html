@@ -77,6 +77,8 @@
 
         <div class="instant-quick-chips">
           <button class="instant-chip" data-instant="rewrite">✏️ Rewrite</button>
+          <button class="instant-chip" data-instant="humanize" style="font-weight:600;color:#8b5cf6;">🪄 Humanize</button>
+          <button class="instant-chip" data-instant="table">📊 Table</button>
           <button class="instant-chip" data-instant="improve">✨ Improve</button>
           <button class="instant-chip" data-instant="grammar">🔍 Fix Grammar</button>
           <button class="instant-chip" data-instant="shorten">➖ Shorten</button>
@@ -108,6 +110,8 @@
     <!-- Quick Actions -->
     <section class="quick-actions">
       <button class="quick-btn" data-action="rewrite" title="Ctrl+Shift+R">✏️ Rewrite</button>
+      <button class="quick-btn quick-btn-humanize" data-action="humanize" title="Humanize & Polish (Anti-AI Detector)">🪄 Humanize</button>
+      <button class="quick-btn" data-action="table" title="Convert to Word Table">📊 Table</button>
       <button class="quick-btn" data-action="summarize" title="Ctrl+Shift+S">📄 Summarize</button>
       <button class="quick-btn" data-action="improve" title="Ctrl+Shift+I">✨ Improve</button>
       <button class="quick-btn" data-action="translate">🌍 Translate</button>
@@ -150,6 +154,8 @@
     <!-- Tab: Edit & Intelligence -->
     <div class="tab-content" id="tab-edit">
       <div class="edit-actions">
+        <button class="edit-btn" data-action="humanize" style="background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.12));border-color:rgba(139,92,246,0.4);font-weight:600;">🪄 AI Humanizer &amp; Anti-Robotic Polish</button>
+        <button class="edit-btn" data-action="table" style="background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(16,185,129,0.1));">📊 Convert Text to Formatted Word Table</button>
         <button class="edit-btn" data-action="grammar">🔍 Check Grammar</button>
         <button class="edit-btn" data-action="fix-all">⚡ Fix All Issues</button>
         <button class="edit-btn" data-action="clarity">💡 Improve Clarity</button>
@@ -170,7 +176,24 @@
         <button class="edit-btn" data-action="sentiment">🎭 Sentiment &amp; Tone Breakdown</button>
         <button class="edit-btn" data-action="contract-scan">⚖️ Contract Risk Scanner</button>
         <button class="edit-btn" data-action="reviewer2">🔬 Reviewer #2 Peer Review</button>
-        <button class="edit-btn" data-action="translate-sidebyside">🌍 Translate (Side-by-Side)</button>
+        <button class="edit-btn" data-action="translate-preserve">🌐 Format-Preserving Translate</button>
+      </div>
+      <div id="humanizer-card" class="humanizer-card hidden">
+        <div class="humanizer-header">
+          <span>🪄 AI Humanizer Rating</span>
+          <span id="humanizer-score-badge" class="humanizer-score-badge">98% Human</span>
+        </div>
+        <div class="humanizer-metrics">
+          <div class="h-metric"><span class="h-metric-val" id="h-metric-burst">High</span><span class="h-metric-label">Sentence Burstiness</span></div>
+          <div class="h-metric"><span class="h-metric-val" id="h-metric-cliches">0</span><span class="h-metric-label">AI Clichés Left</span></div>
+          <div class="h-metric"><span class="h-metric-val" id="h-metric-flow">Natural</span><span class="h-metric-label">Rhythmic Cadence</span></div>
+        </div>
+        <div id="humanizer-result-preview" class="humanizer-result-preview"></div>
+        <div class="humanizer-actions">
+          <button id="btn-humanize-replace" class="primary-btn">⚡ Replace in Canvas</button>
+          <button id="btn-humanize-below" class="small-btn">➕ Insert Below</button>
+          <button id="btn-humanize-copy" class="small-btn">📋 Copy</button>
+        </div>
       </div>
       <div id="grammar-results" class="results-box hidden"></div>
       <div id="rewrite3-panel" class="rewrite3-panel hidden"></div>
@@ -183,7 +206,7 @@
       <div class="semantic-search-box">
         <div class="doc-section-label">🔍 Live Academic Paper Search</div>
         <div class="semantic-input-row">
-          <input type="text" id="semantic-search-input" placeholder="Search 200M+ real papers &amp; DOIs..." />
+          <input type="text" id="semantic-search-input" placeholder="Search 250M+ papers (OpenAlex, Crossref)..." />
           <button id="btn-semantic-search" class="primary-btn">Search</button>
         </div>
         <div id="semantic-results" class="semantic-results hidden"></div>
@@ -204,12 +227,37 @@
       <div class="research-topic-row">
         <input type="text" id="research-topic" placeholder="Enter your research topic..." />
         <select id="research-citation-style">
-          <option value="APA">APA</option>
-          <option value="MLA">MLA</option>
+          <option value="APA">APA 7th</option>
+          <option value="MLA">MLA 9th</option>
           <option value="Chicago">Chicago</option>
           <option value="Harvard">Harvard</option>
           <option value="IEEE">IEEE</option>
         </select>
+      </div>
+
+      <!-- Dedicated Auto-Citation & Bibliography Studio -->
+      <div class="citation-builder-card">
+        <div class="citation-builder-header">
+          <span class="citation-builder-title">🎓 Auto-Citation &amp; Bibliography Builder</span>
+          <span class="citation-style-pill" id="citation-active-style-badge">APA 7th</span>
+        </div>
+        <div class="citation-input-group">
+          <input type="text" id="citation-source-input" placeholder="Paste Paper Title, DOI (10.xxx), URL, or author..." />
+        </div>
+        <div class="citation-action-btns">
+          <button id="btn-generate-citation" class="primary-btn citation-btn">✨ Generate Citation</button>
+          <button id="btn-cite-selection" class="small-btn citation-btn" title="Generate citation for currently selected text">📌 Cite Selection</button>
+        </div>
+        <div id="citation-preview-box" class="citation-preview-box hidden">
+          <div class="citation-preview-label">In-Text Citation:</div>
+          <div id="citation-in-text" class="citation-preview-text"></div>
+          <div class="citation-preview-label" style="margin-top:6px;">Full Reference (Bibliography):</div>
+          <div id="citation-full-ref" class="citation-preview-text"></div>
+          <div class="citation-insert-actions">
+            <button id="btn-insert-intext" class="small-btn">➕ Insert In-Text (Cursor)</button>
+            <button id="btn-append-bibliography" class="primary-btn" style="font-size:11px;">📚 Append to Bibliography at Doc End</button>
+          </div>
+        </div>
       </div>
       <div class="research-grid">
         <button class="res-btn" data-action="ai-citation-finder">🔍 AI Citation Finder</button>
@@ -333,26 +381,34 @@
       </div>
     </div>
 
-    <!-- Tab: Chat -->
+    <!-- Tab: Chat with Document -->
     <div class="tab-content" id="tab-chat">
+      <div class="chat-doc-banner">
+        <div class="chat-doc-status" id="chat-doc-status">
+          <span class="chat-pulse-dot"></span>
+          <span id="chat-doc-info">📄 Connected to Open Document</span>
+        </div>
+        <button id="btn-refresh-chat-doc" class="small-btn chat-refresh-btn" title="Refresh Document Context">🔄 Sync Doc</button>
+      </div>
       <div id="chat-messages" class="chat-messages"></div>
       <div class="chat-suggestions">
-        <button class="suggest-btn" data-msg="Summarize this document">Summarize</button>
-        <button class="suggest-btn" data-msg="What are the main points?">Main Points</button>
-        <button class="suggest-btn" data-msg="Find all important dates">Find Dates</button>
-        <button class="suggest-btn" data-msg="What are the weaknesses?">Weaknesses</button>
-        <button class="suggest-btn" data-msg="Create 10 questions from this document">Quiz Me</button>
-        <button class="suggest-btn" data-msg="Create an executive summary">Exec Summary</button>
+        <button class="suggest-btn" data-msg="Summarize the entire document into 5 executive bullet points">📋 Summarize</button>
+        <button class="suggest-btn" data-msg="Identify all key risks, liabilities, and potential contradictions in this document">⚖️ Risks &amp; Gaps</button>
+        <button class="suggest-btn" data-msg="Extract all deadlines, dates, and milestones mentioned in this text">📅 Dates &amp; Deadlines</button>
+        <button class="suggest-btn" data-msg="Create an actionable checklist of tasks and designated owners">🎯 Action Items</button>
+        <button class="suggest-btn" data-msg="Draft a 60-second executive briefing with key decisions required">⚡ Exec Brief</button>
+        <button class="suggest-btn" data-msg="Critique this document: what are its top 3 weaknesses and how to fix them?">🔍 Critical Review</button>
       </div>
       <div class="chat-input-row">
-        <textarea id="chat-input" placeholder="Ask about your document..." rows="2"></textarea>
-        <button id="btn-chat-send">➤</button>
+        <textarea id="chat-input" placeholder="Ask anything about your document..." rows="2"></textarea>
+        <button id="btn-chat-send" title="Send (Enter)">➤</button>
       </div>
     </div>
 
-    <!-- Tab: Tone -->
+    <!-- Tab: Tone & Writing DNA Studio -->
     <div class="tab-content" id="tab-tone">
-      <p class="hint">Select text, then choose a tone:</p>
+      <div class="doc-section-label">🎭 Instant Tone Shifter</div>
+      <p class="hint">Select text in your document, then click a tone to transform:</p>
       <div class="tone-grid">
         <button class="tone-btn" data-tone="professional">💼 Professional</button>
         <button class="tone-btn" data-tone="academic">🎓 Academic</button>
@@ -362,6 +418,40 @@
         <button class="tone-btn" data-tone="formal">📜 Formal</button>
         <button class="tone-btn" data-tone="casual">☕ Casual</button>
         <button class="tone-btn" data-tone="confident">💪 Confident</button>
+      </div>
+
+      <!-- Writing DNA Studio Card -->
+      <div class="dna-studio-card">
+        <div class="dna-studio-header">
+          <span class="dna-studio-title">🧬 Personal Writing DNA Studio</span>
+          <span class="dna-active-badge" id="dna-active-badge">Standard Voice</span>
+        </div>
+        <p class="hint" style="margin:4px 0 8px 0;">Clone your unique authorial style so all AI generations sound like you:</p>
+        <div class="dna-action-row">
+          <button id="btn-dna-extract-doc" class="primary-btn dna-btn">✨ Extract DNA from Document</button>
+          <button id="btn-dna-sample-toggle" class="small-btn dna-btn">📝 Paste Writing Sample</button>
+        </div>
+        <div id="dna-sample-input-box" class="dna-sample-input-box hidden">
+          <textarea id="dna-sample-text" placeholder="Paste 100-300 words of your past writing here..." rows="3"></textarea>
+          <button id="btn-dna-analyze-sample" class="primary-btn" style="width:100%;margin-top:4px;">Analyze Sample ➤</button>
+        </div>
+        <div id="dna-metrics-display" class="dna-metrics-display hidden">
+          <div class="dna-metric-row">
+            <span class="dna-metric-name">Formality Index:</span>
+            <span class="dna-metric-val" id="dna-formality-val">82% (Executive)</span>
+          </div>
+          <div class="dna-metric-row">
+            <span class="dna-metric-name">Sentence Rhythm:</span>
+            <span class="dna-metric-val" id="dna-rhythm-val">Mixed / Dynamic</span>
+          </div>
+          <div class="dna-metric-row">
+            <span class="dna-metric-name">Dominant Persona:</span>
+            <span class="dna-metric-val" id="dna-persona-val">Strategic Thought Leader</span>
+          </div>
+          <div class="dna-preview-instruction" id="dna-instruction-preview"></div>
+          <button id="btn-dna-reset" class="small-btn" style="margin-top:6px;width:100%;">Reset to Default</button>
+        </div>
+        <div id="dna-status" class="dna-status hidden"></div>
       </div>
     </div>
 
