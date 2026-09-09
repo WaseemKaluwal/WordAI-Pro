@@ -11,6 +11,9 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="WordAI Pro" />
   <Description DefaultValue="AI-powered writing assistant inside Microsoft Word" />
+  <IconUrl DefaultValue="https://waseemkaluwal.github.io/wordai-pro/assets/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://waseemkaluwal.github.io/wordai-pro/assets/icon-80.png" />
+  <SupportUrl DefaultValue="https://github.com/waseemkaluwal/wordai-pro" />
 
   <Hosts>
     <Host Name="Document" />

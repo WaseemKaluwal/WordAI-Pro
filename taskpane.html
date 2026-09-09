@@ -15,7 +15,8 @@
     <header>
       <div class="logo">⚡ WordAI Pro</div>
       <div style="display:flex;gap:4px">
-        <button id="btn-darkmode" class="icon-btn" title="Toggle Dark Mode">🌙</button>
+        <button id="btn-history" class="icon-btn" title="Prompt History &amp; Saved Outputs (Ctrl+Shift+H)">🕒</button>
+        <button id="btn-darkmode" class="icon-btn" title="Toggle Dark Mode (Ctrl+Shift+D)">🌙</button>
         <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
       </div>
     </header>
@@ -38,23 +39,268 @@
 
     <!-- Quick Actions -->
     <section class="quick-actions">
-      <button class="quick-btn" data-action="rewrite">✏️ Rewrite</button>
-      <button class="quick-btn" data-action="summarize">📄 Summarize</button>
-      <button class="quick-btn" data-action="improve">✨ Improve</button>
+      <button class="quick-btn" data-action="rewrite" title="Ctrl+Shift+R">✏️ Rewrite</button>
+      <button class="quick-btn" data-action="summarize" title="Ctrl+Shift+S">📄 Summarize</button>
+      <button class="quick-btn" data-action="improve" title="Ctrl+Shift+I">✨ Improve</button>
       <button class="quick-btn" data-action="translate">🌍 Translate</button>
       <button class="quick-btn" data-action="expand">➕ Expand</button>
       <button class="quick-btn" data-action="shorten">➖ Shorten</button>
+      <button class="quick-btn autocomplete-quick-btn" data-action="continue-writing" id="btn-continue-writing" title="Predicts and writes the next logical sentences">🔮 Continue Writing</button>
     </section>
 
-    <!-- Mode Tabs -->
+    <!-- Mode Tabs (Scrollable) -->
     <nav class="mode-tabs">
       <button class="tab active" data-tab="generate">✨ Generate</button>
       <button class="tab" data-tab="edit">📝 Edit</button>
+      <button class="tab" data-tab="research">🎓 Research</button>
+      <button class="tab" data-tab="templates">📚 Templates</button>
+      <button class="tab" data-tab="career">🎯 Career</button>
+      <button class="tab" data-tab="email">📧 Email</button>
+      <button class="tab" data-tab="social">📱 Social</button>
+      <button class="tab" data-tab="slides">🗣️ Slides</button>
       <button class="tab" data-tab="chat">🤖 Chat</button>
       <button class="tab" data-tab="tone">🎭 Tone</button>
-      <button class="tab" data-tab="research">🎓 Research</button>
       <button class="tab" data-tab="document">📁 Document</button>
     </nav>
+
+    <!-- Tab: Generate -->
+    <div class="tab-content active" id="tab-generate">
+      <div class="generate-grid">
+        <button class="gen-btn" data-prompt="Write a professional business email">📧 Email</button>
+        <button class="gen-btn" data-prompt="Write a comprehensive business report with executive summary">📊 Report</button>
+        <button class="gen-btn" data-prompt="Write a persuasive commercial project proposal">📋 Proposal</button>
+        <button class="gen-btn" data-prompt="Write a compelling job application cover letter">💼 Cover Letter</button>
+        <button class="gen-btn" data-prompt="Generate a structured multi-level outline">🗂️ Outline</button>
+        <button class="gen-btn" data-prompt="Write an engaging introductory section with a hook">🚀 Introduction</button>
+        <button class="gen-btn" data-prompt="Write an impactful concluding section with key takeaways">🏁 Conclusion</button>
+        <button class="gen-btn" data-prompt="Convert this text into clear bullet points">• Bullets</button>
+        <button class="gen-btn" data-prompt="Convert these bullets into cohesive narrative paragraphs">¶ Paragraphs</button>
+        <button class="gen-btn" data-prompt="Organize this information into a clean structured table">📊 Table</button>
+      </div>
+    </div>
+
+    <!-- Tab: Edit & Intelligence -->
+    <div class="tab-content" id="tab-edit">
+      <div class="edit-actions">
+        <button class="edit-btn" data-action="grammar">🔍 Check Grammar</button>
+        <button class="edit-btn" data-action="fix-all">⚡ Fix All Issues</button>
+        <button class="edit-btn" data-action="clarity">💡 Improve Clarity</button>
+        <button class="edit-btn" data-action="passive">🔄 Fix Passive Voice</button>
+        <button class="edit-btn" data-action="simplify">🧩 Simplify Language</button>
+        <button class="edit-btn" data-action="plagiarism">🚨 Plagiarism &amp; Originality Highlighter</button>
+        <button class="edit-btn" data-action="score">📈 Writing Score</button>
+        <button class="edit-btn" data-action="readinglevel">📊 Reading Level</button>
+        <button class="edit-btn" data-action="consistency">🔁 Consistency Check</button>
+        <button class="edit-btn" data-action="rewrite3">🔀 Rewrite (3 Versions)</button>
+        <button class="edit-btn" data-action="transitions">🌉 Transition Sentence Generator</button>
+        <button class="edit-btn" data-action="expander-evidence">➕ Expand with Evidence Slots</button>
+        <button class="edit-btn" data-action="jargon">🧩 Jargon Detector &amp; Plain English</button>
+        <button class="edit-btn" data-action="section-summarize">📑 Summarize by Section</button>
+        <button class="edit-btn" data-action="key-terms">🏷️ Key Terms Extractor</button>
+        <button class="edit-btn" data-action="action-items">✅ Action Items &amp; Tasks Extractor</button>
+        <button class="edit-btn" data-action="compare-evaluate">⚖️ Compare &amp; Evaluate Two Versions</button>
+        <button class="edit-btn" data-action="sentiment">🎭 Sentiment &amp; Tone Breakdown</button>
+        <button class="edit-btn" data-action="contract-scan">⚖️ Contract Risk Scanner</button>
+        <button class="edit-btn" data-action="reviewer2">🔬 Reviewer #2 Peer Review</button>
+        <button class="edit-btn" data-action="translate-sidebyside">🌍 Translate (Side-by-Side)</button>
+      </div>
+      <div id="grammar-results" class="results-box hidden"></div>
+      <div id="rewrite3-panel" class="rewrite3-panel hidden"></div>
+    </div>
+
+    <!-- Tab: Research Copilot -->
+    <div class="tab-content" id="tab-research">
+
+      <!-- Live Paper Search (Semantic Scholar API) -->
+      <div class="semantic-search-box">
+        <div class="doc-section-label">🔍 Live Academic Paper Search</div>
+        <div class="semantic-input-row">
+          <input type="text" id="semantic-search-input" placeholder="Search 200M+ real papers &amp; DOIs..." />
+          <button id="btn-semantic-search" class="primary-btn">Search</button>
+        </div>
+        <div id="semantic-results" class="semantic-results hidden"></div>
+      </div>
+
+      <!-- File Upload -->
+      <div class="upload-area" id="upload-area">
+        <input type="file" id="research-file-input" multiple
+          accept=".txt,.pdf,.doc,.docx,.rtf,.csv,.json,.xml,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.xlsx,.pptx" />
+        <label for="research-file-input" class="upload-label" id="upload-label">
+          📎 Upload files for AI context
+          <span class="upload-hint">PDF, Word, Image, TXT, CSV, JSON…</span>
+        </label>
+        <div id="upload-file-list" class="upload-file-list hidden"></div>
+        <button id="btn-clear-uploads" class="upload-clear hidden">✕ Clear files</button>
+      </div>
+
+      <div class="research-topic-row">
+        <input type="text" id="research-topic" placeholder="Enter your research topic..." />
+        <select id="research-citation-style">
+          <option value="APA">APA</option>
+          <option value="MLA">MLA</option>
+          <option value="Chicago">Chicago</option>
+          <option value="Harvard">Harvard</option>
+          <option value="IEEE">IEEE</option>
+        </select>
+      </div>
+      <div class="research-grid">
+        <button class="res-btn" data-action="ai-citation-finder">🔍 AI Citation Finder</button>
+        <button class="res-btn" data-action="gap-finder">🔬 Research Gap Finder</button>
+        <button class="res-btn" data-action="thesis-generator">💡 Thesis Generator</button>
+        <button class="res-btn" data-action="counter-argument">⚔️ Counter-Arguments</button>
+        <button class="res-btn" data-action="interview-questions">🎤 Interview Questions</button>
+        <button class="res-btn" data-action="survey-builder">📊 Survey Builder</button>
+        <button class="res-btn" data-action="planner">📋 Research Planner</button>
+        <button class="res-btn" data-action="litreview">📚 Literature Review</button>
+        <button class="res-btn" data-action="evidence">🔍 Evidence Matrix</button>
+        <button class="res-btn" data-action="argument">⚖️ Argument Checker</button>
+        <button class="res-btn" data-action="defense">🎤 Oral Defense Prep</button>
+        <button class="res-btn" data-action="abstract">📄 Write Abstract</button>
+        <button class="res-btn" data-action="methodology">🔬 Methodology</button>
+        <button class="res-btn" data-action="bibliography">📖 Bibliography</button>
+      </div>
+      <div class="research-hint">💡 Tip: Use "Entire Document" context for best results on existing drafts.</div>
+    </div>
+
+    <!-- Tab: Smart Templates Library -->
+    <div class="tab-content" id="tab-templates">
+      <div class="doc-section-label">📚 Pre-built Document Frameworks</div>
+      <p class="hint">1-click inserts a professional, fully structured document skeleton with headings directly into Word:</p>
+      <div class="template-list">
+        <div class="template-card">
+          <div class="template-info">
+            <div class="template-title">🎓 Academic Research Proposal</div>
+            <div class="template-desc">Title, Abstract, Background, Problem, Objectives, Methodology, Timeline &amp; References.</div>
+          </div>
+          <button class="small-btn primary-btn btn-insert-template" data-template="research-proposal">Insert ➕</button>
+        </div>
+        <div class="template-card">
+          <div class="template-info">
+            <div class="template-title">📖 Thesis / Dissertation Chapter</div>
+            <div class="template-desc">Chapter Overview, Theoretical Framework, Empirical Analysis, Critical Discussion &amp; Conclusion.</div>
+          </div>
+          <button class="small-btn primary-btn btn-insert-template" data-template="thesis-chapter">Insert ➕</button>
+        </div>
+        <div class="template-card">
+          <div class="template-info">
+            <div class="template-title">🔬 Scientific Lab Report</div>
+            <div class="template-desc">Objective, Theoretical Background, Apparatus, Procedure, Data Table, Calculations &amp; Error Analysis.</div>
+          </div>
+          <button class="small-btn primary-btn btn-insert-template" data-template="lab-report">Insert ➕</button>
+        </div>
+        <div class="template-card">
+          <div class="template-info">
+            <div class="template-title">💼 Comprehensive Business Plan</div>
+            <div class="template-desc">Executive Summary, Company Profile, Market &amp; Competitor Analysis, Marketing Strategy &amp; Financial Plan.</div>
+          </div>
+          <button class="small-btn primary-btn btn-insert-template" data-template="business-plan">Insert ➕</button>
+        </div>
+        <div class="template-card">
+          <div class="template-info">
+            <div class="template-title">📰 Official Press Release (AP Style)</div>
+            <div class="template-desc">Headline, Dateline, Hook Paragraph, Executive Quotes, Key Details, Boilerplate &amp; Media Contact.</div>
+          </div>
+          <button class="small-btn primary-btn btn-insert-template" data-template="press-release">Insert ➕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Career & Job Mode -->
+    <div class="tab-content" id="tab-career">
+      <div class="doc-section-label">🎯 Job Application &amp; Resume Suite</div>
+      <div class="career-grid">
+        <button class="career-btn" data-career="resume-bullet">⭐ Optimize Resume Bullet (XYZ Formula)</button>
+        <button class="career-btn" data-career="cover-letter-tailor">💼 Tailor Cover Letter to Job Description</button>
+        <button class="career-btn" data-career="linkedin-headline">✨ LinkedIn Headline &amp; About Section</button>
+        <button class="career-btn" data-career="star-answer">🎤 Behavioral Interview Answer (STAR Method)</button>
+        <button class="career-btn" data-career="salary-negotiate">💰 Salary Negotiation &amp; Counter-Offer</button>
+        <button class="career-btn" data-career="networking-inmail">🤝 Warm Networking InMail Pitch</button>
+      </div>
+    </div>
+
+    <!-- Tab: Social Media Mode -->
+    <div class="tab-content" id="tab-social">
+      <div class="doc-section-label">📱 Content Repurposing Suite</div>
+      <p class="hint">Transforms your document content into engaging social media content:</p>
+      <div class="social-grid">
+        <button class="social-btn" data-social="linkedin-post">👔 Professional LinkedIn Post (with Hook &amp; Tags)</button>
+        <button class="social-btn" data-social="twitter-thread">🧵 Viral Twitter / X Thread (Numbered)</button>
+        <button class="social-btn" data-social="instagram-caption">📸 Instagram / Threads Caption &amp; Hashtags</button>
+        <button class="social-btn" data-social="newsletter-blurb">📰 Newsletter TL;DR &amp; Takeaways</button>
+      </div>
+    </div>
+
+    <!-- Tab: Presentation / Slide Mode -->
+    <div class="tab-content" id="tab-slides">
+      <div class="doc-section-label">🗣️ Presentation Deck Outlines</div>
+      <p class="hint">Converts document sections into presentation slides with Speaker Notes:</p>
+      <div class="slides-grid">
+        <button class="slides-btn" data-slides="deck-8">📊 8-Slide PowerPoint Outline + Speaker Notes</button>
+        <button class="slides-btn" data-slides="deck-pitch">🚀 10-Slide Investor / Client Pitch Deck</button>
+        <button class="slides-btn" data-slides="deck-academic">🎓 12-Slide Academic Conference Presentation</button>
+        <button class="slides-btn" data-slides="deck-summary">⚡ 3-Slide Executive Lightning Brief</button>
+      </div>
+    </div>
+
+    <!-- Tab: Email -->
+    <div class="tab-content" id="tab-email">
+      <div class="doc-section-label">📧 Quick Email Templates</div>
+      <div class="email-grid">
+        <button class="email-btn" data-email="cold-outreach">🤝 Cold Outreach</button>
+        <button class="email-btn" data-email="executive-update">📊 Executive Update</button>
+        <button class="email-btn" data-email="meeting-recap">📝 Meeting Recap &amp; Actions</button>
+        <button class="email-btn" data-email="deadline-status">⏳ Project &amp; Deadline Status</button>
+        <button class="email-btn" data-email="polite-decline">❌ Polite Decline</button>
+        <button class="email-btn" data-email="formal-apology">🙇 Formal Apology</button>
+        <button class="email-btn" data-email="follow-up">🔔 Gentle Follow-up</button>
+        <button class="email-btn" data-email="introduction">👋 Warm Introduction</button>
+      </div>
+
+      <div class="doc-section-label" style="margin-top:12px;">💬 Email Reply Drafter</div>
+      <div class="reply-drafter-box">
+        <textarea id="reply-incoming-email" placeholder="Paste incoming email text here to draft a quick reply..." rows="3"></textarea>
+        <div class="reply-stance-label">Your Response Stance:</div>
+        <div class="reply-stance-grid">
+          <button class="stance-btn active" data-stance="accept">✅ Agree &amp; Accept</button>
+          <button class="stance-btn" data-stance="decline">❌ Polite Decline</button>
+          <button class="stance-btn" data-stance="clarify">❓ Request More Info</button>
+          <button class="stance-btn" data-stance="reschedule">📅 Reschedule</button>
+        </div>
+        <button id="btn-generate-reply" class="primary-btn" style="width:100%;margin-top:6px;">Draft Reply ➤</button>
+      </div>
+    </div>
+
+    <!-- Tab: Chat -->
+    <div class="tab-content" id="tab-chat">
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-suggestions">
+        <button class="suggest-btn" data-msg="Summarize this document">Summarize</button>
+        <button class="suggest-btn" data-msg="What are the main points?">Main Points</button>
+        <button class="suggest-btn" data-msg="Find all important dates">Find Dates</button>
+        <button class="suggest-btn" data-msg="What are the weaknesses?">Weaknesses</button>
+        <button class="suggest-btn" data-msg="Create 10 questions from this document">Quiz Me</button>
+        <button class="suggest-btn" data-msg="Create an executive summary">Exec Summary</button>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chat-input" placeholder="Ask about your document..." rows="2"></textarea>
+        <button id="btn-chat-send">➤</button>
+      </div>
+    </div>
+
+    <!-- Tab: Tone -->
+    <div class="tab-content" id="tab-tone">
+      <p class="hint">Select text, then choose a tone:</p>
+      <div class="tone-grid">
+        <button class="tone-btn" data-tone="professional">💼 Professional</button>
+        <button class="tone-btn" data-tone="academic">🎓 Academic</button>
+        <button class="tone-btn" data-tone="friendly">😊 Friendly</button>
+        <button class="tone-btn" data-tone="persuasive">🎯 Persuasive</button>
+        <button class="tone-btn" data-tone="simple">🧩 Simple</button>
+        <button class="tone-btn" data-tone="formal">📜 Formal</button>
+        <button class="tone-btn" data-tone="casual">☕ Casual</button>
+        <button class="tone-btn" data-tone="confident">💪 Confident</button>
+      </div>
+    </div>
 
     <!-- Tab: Document -->
     <div class="tab-content" id="tab-document">
@@ -261,6 +507,11 @@
 
       <!-- Sub: Layout -->
       <div class="doc-subpanel" id="subpanel-layout">
+        <div class="doc-section-label">🎓 1-Click Academic Standards</div>
+        <div class="doc-grid">
+          <button class="doc-btn" data-action="apa-format" style="background:#f0f4ff;border-color:#b4c6fc;color:var(--primary);font-weight:600;">🎓 APA 7th Format</button>
+          <button class="doc-btn" data-action="mla-format" style="background:#f0f4ff;border-color:#b4c6fc;color:var(--primary);font-weight:600;">📜 MLA 9th Format</button>
+        </div>
         <div class="doc-section-label">📐 Page Orientation</div>
         <div class="doc-grid">
           <button class="doc-btn" data-action="page-portrait">📄 Portrait</button>
@@ -304,109 +555,13 @@
       <div id="doc-status" class="doc-status hidden"></div>
     </div>
 
-    <!-- Tab: Generate -->
-    <div class="tab-content active" id="tab-generate">
-      <div class="generate-grid">
-        <button class="gen-btn" data-prompt="Write a professional email">📧 Email</button>
-        <button class="gen-btn" data-prompt="Write a business report">📊 Report</button>
-        <button class="gen-btn" data-prompt="Write a proposal">📋 Proposal</button>
-        <button class="gen-btn" data-prompt="Write a cover letter">💼 Cover Letter</button>
-        <button class="gen-btn" data-prompt="Generate an outline">🗂️ Outline</button>
-        <button class="gen-btn" data-prompt="Write an introduction">🚀 Introduction</button>
-        <button class="gen-btn" data-prompt="Write a conclusion">🏁 Conclusion</button>
-        <button class="gen-btn" data-prompt="Convert to bullet points">• Bullets</button>
-        <button class="gen-btn" data-prompt="Convert bullets to paragraphs">¶ Paragraphs</button>
-        <button class="gen-btn" data-prompt="Generate a table from this text">📊 Table</button>
-      </div>
-    </div>
-
-    <!-- Tab: Edit -->
-    <div class="tab-content" id="tab-edit">
-      <div class="edit-actions">
-        <button class="edit-btn" data-action="grammar">🔍 Check Grammar</button>
-        <button class="edit-btn" data-action="fix-all">⚡ Fix All Issues</button>
-        <button class="edit-btn" data-action="clarity">💡 Improve Clarity</button>
-        <button class="edit-btn" data-action="passive">🔄 Fix Passive Voice</button>
-        <button class="edit-btn" data-action="simplify">🧩 Simplify Language</button>
-        <button class="edit-btn" data-action="score">📈 Writing Score</button>
-        <button class="edit-btn" data-action="readinglevel">📊 Reading Level</button>
-      </div>
-      <div id="grammar-results" class="results-box hidden"></div>
-    </div>
-
-    <!-- Tab: Chat -->
-    <div class="tab-content" id="tab-chat">
-      <div id="chat-messages" class="chat-messages"></div>
-      <div class="chat-suggestions">
-        <button class="suggest-btn" data-msg="Summarize this document">Summarize</button>
-        <button class="suggest-btn" data-msg="What are the main points?">Main Points</button>
-        <button class="suggest-btn" data-msg="Find all important dates">Find Dates</button>
-        <button class="suggest-btn" data-msg="What are the weaknesses?">Weaknesses</button>
-        <button class="suggest-btn" data-msg="Create 10 questions from this document">Quiz Me</button>
-        <button class="suggest-btn" data-msg="Create an executive summary">Exec Summary</button>
-      </div>
-      <div class="chat-input-row">
-        <textarea id="chat-input" placeholder="Ask about your document..." rows="2"></textarea>
-        <button id="btn-chat-send">➤</button>
-      </div>
-    </div>
-
-    <!-- Tab: Tone -->
-    <div class="tab-content" id="tab-tone">
-      <p class="hint">Select text, then choose a tone:</p>
-      <div class="tone-grid">
-        <button class="tone-btn" data-tone="professional">💼 Professional</button>
-        <button class="tone-btn" data-tone="academic">🎓 Academic</button>
-        <button class="tone-btn" data-tone="friendly">😊 Friendly</button>
-        <button class="tone-btn" data-tone="persuasive">🎯 Persuasive</button>
-        <button class="tone-btn" data-tone="simple">🧩 Simple</button>
-        <button class="tone-btn" data-tone="formal">📜 Formal</button>
-        <button class="tone-btn" data-tone="casual">☕ Casual</button>
-        <button class="tone-btn" data-tone="confident">💪 Confident</button>
-      </div>
-    </div>
-
-    <!-- Tab: Research -->
-    <div class="tab-content" id="tab-research">
-
-      <!-- File Upload -->
-      <div class="upload-area" id="upload-area">
-        <input type="file" id="research-file-input" multiple
-          accept=".txt,.pdf,.doc,.docx,.rtf,.csv,.json,.xml,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.xlsx,.pptx" />
-        <label for="research-file-input" class="upload-label" id="upload-label">
-          📎 Upload files for AI context
-          <span class="upload-hint">PDF, Word, Image, TXT, CSV, JSON…</span>
-        </label>
-        <div id="upload-file-list" class="upload-file-list hidden"></div>
-        <button id="btn-clear-uploads" class="upload-clear hidden">✕ Clear files</button>
-      </div>
-
-      <div class="research-topic-row">
-        <input type="text" id="research-topic" placeholder="Enter your research topic..." />
-        <select id="research-citation-style">
-          <option value="APA">APA</option>
-          <option value="MLA">MLA</option>
-          <option value="Chicago">Chicago</option>
-          <option value="Harvard">Harvard</option>
-          <option value="IEEE">IEEE</option>
-        </select>
-      </div>
-      <div class="research-grid">
-        <button class="res-btn" data-action="planner">📋 Research Planner</button>
-        <button class="res-btn" data-action="litreview">📚 Literature Review</button>
-        <button class="res-btn" data-action="evidence">🔍 Evidence Matrix</button>
-        <button class="res-btn" data-action="argument">⚖️ Argument Checker</button>
-        <button class="res-btn" data-action="defense">🎤 Oral Defense Prep</button>
-        <button class="res-btn" data-action="abstract">📄 Write Abstract</button>
-        <button class="res-btn" data-action="methodology">🔬 Methodology</button>
-        <button class="res-btn" data-action="bibliography">📖 Bibliography</button>
-      </div>
-      <div class="research-hint">💡 Tip: Use "Entire Document" context for best results on existing drafts.</div>
-    </div>
-
     <!-- Prompt Box (shared) -->
     <section class="prompt-section">
-      <textarea id="main-prompt" placeholder="Ask anything or describe what to generate..." rows="3"></textarea>
+      <div class="prompt-input-wrapper">
+        <textarea id="main-prompt" placeholder="Ask anything or describe what to generate..." rows="3"></textarea>
+        <button id="btn-dictate" class="icon-btn dictate-btn" title="Voice Dictation (Speech-to-Text)">🎙️</button>
+      </div>
+      <div id="dictation-status" class="dictation-status hidden">🔴 Listening... speak now</div>
       <div class="prompt-actions">
         <select id="context-select">
           <option value="selection">Selected Text</option>
@@ -417,10 +572,17 @@
       </div>
     </section>
 
-    <!-- Output Preview -->
+    <!-- Output Preview, Redline Diff & Side-by-Side -->
     <section id="output-section" class="hidden">
       <div class="output-header">
-        <span>AI Response</span>
+        <div class="output-header-left">
+          <span>AI Response</span>
+          <div class="output-view-toggle">
+            <button id="btn-view-preview" class="view-toggle-btn active">Preview</button>
+            <button id="btn-view-diff" class="view-toggle-btn">Redline Diff</button>
+            <button id="btn-view-sidebyside" class="view-toggle-btn">Side-by-Side</button>
+          </div>
+        </div>
         <div>
           <button id="btn-insert" class="small-btn">Insert ✅</button>
           <button id="btn-replace" class="small-btn">Replace 🔄</button>
@@ -429,12 +591,65 @@
         </div>
       </div>
       <div id="output-text" class="output-text"></div>
+      <div id="output-diff" class="output-text output-diff hidden"></div>
+      <div id="output-sidebyside" class="output-text output-sidebyside hidden">
+        <div class="sidebyside-col">
+          <div class="sidebyside-label">Original Document Context</div>
+          <div id="sidebyside-original" class="sidebyside-content"></div>
+        </div>
+        <div class="sidebyside-col">
+          <div class="sidebyside-label">AI Generated Output</div>
+          <div id="sidebyside-output" class="sidebyside-content"></div>
+        </div>
+      </div>
     </section>
 
     <!-- Loading -->
     <div id="loading" class="loading hidden">
       <div class="spinner"></div>
       <span>Thinking...</span>
+    </div>
+
+    <!-- History & Presets Off-Canvas Drawer -->
+    <div id="history-drawer" class="panel hidden">
+      <div class="panel-header">
+        <h3>🕒 History &amp; Saved Outputs</h3>
+        <button id="btn-close-history" class="icon-btn">✕</button>
+      </div>
+      <div class="drawer-subtabs">
+        <button class="drawer-subtab active" data-dtab="history">Prompt History</button>
+        <button class="drawer-subtab" data-dtab="presets">Custom Presets</button>
+        <button class="drawer-subtab" data-dtab="saved">Auto-Saved Outputs</button>
+      </div>
+
+      <!-- Drawer Panel: Prompt History -->
+      <div class="drawer-panel active" id="dpanel-history">
+        <div class="drawer-header-row">
+          <span class="hint">Last 20 used prompts (click to load):</span>
+          <button id="btn-clear-history" class="small-btn danger" style="font-size:10px;padding:2px 6px;">Clear</button>
+        </div>
+        <div id="history-list" class="drawer-item-list"></div>
+      </div>
+
+      <!-- Drawer Panel: Custom Presets -->
+      <div class="drawer-panel" id="dpanel-presets">
+        <div class="preset-create-row">
+          <input type="text" id="preset-name-input" placeholder="Preset name (e.g. Professor Style)" />
+          <textarea id="preset-prompt-input" placeholder="Prompt instruction..." rows="2"></textarea>
+          <button id="btn-save-preset" class="primary-btn" style="width:100%;">Save Custom Preset ⭐</button>
+        </div>
+        <div class="doc-section-label" style="margin-top:10px;">Saved Presets</div>
+        <div id="presets-list" class="drawer-item-list"></div>
+      </div>
+
+      <!-- Drawer Panel: Saved Outputs -->
+      <div class="drawer-panel" id="dpanel-saved">
+        <div class="drawer-header-row">
+          <span class="hint">Session output log (last 30 responses):</span>
+          <button id="btn-clear-saved" class="small-btn danger" style="font-size:10px;padding:2px 6px;">Clear</button>
+        </div>
+        <div id="saved-outputs-list" class="drawer-item-list"></div>
+      </div>
     </div>
 
     <!-- Settings Panel -->
@@ -456,6 +671,18 @@
       <select id="model-select" style="width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;font-size:12.5px;outline:none;background:var(--bg);margin-bottom:4px;"><option value="">— click Fetch Models —</option></select>
       <button id="btn-fetch-models" class="primary-btn" style="width:100%;margin-bottom:4px;">🔄 Fetch Models</button>
       <div id="fetch-status" style="font-size:11px;color:var(--muted);min-height:16px;"></div>
+
+      <label>Brand Voice / Writing Persona</label>
+      <select id="persona-select">
+        <option value="standard">Standard Professional</option>
+        <option value="academic">Academic Scholar (Rigorous &amp; Formal)</option>
+        <option value="executive">Executive / Concise (Direct &amp; High-Impact)</option>
+        <option value="creative">Creative &amp; Storytelling (Engaging)</option>
+        <option value="custom">Custom Learned Persona</option>
+      </select>
+      <button id="btn-extract-voice" class="small-btn" style="width:100%;margin-bottom:4px;padding:6px;">✨ Learn Voice from Document</button>
+      <div id="voice-status" style="font-size:11px;color:var(--muted);min-height:16px;"></div>
+
       <label>Language</label>
       <select id="language-select">
         <option value="English">English</option>
@@ -472,7 +699,15 @@
         <span>Tokens used: <strong id="token-count">0</strong></span>
         <button id="btn-reset-tokens" class="small-btn">Reset</button>
       </div>
-      <button id="btn-save-settings" class="primary-btn">Save Settings</button>
+      <div class="keyboard-shortcuts-box">
+        <div class="doc-section-label" style="margin-top:0;">⌨️ Global Keyboard Shortcuts</div>
+        <div class="shortcut-row"><span>Rewrite Selection</span><kbd>Ctrl+Shift+R</kbd></div>
+        <div class="shortcut-row"><span>Summarize Selection</span><kbd>Ctrl+Shift+S</kbd></div>
+        <div class="shortcut-row"><span>Improve Selection</span><kbd>Ctrl+Shift+I</kbd></div>
+        <div class="shortcut-row"><span>Toggle Dark Mode</span><kbd>Ctrl+Shift+D</kbd></div>
+        <div class="shortcut-row"><span>History &amp; Presets</span><kbd>Ctrl+Shift+H</kbd></div>
+      </div>
+      <button id="btn-save-settings" class="primary-btn" style="margin-top:6px;">Save Settings</button>
     </div>
 
   </div>
