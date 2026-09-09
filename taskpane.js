@@ -86,6 +86,12 @@ async function runAI(systemPrompt, userContent) {
 function updateTokenDisplay() {
   const el = document.getElementById('token-count');
   if (el) el.textContent = localStorage.getItem('wordai_tokens') || '0';
+  const working = localStorage.getItem('wordai_working_model');
+  const model = localStorage.getItem('wordai_model');
+  const status = document.getElementById('fetch-status');
+  if (status && model === '__auto__' && working) {
+    status.textContent = `⚡ Using: ${working}`;
+  }
 }
 
 function showError(msg) {
@@ -398,9 +404,10 @@ function bindSettings() {
     const select = document.getElementById('model-select');
     select.innerHTML = '';
     if (models.length === 0) {
-      select.innerHTML = '<option value="">No models found — check your API key</option>';
+      select.innerHTML = '<option value="__auto__">🤖 Auto (fallback)</option><option value="">No models found — check your API key</option>';
       status.textContent = '❌ Could not load models.';
     } else {
+      select.innerHTML = '<option value="__auto__">🤖 Auto (try best available)</option>';
       models.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m; opt.textContent = m;
@@ -442,9 +449,12 @@ function loadSettings() {
   document.getElementById('language-select').value = lang;
 
   const select = document.getElementById('model-select');
-  select.innerHTML = model
-    ? `<option value="${model}">${model}</option>`
-    : '<option value="">— click Fetch Models —</option>';
-  if (model) select.value = model;
+  if (model && model !== '__auto__') {
+    select.innerHTML = `<option value="__auto__">🤖 Auto (try best available)</option><option value="${model}">${model}</option>`;
+    select.value = model;
+  } else {
+    select.innerHTML = '<option value="__auto__">🤖 Auto (try best available)</option>';
+    select.value = '__auto__';
+  }
   updateTokenDisplay();
 }

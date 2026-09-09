@@ -47,42 +47,61 @@ const AIProvider = (() => {
     },
   };
 
+  const FALLBACKS = {
+    openai:     ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'],
+    gemini:     ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'],
+    groq:       ['llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'gemma2-9b-it'],
+    openrouter: ['openai/gpt-4o', 'openai/gpt-4o-mini', 'google/gemini-flash-1.5', 'meta-llama/llama-3-70b-instruct'],
+  };
+
+  async function callModel(p, model, apiKey, messages) {
+    const url = typeof p.url === 'function' ? p.url(model, apiKey) : p.url;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: p.buildHeaders(apiKey),
+      body: JSON.stringify(p.buildBody(model, messages)),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${res.status}`);
+    }
+    const data = await res.json();
+    return { text: p.extractText(data), tokens: p.extractTokens(data) };
+  }
+
   async function call(messages) {
     const providerName = localStorage.getItem('wordai_provider') || 'openai';
     const apiKey = localStorage.getItem('wordai_api_key') || '';
-    const customModel = localStorage.getItem('wordai_model') || '';
+    const savedModel = localStorage.getItem('wordai_model') || '';
 
     if (!apiKey) throw new Error('No API key set. Open Settings ⚙️ to add your key.');
 
     const p = PROVIDERS[providerName];
     if (!p) throw new Error(`Unknown provider: ${providerName}`);
 
-    const model = customModel || p.defaultModel;
+    // Build model list to try: saved/default first, then fallbacks
+    const isAuto = savedModel === '__auto__' || !savedModel;
+    const fallbacks = FALLBACKS[providerName] || [];
+    const modelsToTry = isAuto
+      ? fallbacks
+      : [savedModel, ...fallbacks.filter(m => m !== savedModel)];
 
-    let url = typeof p.url === 'function' ? p.url(model, apiKey) : p.url;
-    const headers = p.buildHeaders(apiKey);
-    const body = p.buildBody(model, messages);
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `API error ${res.status}`);
+    let lastError;
+    for (const model of modelsToTry) {
+      try {
+        const { text, tokens } = await callModel(p, model, apiKey, messages);
+        // If auto mode and model changed, persist the working model
+        if (isAuto) localStorage.setItem('wordai_working_model', model);
+        const prev = parseInt(localStorage.getItem('wordai_tokens') || '0', 10);
+        localStorage.setItem('wordai_tokens', prev + tokens);
+        return { text, tokens, model };
+      } catch (err) {
+        lastError = err;
+        // Only fallback on model-not-found or quota errors, not auth errors
+        if (err.message.includes('401') || err.message.includes('API key')) throw err;
+      }
     }
-
-    const data = await res.json();
-    const text = p.extractText(data);
-    const tokens = p.extractTokens(data);
-
-    // Track token usage
-    const prev = parseInt(localStorage.getItem('wordai_tokens') || '0', 10);
-    localStorage.setItem('wordai_tokens', prev + tokens);
-
-    return { text, tokens };
+    throw new Error(`All models failed. Last error: ${lastError?.message}`);
   }
 
   async function fetchModels(providerName, apiKey) {
