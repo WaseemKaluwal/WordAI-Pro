@@ -1,0 +1,84 @@
+// ai-provider.js — Multi-provider AI layer
+
+const AIProvider = (() => {
+
+  const PROVIDERS = {
+    openai: {
+      url: 'https://api.openai.com/v1/chat/completions',
+      defaultModel: 'gpt-4o',
+      buildBody: (model, messages) => ({ model, messages, temperature: 0.7 }),
+      buildHeaders: (key) => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }),
+      extractText: (data) => data.choices[0].message.content,
+      extractTokens: (data) => data.usage?.total_tokens || 0,
+    },
+    gemini: {
+      url: (model, key) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      defaultModel: 'gemini-1.5-flash',
+      buildBody: (model, messages) => ({
+        contents: messages.map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }]
+        }))
+      }),
+      buildHeaders: () => ({ 'Content-Type': 'application/json' }),
+      extractText: (data) => data.candidates[0].content.parts[0].text,
+      extractTokens: (data) => (data.usageMetadata?.totalTokenCount) || 0,
+    },
+    openrouter: {
+      url: 'https://openrouter.ai/api/v1/chat/completions',
+      defaultModel: 'openai/gpt-4o',
+      buildBody: (model, messages) => ({ model, messages }),
+      buildHeaders: (key) => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }),
+      extractText: (data) => data.choices[0].message.content,
+      extractTokens: (data) => data.usage?.total_tokens || 0,
+    },
+    groq: {
+      url: 'https://api.groq.com/openai/v1/chat/completions',
+      defaultModel: 'llama3-70b-8192',
+      buildBody: (model, messages) => ({ model, messages, temperature: 0.7 }),
+      buildHeaders: (key) => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` }),
+      extractText: (data) => data.choices[0].message.content,
+      extractTokens: (data) => data.usage?.total_tokens || 0,
+    },
+  };
+
+  async function call(messages) {
+    const providerName = localStorage.getItem('wordai_provider') || 'openai';
+    const apiKey = localStorage.getItem('wordai_api_key') || '';
+    const customModel = localStorage.getItem('wordai_model') || '';
+
+    if (!apiKey) throw new Error('No API key set. Open Settings ⚙️ to add your key.');
+
+    const p = PROVIDERS[providerName];
+    if (!p) throw new Error(`Unknown provider: ${providerName}`);
+
+    const model = customModel || p.defaultModel;
+
+    let url = typeof p.url === 'function' ? p.url(model, apiKey) : p.url;
+    const headers = p.buildHeaders(apiKey);
+    const body = p.buildBody(model, messages);
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = p.extractText(data);
+    const tokens = p.extractTokens(data);
+
+    // Track token usage
+    const prev = parseInt(localStorage.getItem('wordai_tokens') || '0', 10);
+    localStorage.setItem('wordai_tokens', prev + tokens);
+
+    return { text, tokens };
+  }
+
+  return { call };
+})();

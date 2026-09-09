@@ -1,0 +1,15 @@
+{
+  "name": "wordai-pro",
+  "version": "1.0.0",
+  "description": "AI-powered Microsoft Word add-in",
+  "scripts": {
+    "start": "office-addin-debugging start manifest.xml desktop --app word",
+    "stop": "office-addin-debugging stop manifest.xml",
+    "validate": "office-addin-manifest validate manifest.xml"
+  },
+  "devDependencies": {
+    "office-addin-debugging": "^1.8.0",
+    "office-addin-manifest": "^1.7.0",
+    "office-addin-dev-certs": "^1.8.0"
+  }
+}

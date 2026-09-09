@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WordAI Pro</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <link rel="stylesheet" href="taskpane.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Header -->
+    <header>
+      <div class="logo">⚡ WordAI Pro</div>
+      <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
+    </header>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <button class="quick-btn" data-action="rewrite">✏️ Rewrite</button>
+      <button class="quick-btn" data-action="summarize">📄 Summarize</button>
+      <button class="quick-btn" data-action="improve">✨ Improve</button>
+      <button class="quick-btn" data-action="translate">🌍 Translate</button>
+      <button class="quick-btn" data-action="expand">➕ Expand</button>
+      <button class="quick-btn" data-action="shorten">➖ Shorten</button>
+    </section>
+
+    <!-- Mode Tabs -->
+    <nav class="mode-tabs">
+      <button class="tab active" data-tab="generate">✨ Generate</button>
+      <button class="tab" data-tab="edit">📝 Edit</button>
+      <button class="tab" data-tab="chat">🤖 Chat</button>
+      <button class="tab" data-tab="tone">🎭 Tone</button>
+      <button class="tab" data-tab="research">🎓 Research</button>
+    </nav>
+
+    <!-- Tab: Generate -->
+    <div class="tab-content active" id="tab-generate">
+      <div class="generate-grid">
+        <button class="gen-btn" data-prompt="Write a professional email">📧 Email</button>
+        <button class="gen-btn" data-prompt="Write a business report">📊 Report</button>
+        <button class="gen-btn" data-prompt="Write a proposal">📋 Proposal</button>
+        <button class="gen-btn" data-prompt="Write a cover letter">💼 Cover Letter</button>
+        <button class="gen-btn" data-prompt="Generate an outline">🗂️ Outline</button>
+        <button class="gen-btn" data-prompt="Write an introduction">🚀 Introduction</button>
+        <button class="gen-btn" data-prompt="Write a conclusion">🏁 Conclusion</button>
+        <button class="gen-btn" data-prompt="Convert to bullet points">• Bullets</button>
+        <button class="gen-btn" data-prompt="Convert bullets to paragraphs">¶ Paragraphs</button>
+        <button class="gen-btn" data-prompt="Generate a table from this text">📊 Table</button>
+      </div>
+    </div>
+
+    <!-- Tab: Edit -->
+    <div class="tab-content" id="tab-edit">
+      <div class="edit-actions">
+        <button class="edit-btn" data-action="grammar">🔍 Check Grammar</button>
+        <button class="edit-btn" data-action="fix-all">⚡ Fix All Issues</button>
+        <button class="edit-btn" data-action="clarity">💡 Improve Clarity</button>
+        <button class="edit-btn" data-action="passive">🔄 Fix Passive Voice</button>
+        <button class="edit-btn" data-action="simplify">🧩 Simplify Language</button>
+        <button class="edit-btn" data-action="score">📈 Writing Score</button>
+      </div>
+      <div id="grammar-results" class="results-box hidden"></div>
+    </div>
+
+    <!-- Tab: Chat -->
+    <div class="tab-content" id="tab-chat">
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-suggestions">
+        <button class="suggest-btn" data-msg="Summarize this document">Summarize</button>
+        <button class="suggest-btn" data-msg="What are the main points?">Main Points</button>
+        <button class="suggest-btn" data-msg="Find all important dates">Find Dates</button>
+        <button class="suggest-btn" data-msg="What are the weaknesses?">Weaknesses</button>
+        <button class="suggest-btn" data-msg="Create 10 questions from this document">Quiz Me</button>
+        <button class="suggest-btn" data-msg="Create an executive summary">Exec Summary</button>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chat-input" placeholder="Ask about your document..." rows="2"></textarea>
+        <button id="btn-chat-send">➤</button>
+      </div>
+    </div>
+
+    <!-- Tab: Tone -->
+    <div class="tab-content" id="tab-tone">
+      <p class="hint">Select text, then choose a tone:</p>
+      <div class="tone-grid">
+        <button class="tone-btn" data-tone="professional">💼 Professional</button>
+        <button class="tone-btn" data-tone="academic">🎓 Academic</button>
+        <button class="tone-btn" data-tone="friendly">😊 Friendly</button>
+        <button class="tone-btn" data-tone="persuasive">🎯 Persuasive</button>
+        <button class="tone-btn" data-tone="simple">🧩 Simple</button>
+        <button class="tone-btn" data-tone="formal">📜 Formal</button>
+        <button class="tone-btn" data-tone="casual">☕ Casual</button>
+        <button class="tone-btn" data-tone="confident">💪 Confident</button>
+      </div>
+    </div>
+
+    <!-- Tab: Research -->
+    <div class="tab-content" id="tab-research">
+      <div class="research-topic-row">
+        <input type="text" id="research-topic" placeholder="Enter your research topic..." />
+        <select id="research-citation-style">
+          <option value="APA">APA</option>
+          <option value="MLA">MLA</option>
+          <option value="Chicago">Chicago</option>
+          <option value="Harvard">Harvard</option>
+          <option value="IEEE">IEEE</option>
+        </select>
+      </div>
+      <div class="research-grid">
+        <button class="res-btn" data-action="planner">📋 Research Planner</button>
+        <button class="res-btn" data-action="litreview">📚 Literature Review</button>
+        <button class="res-btn" data-action="evidence">🔍 Evidence Matrix</button>
+        <button class="res-btn" data-action="argument">⚖️ Argument Checker</button>
+        <button class="res-btn" data-action="defense">🎤 Oral Defense Prep</button>
+        <button class="res-btn" data-action="abstract">📄 Write Abstract</button>
+        <button class="res-btn" data-action="methodology">🔬 Methodology</button>
+        <button class="res-btn" data-action="bibliography">📖 Bibliography</button>
+      </div>
+      <div class="research-hint">💡 Tip: Use "Entire Document" context for best results on existing drafts.</div>
+    </div>
+
+    <!-- Prompt Box (shared) -->
+    <section class="prompt-section">
+      <textarea id="main-prompt" placeholder="Ask anything or describe what to generate..." rows="3"></textarea>
+      <div class="prompt-actions">
+        <select id="context-select">
+          <option value="selection">Selected Text</option>
+          <option value="document">Entire Document</option>
+          <option value="none">No Context</option>
+        </select>
+        <button id="btn-generate" class="primary-btn">Generate ➤</button>
+      </div>
+    </section>
+
+    <!-- Output Preview -->
+    <section id="output-section" class="hidden">
+      <div class="output-header">
+        <span>AI Response</span>
+        <div>
+          <button id="btn-insert" class="small-btn">Insert ✅</button>
+          <button id="btn-replace" class="small-btn">Replace 🔄</button>
+          <button id="btn-copy" class="small-btn">Copy 📋</button>
+          <button id="btn-discard" class="small-btn danger">✕</button>
+        </div>
+      </div>
+      <div id="output-text" class="output-text"></div>
+    </section>
+
+    <!-- Loading -->
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <span>Thinking...</span>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="panel hidden">
+      <div class="panel-header">
+        <h3>Settings</h3>
+        <button id="btn-close-settings" class="icon-btn">✕</button>
+      </div>
+      <label>AI Provider</label>
+      <select id="provider-select">
+        <option value="openai">OpenAI (GPT-4)</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="openrouter">OpenRouter</option>
+        <option value="groq">Groq</option>
+      </select>
+      <label>API Key</label>
+      <input type="password" id="api-key-input" placeholder="Paste your API key..." />
+      <label id="model-label">Model (optional)</label>
+      <input type="text" id="model-input" placeholder="e.g. gpt-4o, gemini-1.5-pro" />
+      <label>Language</label>
+      <select id="language-select">
+        <option value="English">English</option>
+        <option value="Urdu">Urdu</option>
+        <option value="Roman Urdu">Roman Urdu</option>
+        <option value="Arabic">Arabic</option>
+        <option value="Spanish">Spanish</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Hindi">Hindi</option>
+      </select>
+      <div class="usage-box">
+        <span>Tokens used: <strong id="token-count">0</strong></span>
+        <button id="btn-reset-tokens" class="small-btn">Reset</button>
+      </div>
+      <button id="btn-save-settings" class="primary-btn">Save Settings</button>
+    </div>
+
+  </div>
+
+  <script src="ai-provider.js"></script>
+  <script src="taskpane.js"></script>
+</body>
+</html>
