@@ -30,6 +30,7 @@ function initApp() {
   bindHistoryDrawer();
   bindKeyboardShortcuts();
   bindInstantSelectionCopilot();
+  bindPromptsLibrary();
 }
 
 if (typeof Office !== 'undefined') {
@@ -130,29 +131,119 @@ let currentSelectedBodyText = '';
 let lastReplacedOriginalText = '';
 let isInstantProcessing = false;
 let selectionPollInterval = null;
+let copilotDialog = null;
 
 function bindInstantSelectionCopilot() {
-  const bar = document.getElementById('instant-selection-bar');
+  const launcher = document.getElementById('instant-copilot-launcher');
+  const launcherSubtitle = document.getElementById('launcher-status-text');
+  const openModalBtn = document.getElementById('btn-open-popup-modal');
+  const openFloatBtn = document.getElementById('btn-open-float-dialog');
+  const modalPopoutBtn = document.getElementById('btn-modal-popout');
+
+  const modal = document.getElementById('instant-popup-modal');
+  const backdrop = document.getElementById('instant-popup-backdrop');
   const countBadge = document.getElementById('instant-sel-count');
   const snippet = document.getElementById('instant-sel-snippet');
   const input = document.getElementById('instant-instruction-input');
   const execBtn = document.getElementById('btn-instant-exec');
   const undoBtn = document.getElementById('btn-instant-undo');
-  const closeBtn = document.getElementById('btn-close-instant-bar');
+  const closeBtn = document.getElementById('btn-close-popup-modal');
   const statusEl = document.getElementById('instant-status');
-  if (!bar) return;
+
+  if (!launcher || !modal) return;
+
+  // Window/taskpane focus & hover triggers for instant selection capture
+  window.addEventListener('focus', () => checkWordSelection(false));
+  document.addEventListener('mouseenter', () => checkWordSelection(false));
 
   if (typeof Word !== 'undefined') {
     Word.run(async (context) => {
-      context.document.onSelectionChanged.add(checkWordSelection);
-      await context.sync();
+      if (context.document && context.document.onSelectionChanged) {
+        context.document.onSelectionChanged.add(() => checkWordSelection(false));
+        await context.sync();
+      }
     }).catch(() => {});
 
     clearInterval(selectionPollInterval);
-    selectionPollInterval = setInterval(checkWordSelection, 2000);
+    selectionPollInterval = setInterval(() => checkWordSelection(false), 380);
   }
 
-  async function checkWordSelection() {
+  window.openInstantPopupModal = async function() {
+    await checkWordSelection(false);
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 60);
+  };
+
+  window.closeInstantPopupModal = function() {
+    modal.classList.add('hidden');
+  };
+
+  window.openFloatingCopilotDialog = function() {
+    if (typeof Office === 'undefined' || !Office.context || !Office.context.ui || !Office.context.ui.displayDialogAsync) {
+      openInstantPopupModal();
+      return;
+    }
+
+    if (copilotDialog) {
+      try { copilotDialog.close(); } catch (_) {}
+      copilotDialog = null;
+    }
+
+    const currentUrl = window.location.href;
+    const dialogUrl = new URL('popup-copilot.html', currentUrl).href;
+
+    Office.context.ui.displayDialogAsync(
+      dialogUrl,
+      { height: 44, width: 34, displayInIframe: false, promptBeforeOpen: false },
+      (asyncResult) => {
+        if (asyncResult.status === Office.AsyncResultStatus.Failed) {
+          openInstantPopupModal();
+          return;
+        }
+        copilotDialog = asyncResult.value;
+        copilotDialog.addEventHandler(Office.EventType.DialogMessageReceived, onCopilotDialogMessage);
+        copilotDialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
+          copilotDialog = null;
+        });
+
+        setTimeout(() => {
+          sendSelectionToCopilotDialog(currentSelectedBodyText);
+        }, 600);
+      }
+    );
+  };
+
+  function sendSelectionToCopilotDialog(text) {
+    if (copilotDialog) {
+      try {
+        copilotDialog.messageChild(JSON.stringify({ type: 'selection', text: text || '' }));
+      } catch (_) {}
+    }
+  }
+
+  async function onCopilotDialogMessage(arg) {
+    try {
+      const data = JSON.parse(arg.message);
+      if (data.type === 'ready') {
+        sendSelectionToCopilotDialog(currentSelectedBodyText);
+      } else if (data.type === 'directReplace') {
+        if (data.text) currentSelectedBodyText = data.text;
+        await runDirectReplace(data.actionType, data.instruction);
+        if (copilotDialog) {
+          copilotDialog.messageChild(JSON.stringify({ type: 'status', msg: '✅ Replaced in Word body!', isError: false }));
+        }
+      }
+    } catch (err) {
+      if (copilotDialog) {
+        copilotDialog.messageChild(JSON.stringify({ type: 'status', msg: `❌ ${err.message}`, isError: true }));
+      }
+    }
+  }
+
+  async function checkWordSelection(forceOpen = false) {
     if (isInstantProcessing || typeof Word === 'undefined') return;
     try {
       await Word.run(async (context) => {
@@ -160,12 +251,26 @@ function bindInstantSelectionCopilot() {
         selection.load('text');
         await context.sync();
         const text = (selection.text || '').trim();
-        if (text.length >= 3 && text !== currentSelectedBodyText) {
+        if (text.length >= 2) {
           currentSelectedBodyText = text;
           const words = text.split(/\s+/).filter(Boolean).length;
           countBadge.textContent = `${words} word${words === 1 ? '' : 's'}`;
-          snippet.textContent = `"${text.slice(0, 80)}${text.length > 80 ? '…' : ''}"`;
-          bar.classList.remove('hidden');
+          snippet.textContent = `"${text.slice(0, 110)}${text.length > 110 ? '…' : ''}"`;
+          launcherSubtitle.textContent = `🎯 ${words} word${words === 1 ? '' : 's'} selected — Click for popup`;
+          launcherSubtitle.style.color = 'var(--primary)';
+          sendSelectionToCopilotDialog(text);
+
+          if (forceOpen) {
+            openInstantPopupModal();
+          }
+        } else {
+          if (currentSelectedBodyText !== '') {
+            currentSelectedBodyText = '';
+            launcherSubtitle.textContent = 'Highlight text in Word or click to instruct';
+            launcherSubtitle.style.color = 'var(--text-secondary)';
+            snippet.textContent = '"Highlight text in your Word document body..."';
+            countBadge.textContent = '0 words';
+          }
         }
       });
     } catch (_) {}
@@ -173,6 +278,12 @@ function bindInstantSelectionCopilot() {
 
   async function runDirectReplace(instructionType, customInstruction = '') {
     if (isInstantProcessing) return;
+
+    // If no text was captured, try one live grab
+    if (!currentSelectedBodyText || currentSelectedBodyText.length < 2) {
+      await checkWordSelection(false);
+    }
+
     const targetText = currentSelectedBodyText;
     if (!targetText || targetText.length < 2) {
       setInstantStatus('⚠️ Highlight text in Word body first.', true);
@@ -204,7 +315,7 @@ function bindInstantSelectionCopilot() {
         break;
       case 'custom':
       default:
-        prompt = `${customInstruction}. Return ONLY the direct replacement text to be inserted in the document.`;
+        prompt = `${customInstruction}. Return ONLY the direct replacement text to be inserted in the document without any extra commentary.`;
         break;
     }
 
@@ -221,7 +332,7 @@ function bindInstantSelectionCopilot() {
       lastReplacedOriginalText = targetText;
       await insertText(replacement.trim(), true);
       currentSelectedBodyText = replacement.trim();
-      snippet.textContent = `"${replacement.trim().slice(0, 80)}${replacement.trim().length > 80 ? '…' : ''}"`;
+      snippet.textContent = `"${replacement.trim().slice(0, 110)}${replacement.trim().length > 110 ? '…' : ''}"`;
       undoBtn.classList.remove('hidden');
       setInstantStatus('✅ Replaced directly in Word body!', false);
       input.value = '';
@@ -242,6 +353,38 @@ function bindInstantSelectionCopilot() {
       if (statusEl.textContent === msg) statusEl.classList.add('hidden');
     }, 4500);
   }
+
+  // Launcher click opens in-place popup modal
+  launcher.addEventListener('click', (e) => {
+    if (e.target.closest('#btn-open-float-dialog')) return;
+    openInstantPopupModal();
+  });
+
+  openModalBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openInstantPopupModal();
+  });
+
+  openFloatBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openFloatingCopilotDialog();
+  });
+
+  if (modalPopoutBtn) {
+    modalPopoutBtn.addEventListener('click', () => {
+      closeInstantPopupModal();
+      openFloatingCopilotDialog();
+    });
+  }
+
+  backdrop.addEventListener('click', closeInstantPopupModal);
+  closeBtn.addEventListener('click', closeInstantPopupModal);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+      closeInstantPopupModal();
+    }
+  });
 
   execBtn.addEventListener('click', () => {
     const val = input.value.trim();
@@ -271,16 +414,12 @@ function bindInstantSelectionCopilot() {
     try {
       await insertText(lastReplacedOriginalText, true);
       currentSelectedBodyText = lastReplacedOriginalText;
-      snippet.textContent = `"${lastReplacedOriginalText.slice(0, 80)}${lastReplacedOriginalText.length > 80 ? '…' : ''}"`;
+      snippet.textContent = `"${lastReplacedOriginalText.slice(0, 110)}${lastReplacedOriginalText.length > 110 ? '…' : ''}"`;
       setInstantStatus('↩️ Restored original text!', false);
       undoBtn.classList.add('hidden');
     } catch (err) {
       setInstantStatus(`❌ Undo failed: ${err.message}`, true);
     }
-  });
-
-  closeBtn.addEventListener('click', () => {
-    bar.classList.add('hidden');
   });
 }
 
@@ -412,134 +551,292 @@ async function getContext(mode) {
   });
 }
 
-async function insertText(rawText, replace = false) {
+function markdownToRichWordHtml(markdown) {
+  if (!markdown) return '';
+
+  const lines = markdown.split('\n');
+  let html = '';
+  let inList = false;
+  let listType = '';
+  let inTable = false;
+  let tableRows = [];
+
+  function closeList() {
+    if (inList) {
+      html += `</${listType}>\n`;
+      inList = false;
+      listType = '';
+    }
+  }
+
+  function flushTable() {
+    if (!tableRows.length) return;
+    const cleanRows = tableRows.filter(r => !/^\|?[-:\s|]+\|?$/.test(r.trim()));
+    if (!cleanRows.length) { tableRows = []; inTable = false; return; }
+
+    html += '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;border:1px solid #cbd5e1;margin-top:10pt;margin-bottom:12pt;font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:10.5pt;">\n';
+    cleanRows.forEach((rowStr, idx) => {
+      const cells = rowStr.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+      html += '  <tr>\n';
+      cells.forEach(cell => {
+        const formatted = formatInline(cell);
+        if (idx === 0) {
+          html += `    <th style="background-color:#f1f5f9;font-weight:bold;text-align:left;padding:6pt 8pt;border:1px solid #cbd5e1;color:#0f172a;">${formatted}</th>\n`;
+        } else {
+          html += `    <td style="padding:5pt 8pt;border:1px solid #cbd5e1;vertical-align:top;color:#1e293b;">${formatted}</td>\n`;
+        }
+      });
+      html += '  </tr>\n';
+    });
+    html += '</table>\n';
+    tableRows = [];
+    inTable = false;
+  }
+
+  function formatInline(text) {
+    if (!text) return '';
+    const underscores = [];
+    // Protect signature underline lines like By: ___________________
+    text = text.replace(/_{2,}/g, (m) => {
+      underscores.push(m);
+      return `@@USCORE${underscores.length - 1}@@`;
+    });
+
+    let formatted = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/__(.+?)__/g, '<strong>$1</strong>')
+      .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
+      .replace(/(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code style="font-family:Consolas,monospace;background-color:#f1f5f9;padding:1pt 3pt;border-radius:2pt;font-size:9.5pt;">$1</code>');
+
+    // Restore signature lines
+    underscores.forEach((u, idx) => {
+      formatted = formatted.replace(`@@USCORE${idx}@@`, u);
+    });
+
+    return formatted;
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const trimmed = rawLine.trim();
+
+    // Table Row
+    if (/^\|.*\|$/.test(trimmed)) {
+      closeList();
+      inTable = true;
+      tableRows.push(trimmed);
+      continue;
+    } else if (inTable) {
+      flushTable();
+    }
+
+    if (!trimmed) {
+      closeList();
+      continue;
+    }
+
+    // Headings
+    if (/^#\s+/.test(trimmed)) {
+      closeList();
+      const text = formatInline(trimmed.replace(/^#\s+/, ''));
+      html += `<h1 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:20pt;font-weight:bold;color:#0f172a;margin-top:18pt;margin-bottom:8pt;line-height:1.25;">${text}</h1>\n`;
+      continue;
+    }
+    if (/^##\s+/.test(trimmed)) {
+      closeList();
+      const text = formatInline(trimmed.replace(/^##\s+/, ''));
+      html += `<h2 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:14.5pt;font-weight:bold;color:#1e40af;margin-top:14pt;margin-bottom:6pt;line-height:1.3;">${text}</h2>\n`;
+      continue;
+    }
+    if (/^###\s+/.test(trimmed)) {
+      closeList();
+      const text = formatInline(trimmed.replace(/^###\s+/, ''));
+      html += `<h3 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:12.5pt;font-weight:bold;color:#334155;margin-top:10pt;margin-bottom:4pt;line-height:1.3;">${text}</h3>\n`;
+      continue;
+    }
+    if (/^####\s+/.test(trimmed)) {
+      closeList();
+      const text = formatInline(trimmed.replace(/^####\s+/, ''));
+      html += `<h4 style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;font-weight:bold;color:#475569;margin-top:8pt;margin-bottom:3pt;">${text}</h4>\n`;
+      continue;
+    }
+
+    // Horizontal Rule
+    if (/^[-*_]{3,}$/.test(trimmed)) {
+      closeList();
+      html += '<hr style="border:none;border-top:1px solid #cbd5e1;margin-top:12pt;margin-bottom:12pt;" />\n';
+      continue;
+    }
+
+    // Bullet Lists
+    if (/^[*\-]\s+/.test(trimmed)) {
+      if (!inList || listType !== 'ul') {
+        closeList();
+        inList = true;
+        listType = 'ul';
+        html += '<ul style="margin-top:4pt;margin-bottom:8pt;padding-left:18pt;">\n';
+      }
+      const itemText = formatInline(trimmed.replace(/^[*\-]\s+/, ''));
+      html += `  <li style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;line-height:1.55;margin-bottom:4pt;color:#1e293b;">${itemText}</li>\n`;
+      continue;
+    }
+
+    // Numbered Lists
+    const numMatch = trimmed.match(/^(\d+)\.\s+(.+)/);
+    if (numMatch) {
+      if (!inList || listType !== 'ol') {
+        closeList();
+        inList = true;
+        listType = 'ol';
+        html += '<ol style="margin-top:4pt;margin-bottom:8pt;padding-left:18pt;">\n';
+      }
+      const itemText = formatInline(numMatch[2]);
+      html += `  <li style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;line-height:1.55;margin-bottom:4pt;color:#1e293b;">${itemText}</li>\n`;
+      continue;
+    }
+
+    // Normal Paragraph
+    closeList();
+    const pText = formatInline(trimmed);
+    html += `<p style="font-family:\'Segoe UI\',Calibri,Arial,sans-serif;font-size:11pt;line-height:1.55;margin-top:0pt;margin-bottom:8pt;color:#1e293b;">${pText}</p>\n`;
+  }
+
+  closeList();
+  if (inTable) flushTable();
+
+  return html;
+}
+
+async function insertText(rawText, replace = false, insertAtEnd = false) {
   if (typeof Word === 'undefined') { showError('Word API not available.'); return; }
   return Word.run(async (ctx) => {
-    const sel = ctx.document.getSelection();
-    if (replace) sel.insertText('', Word.InsertLocation.replace);
-    const insertRange = replace ? sel : sel.getRange(Word.RangeLocation.after);
-
-    const lines = rawText.split('\n');
-    const blocks = [];
-    let i = 0;
-    while (i < lines.length) {
-      const line = lines[i];
-      if (/^\|/.test(line)) {
-        const tableLines = [];
-        while (i < lines.length && /^\|/.test(lines[i])) { tableLines.push(lines[i]); i++; }
-        blocks.push({ type: 'table', lines: tableLines });
-        continue;
+    try {
+      const html = markdownToRichWordHtml(rawText);
+      if (insertAtEnd) {
+        ctx.document.body.insertHtml(html, Word.InsertLocation.end);
+      } else {
+        const sel = ctx.document.getSelection();
+        sel.insertHtml(html, replace ? Word.InsertLocation.replace : Word.InsertLocation.after);
       }
-      blocks.push({ type: 'line', text: line });
-      i++;
+      await ctx.sync();
+    } catch (htmlErr) {
+      await fallbackInsertParagraphs(ctx, rawText, replace, insertAtEnd);
     }
-
-    let cursor = insertRange;
-
-    for (const block of blocks) {
-      if (block.type === 'table') {
-        const rows = block.lines.filter(l => !/^\|[-:\s|]+$/.test(l));
-        const parsed = rows.map(r => r.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()));
-        const colCount = Math.max(...parsed.map(r => r.length));
-        const table = cursor.insertTable(parsed.length, colCount, Word.InsertLocation.after, parsed);
-        table.styleBuiltIn = Word.Style.tableGrid;
-        const headerRow = table.rows.getFirst();
-        headerRow.load('cells');
-        await ctx.sync();
-        headerRow.cells.items.forEach(cell => {
-          cell.body.paragraphs.getFirst().font.bold = true;
-        });
-        cursor = table.getRange(Word.RangeLocation.after);
-        await ctx.sync();
-        continue;
-      }
-
-      const text = block.text;
-
-      if (/^[-*]{3,}$/.test(text.trim())) {
-        const p = cursor.insertParagraph('', Word.InsertLocation.after);
-        p.styleBuiltIn = Word.Style.normal;
-        p.font.size = 4;
-        cursor = p.getRange(Word.RangeLocation.after);
-        continue;
-      }
-
-      if (text.trim() === '') {
-        cursor = cursor.insertParagraph('', Word.InsertLocation.after).getRange(Word.RangeLocation.after);
-        continue;
-      }
-
-      const h1 = text.match(/^# (.+)/);
-      const h2 = text.match(/^## (.+)/);
-      const h3 = text.match(/^### (.+)/);
-      if (h1 || h2 || h3) {
-        const content = (h1 || h2 || h3)[1].replace(/\*\*/g, '');
-        const p = cursor.insertParagraph(content, Word.InsertLocation.after);
-        p.styleBuiltIn = h1 ? Word.Style.heading1 : h2 ? Word.Style.heading2 : Word.Style.heading3;
-        cursor = p.getRange(Word.RangeLocation.after);
-        continue;
-      }
-
-      const bullet = text.match(/^[*-] (.+)/);
-      if (bullet) {
-        const p = cursor.insertParagraph(stripInline(bullet[1]), Word.InsertLocation.after);
-        p.styleBuiltIn = Word.Style.listParagraph;
-        p.listItem.listLevelType = Word.ListLevelType.bullet;
-        applyInlineFormats(p, bullet[1]);
-        cursor = p.getRange(Word.RangeLocation.after);
-        continue;
-      }
-
-      const numbered = text.match(/^\d+\. (.+)/);
-      if (numbered) {
-        const p = cursor.insertParagraph(stripInline(numbered[1]), Word.InsertLocation.after);
-        p.styleBuiltIn = Word.Style.listParagraph;
-        p.listItem.listLevelType = Word.ListLevelType.number;
-        applyInlineFormats(p, numbered[1]);
-        cursor = p.getRange(Word.RangeLocation.after);
-        continue;
-      }
-
-      const p = cursor.insertParagraph(stripInline(text), Word.InsertLocation.after);
-      p.styleBuiltIn = Word.Style.normal;
-      applyInlineFormats(p, text);
-      cursor = p.getRange(Word.RangeLocation.after);
-    }
-
-    await ctx.sync();
   });
 }
 
+async function fallbackInsertParagraphs(ctx, rawText, replace = false, insertAtEnd = false) {
+  let cursor;
+  if (insertAtEnd) {
+    cursor = ctx.document.body;
+  } else {
+    const sel = ctx.document.getSelection();
+    if (replace) sel.insertText('', Word.InsertLocation.replace);
+    cursor = replace ? sel : sel.getRange(Word.RangeLocation.after);
+  }
+
+  const lines = rawText.split('\n');
+  let inTable = false;
+  let tableLines = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\|/.test(line.trim())) {
+      inTable = true;
+      tableLines.push(line);
+      continue;
+    } else if (inTable) {
+      const rows = tableLines.filter(l => !/^\|[-:\s|]+$/.test(l.trim()));
+      const parsed = rows.map(r => r.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => stripInline(c.trim())));
+      if (parsed.length && parsed[0].length) {
+        const table = cursor.insertTable(parsed.length, parsed[0].length, insertAtEnd ? Word.InsertLocation.end : Word.InsertLocation.after, parsed);
+        table.styleBuiltIn = Word.Style.tableGrid;
+        await ctx.sync();
+        if (!insertAtEnd) cursor = table.getRange(Word.RangeLocation.after);
+      }
+      tableLines = [];
+      inTable = false;
+    }
+
+    if (!line.trim()) continue;
+
+    const loc = insertAtEnd ? Word.InsertLocation.end : Word.InsertLocation.after;
+
+    const h1 = line.match(/^#\s+(.+)/);
+    const h2 = line.match(/^##\s+(.+)/);
+    const h3 = line.match(/^###\s+(.+)/);
+    const h4 = line.match(/^####\s+(.+)/);
+
+    if (h1 || h2 || h3 || h4) {
+      const text = stripInline((h1 || h2 || h3 || h4)[1]);
+      const p = cursor.insertParagraph(text, loc);
+      p.styleBuiltIn = h1 ? Word.Style.title : h2 ? Word.Style.heading1 : h3 ? Word.Style.heading2 : Word.Style.heading3;
+      p.font.bold = true;
+      await ctx.sync();
+      if (!insertAtEnd) cursor = p.getRange(Word.RangeLocation.after);
+      continue;
+    }
+
+    const bullet = line.match(/^[*-]\s+(.+)/);
+    if (bullet) {
+      const p = cursor.insertParagraph(stripInline(bullet[1]), loc);
+      p.styleBuiltIn = Word.Style.listParagraph;
+      p.listItem.listLevelType = Word.ListLevelType.bullet;
+      await ctx.sync();
+      await applyInlineBold(ctx, p, bullet[1]);
+      if (!insertAtEnd) cursor = p.getRange(Word.RangeLocation.after);
+      continue;
+    }
+
+    const numbered = line.match(/^(\d+)\.\s+(.+)/);
+    if (numbered) {
+      const p = cursor.insertParagraph(stripInline(numbered[2]), loc);
+      p.styleBuiltIn = Word.Style.listParagraph;
+      p.listItem.listLevelType = Word.ListLevelType.number;
+      await ctx.sync();
+      await applyInlineBold(ctx, p, numbered[2]);
+      if (!insertAtEnd) cursor = p.getRange(Word.RangeLocation.after);
+      continue;
+    }
+
+    const p = cursor.insertParagraph(stripInline(line), loc);
+    p.styleBuiltIn = Word.Style.normal;
+    await ctx.sync();
+    await applyInlineBold(ctx, p, line);
+    if (!insertAtEnd) cursor = p.getRange(Word.RangeLocation.after);
+  }
+
+  await ctx.sync();
+}
+
 function stripInline(text) {
+  if (!text) return '';
   return text
     .replace(/\*\*\*(.+?)\*\*\*/g, '$1')
     .replace(/\*\*(.+?)\*\*/g, '$1')
     .replace(/\*(.+?)\*/g, '$1')
+    .replace(/___(.+?)___/g, '$1')
+    .replace(/__(.+?)__/g, '$1')
     .replace(/_(.+?)_/g, '$1');
 }
 
-function applyInlineFormats(paragraph, rawText) {
-  [...rawText.matchAll(/\*\*\*(.+?)\*\*\*/g)].forEach(m => {
+async function applyInlineBold(ctx, p, rawText) {
+  const matches = [...rawText.matchAll(/\*\*(.+?)\*\*/g)];
+  if (!matches.length) return;
+  for (const m of matches) {
     try {
-      const r = paragraph.search(m[1], { matchCase: false });
-      r.load('items');
-      r.items.forEach(item => { item.font.bold = true; item.font.italic = true; });
+      const searchRes = p.search(m[1], { matchCase: false });
+      searchRes.load('items');
+      await ctx.sync();
+      searchRes.items.forEach(item => { item.font.bold = true; });
+      await ctx.sync();
     } catch (_) {}
-  });
-  [...rawText.matchAll(/\*\*(.+?)\*\*/g)].forEach(m => {
-    try {
-      const r = paragraph.search(m[1], { matchCase: false });
-      r.load('items');
-      r.items.forEach(item => { item.font.bold = true; });
-    } catch (_) {}
-  });
-  [...rawText.matchAll(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g)].forEach(m => {
-    try {
-      const r = paragraph.search(m[1], { matchCase: false });
-      r.load('items');
-      r.items.forEach(item => { item.font.italic = true; });
-    } catch (_) {}
-  });
+  }
 }
 
 function getPersonaInstruction() {
@@ -1826,77 +2123,10 @@ async function insertStructuredFramework(markdownText) {
   }
   showLoading(true);
   try {
-    await Word.run(async (ctx) => {
-      const body = ctx.document.body;
-      const lines = markdownText.split('\n');
-      let tableLines = [];
-      let inTable = false;
-
-      const flushTable = async () => {
-        if (!tableLines.length) return;
-        const rows = tableLines
-          .filter(l => !l.trim().match(/^\|?[-:\s|]+\|?$/))
-          .map(l => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()));
-        if (rows.length && rows[0].length) {
-          const numCols = rows[0].length;
-          const cleanRows = rows.map(r => {
-            const rowCopy = [...r];
-            while (rowCopy.length < numCols) rowCopy.push('');
-            return rowCopy.slice(0, numCols);
-          });
-          const table = body.insertTable(cleanRows.length, numCols, Word.InsertLocation.end, cleanRows);
-          try { table.styleBuiltIn = Word.Style.gridTable4_Accent1; } catch (_) {}
-        }
-        tableLines = [];
-        inTable = false;
-      };
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-
-        if (line.startsWith('|') && line.endsWith('|')) {
-          inTable = true;
-          tableLines.push(line);
-          continue;
-        } else if (inTable) {
-          await flushTable();
-        }
-
-        if (!line) continue;
-
-        if (line.startsWith('# ')) {
-          const p = body.insertParagraph(line.replace(/^#\s+/, ''), Word.InsertLocation.end);
-          try { p.styleBuiltIn = Word.Style.title; } catch (_) {
-            try { p.styleBuiltIn = Word.Style.heading1; } catch (_) {}
-          }
-        } else if (line.startsWith('## ')) {
-          const p = body.insertParagraph(line.replace(/^##\s+/, ''), Word.InsertLocation.end);
-          try { p.styleBuiltIn = Word.Style.heading1; } catch (_) {}
-        } else if (line.startsWith('### ')) {
-          const p = body.insertParagraph(line.replace(/^###\s+/, ''), Word.InsertLocation.end);
-          try { p.styleBuiltIn = Word.Style.heading2; } catch (_) {}
-        } else if (line.startsWith('#### ')) {
-          const p = body.insertParagraph(line.replace(/^####\s+/, ''), Word.InsertLocation.end);
-          try { p.styleBuiltIn = Word.Style.heading3; } catch (_) {}
-        } else if (line.startsWith('* ') || line.startsWith('- ')) {
-          const p = body.insertParagraph('• ' + line.replace(/^[*\-]\s+/, ''), Word.InsertLocation.end);
-          try { p.styleBuiltIn = Word.Style.normal; } catch (_) {}
-        } else {
-          const p = body.insertParagraph(line, Word.InsertLocation.end);
-          try { p.styleBuiltIn = Word.Style.normal; } catch (_) {}
-        }
-      }
-
-      if (inTable) {
-        await flushTable();
-      }
-
-      await ctx.sync();
-      docStatus('📚 Framework inserted with native Word headings & tables!');
-    });
-  } catch (_) {
-    await insertText(markdownText, false);
-    docStatus('📚 Framework inserted into Word!');
+    await insertText(markdownText, false, true);
+    docStatus('📚 Framework inserted with rich Word styles & bold formatting!');
+  } catch (err) {
+    showError('Could not insert framework: ' + err.message);
   } finally {
     showLoading(false);
   }
@@ -3056,6 +3286,9 @@ function bindKeyboardShortcuts() {
       } else if (k === 'G') {
         e.preventDefault();
         triggerGenerate();
+      } else if (k === 'E') {
+        e.preventDefault();
+        if (typeof openInstantPopupModal === 'function') openInstantPopupModal();
       }
     }
   });
@@ -3237,3 +3470,135 @@ function loadSettings() {
   }
   updateTokenDisplay();
 }
+
+// ─── Pre-built Prompts Library ──────────────────────────────────────────
+
+let activePromptCategory = 'all';
+
+function bindPromptsLibrary() {
+  const drawer = document.getElementById('prompts-drawer');
+  const openBtnHeader = document.getElementById('btn-prompts');
+  const openBtnPrompt = document.getElementById('btn-open-prompts-library');
+  const closeBtn = document.getElementById('btn-close-prompts');
+  const searchInput = document.getElementById('prompt-search-input');
+  const viewAllResearchBtn = document.getElementById('btn-view-all-research-prompts');
+  if (!drawer) return;
+
+  function openDrawer(category = 'all') {
+    activePromptCategory = category;
+    document.querySelectorAll('.prompt-filter-pill').forEach(p => {
+      p.classList.toggle('active', p.getAttribute('data-pcat') === category);
+    });
+    if (searchInput) searchInput.value = '';
+    renderPrebuiltPrompts(category, '');
+    drawer.classList.remove('hidden');
+  }
+
+  if (openBtnHeader) openBtnHeader.addEventListener('click', () => openDrawer('all'));
+  if (openBtnPrompt) openBtnPrompt.addEventListener('click', () => openDrawer('all'));
+  if (closeBtn) closeBtn.addEventListener('click', () => drawer.classList.add('hidden'));
+
+  if (viewAllResearchBtn) {
+    viewAllResearchBtn.addEventListener('click', () => openDrawer('academic'));
+  }
+
+  // Filter Pills
+  document.querySelectorAll('.prompt-filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.prompt-filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      activePromptCategory = pill.getAttribute('data-pcat') || 'all';
+      const searchVal = searchInput ? searchInput.value.trim() : '';
+      renderPrebuiltPrompts(activePromptCategory, searchVal);
+    });
+  });
+
+  // Search input filter
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      renderPrebuiltPrompts(activePromptCategory, e.target.value.trim());
+    });
+  }
+
+  // Quick prompt chips in Research tab
+  document.querySelectorAll('.res-prompt-chip').forEach(chip => {
+    chip.addEventListener('click', async () => {
+      const pid = chip.getAttribute('data-pid');
+      const item = typeof PREBUILT_PROMPTS !== 'undefined' ? PREBUILT_PROMPTS.find(p => p.id === pid) : null;
+      if (!item) return;
+      const context = await getContext('selection') || await getContext('document');
+      handleAIAction(item.prompt, context || 'Please apply this research analysis.');
+    });
+  });
+
+  // Initial render
+  renderPrebuiltPrompts('all', '');
+}
+
+function renderPrebuiltPrompts(category = 'all', query = '') {
+  const container = document.getElementById('prompts-container');
+  if (!container || typeof PREBUILT_PROMPTS === 'undefined') return;
+
+  const q = query.toLowerCase();
+  const filtered = PREBUILT_PROMPTS.filter(p => {
+    const matchCat = category === 'all' || p.category === category;
+    const matchQ = !q || p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.prompt.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div style="font-size:11.5px;color:var(--muted);text-align:center;padding:16px;">No prompts found matching your search.</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  filtered.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'prompt-card';
+    card.innerHTML = `
+      <div class="prompt-card-header">
+        <span class="prompt-card-title">${escapeHtml(p.title)}</span>
+        <span class="framework-badge badge-${p.category}">${escapeHtml(p.categoryLabel)}</span>
+      </div>
+      <div class="prompt-card-desc">${escapeHtml(p.desc)}</div>
+      <div class="prompt-text-snippet">${escapeHtml(p.prompt)}</div>
+      <div class="prompt-actions-row">
+        <button class="prompt-btn-run" title="Run directly with current context">⚡ Run Prompt</button>
+        <button class="prompt-btn-load" title="Load prompt into prompt box">✏️ Load into Box</button>
+        <button class="prompt-btn-save" title="Save as custom preset">⭐</button>
+      </div>
+    `;
+
+    // ⚡ Run Prompt
+    card.querySelector('.prompt-btn-run').addEventListener('click', async () => {
+      document.getElementById('prompts-drawer').classList.add('hidden');
+      const contextMode = document.getElementById('context-select').value;
+      const context = await getContext(contextMode);
+      recordPrompt(p.prompt);
+      handleAIAction(p.prompt, context || '(no content provided)');
+    });
+
+    // ✏️ Load into Prompt Box
+    card.querySelector('.prompt-btn-load').addEventListener('click', () => {
+      document.getElementById('main-prompt').value = p.prompt;
+      document.getElementById('prompts-drawer').classList.add('hidden');
+      document.getElementById('main-prompt').focus();
+      docStatus(`💡 Loaded prompt: "${p.title}"`);
+    });
+
+    // ⭐ Save to Presets
+    card.querySelector('.prompt-btn-save').addEventListener('click', () => {
+      let presets = JSON.parse(localStorage.getItem('wordai_custom_presets') || '[]');
+      if (!presets.some(x => x.name === p.title)) {
+        presets.push({ name: p.title, prompt: p.prompt });
+        localStorage.setItem('wordai_custom_presets', JSON.stringify(presets));
+        docStatus(`⭐ Saved "${p.title}" to Custom Presets!`);
+      } else {
+        docStatus(`⭐ Already in Custom Presets!`);
+      }
+    });
+
+    container.appendChild(card);
+  });
+}
+

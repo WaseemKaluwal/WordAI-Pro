@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WordAI Pro - Floating In-Place Copilot</title>
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0d14;
+      --surface: #141726;
+      --surface-hover: #1c2033;
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+      --accent: #a855f7;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px;
+      user-select: none;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 700;
+      font-size: 13.5px;
+      background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      display: inline-block;
+    }
+
+    .badge {
+      font-size: 11px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .snippet-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      max-height: 52px;
+      overflow-y: auto;
+      line-height: 1.4;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 12.5px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 9px 16px;
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .chips-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip:hover {
+      background: var(--surface-hover);
+      border-color: var(--primary);
+      color: #c7d2fe;
+    }
+
+    .status-msg {
+      font-size: 11.5px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-info { color: #818cf8; }
+    .status-success { color: var(--success); }
+    .status-error { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-title">
+      <span class="pulse-dot"></span>
+      <span>Direct In-Place Copilot</span>
+    </div>
+    <span id="word-count" class="badge">0 words</span>
+  </div>
+
+  <div id="selection-snippet" class="snippet-box">"Highlight text in Word document to direct-rewrite..."</div>
+
+  <div class="input-row">
+    <input type="text" id="instruction-input" placeholder="⚡ Type instruction to direct replace in body (e.g. rewrite formally)..." autofocus />
+    <button id="btn-exec" class="btn-primary">Replace ⚡</button>
+  </div>
+
+  <div class="chips-grid">
+    <button class="chip" data-act="rewrite">✏️ Rewrite</button>
+    <button class="chip" data-act="improve">✨ Improve</button>
+    <button class="chip" data-act="grammar">🔍 Fix Grammar</button>
+    <button class="chip" data-act="shorten">➖ Shorten</button>
+    <button class="chip" data-act="expand">➕ Expand</button>
+    <button class="chip" data-act="formal">💼 Formal</button>
+    <button class="chip" data-act="casual">☕ Casual</button>
+  </div>
+
+  <div id="status-box" class="status-msg status-info">⚡ Ready. Type instruction or click a quick action.</div>
+
+  <script>
+    let currentText = '';
+
+    Office.onReady(() => {
+      // Listen for initial selection data sent from parent taskpane
+      Office.context.ui.addHandlerAsync(Office.EventType.DialogParentMessageReceived, onParentMessage);
+
+      // Tell parent taskpane dialog is ready
+      sendMessage({ type: 'ready' });
+
+      // If Word API is accessible in dialog directly
+      if (typeof Word !== 'undefined') {
+        checkSelection();
+        setInterval(checkSelection, 600);
+      }
+    });
+
+    function onParentMessage(arg) {
+      try {
+        const data = JSON.parse(arg.message);
+        if (data.type === 'selection') {
+          updateSelection(data.text);
+        } else if (data.type === 'status') {
+          setStatus(data.msg, data.isError ? 'status-error' : 'status-success');
+          document.getElementById('btn-exec').disabled = false;
+        }
+      } catch (_) {}
+    }
+
+    async function checkSelection() {
+      if (typeof Word === 'undefined') return;
+      try {
+        await Word.run(async (context) => {
+          const selection = context.document.getSelection();
+          selection.load('text');
+          await context.sync();
+          const text = (selection.text || '').trim();
+          if (text.length >= 2 && text !== currentText) {
+            updateSelection(text);
+          }
+        });
+      } catch (_) {}
+    }
+
+    function updateSelection(text) {
+      currentText = text;
+      const count = text.split(/\s+/).filter(Boolean).length;
+      document.getElementById('word-count').textContent = `${count} word${count === 1 ? '' : 's'}`;
+      document.getElementById('selection-snippet').textContent = `"${text.slice(0, 110)}${text.length > 110 ? '…' : ''}"`;
+      setStatus(`🎯 Selected ${count} words. Ready to direct replace.`);
+    }
+
+    function setStatus(msg, cls = 'status-info') {
+      const el = document.getElementById('status-box');
+      el.className = `status-msg ${cls}`;
+      el.textContent = msg;
+    }
+
+    function sendMessage(msgObj) {
+      if (typeof Office !== 'undefined' && Office.context && Office.context.ui && Office.context.ui.messageParent) {
+        Office.context.ui.messageParent(JSON.stringify(msgObj));
+      }
+    }
+
+    function executeReplace(actionType, customInstruction = '') {
+      const input = document.getElementById('instruction-input');
+      const instruction = customInstruction || input.value.trim();
+      
+      document.getElementById('btn-exec').disabled = true;
+      setStatus('⚡ Sending instruction to Word body...', 'status-info');
+
+      sendMessage({
+        type: 'directReplace',
+        actionType: actionType,
+        instruction: instruction,
+        text: currentText
+      });
+    }
+
+    document.getElementById('btn-exec').addEventListener('click', () => {
+      const val = document.getElementById('instruction-input').value.trim();
+      executeReplace(val ? 'custom' : 'rewrite', val);
+    });
+
+    document.getElementById('instruction-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('btn-exec').click();
+      }
+    });
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        executeReplace(chip.dataset.act);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -25,40 +25,68 @@
         <span class="model-pill-badge" id="header-model-badge" title="Active AI Provider">Online</span>
       </div>
       <div class="header-actions">
+        <button id="btn-prompts" class="icon-btn" title="Pre-built Prompts Library (48+ Expert Prompts)">💡</button>
         <button id="btn-history" class="icon-btn" title="Prompt History &amp; Saved Outputs (Ctrl+Shift+H)">🕒</button>
         <button id="btn-darkmode" class="icon-btn" title="Toggle Dark Mode (Ctrl+Shift+D)">🌙</button>
         <button id="btn-settings" class="icon-btn" title="Settings">⚙️</button>
       </div>
     </header>
 
-    <!-- Instant Selection Floating Copilot (Direct In-Place Replace & Instruction) -->
-    <div id="instant-selection-bar" class="instant-selection-bar hidden">
-      <div class="instant-bar-header">
-        <div class="instant-bar-title">
-          <span class="instant-pulse-dot"></span>
-          <span class="instant-title-text">Direct In-Place Copilot</span>
-          <span id="instant-sel-count" class="instant-count-badge">0 words</span>
-        </div>
-        <div class="instant-bar-actions">
-          <button id="btn-instant-undo" class="instant-btn-undo hidden" title="Undo Last In-Place Replace">↩️ Undo</button>
-          <button id="btn-close-instant-bar" class="instant-btn-close" title="Dismiss">✕</button>
+    <!-- Permanent Direct In-Place Copilot Launcher -->
+    <div id="instant-copilot-launcher" class="instant-copilot-launcher" title="Click to open In-Place Floating Copilot (Ctrl+Shift+E)">
+      <div class="launcher-left">
+        <span class="instant-pulse-dot"></span>
+        <div class="launcher-text-col">
+          <span class="launcher-title">⚡ Direct In-Place Copilot</span>
+          <span id="launcher-status-text" class="launcher-subtitle">Highlight text in Word or click to instruct</span>
         </div>
       </div>
-      <div id="instant-sel-snippet" class="instant-sel-snippet">"Highlight text in your Word document..."</div>
-      <div class="instant-input-row">
-        <input type="text" id="instant-instruction-input" placeholder="⚡ Type instruction to direct replace in body (e.g. rewrite formally, simplify)..." />
-        <button id="btn-instant-exec" class="primary-btn instant-exec-btn" title="Execute & Replace directly in Word body">Replace ⚡</button>
+      <div class="launcher-actions">
+        <button id="btn-open-popup-modal" class="launcher-btn-popup" title="Open Floating Popup Modal (Ctrl+Shift+E)">
+          ⚡ Popup
+        </button>
+        <button id="btn-open-float-dialog" class="launcher-btn-float" title="Pop out floating window (draggable anywhere over Word)">
+          🪟 Float
+        </button>
       </div>
-      <div class="instant-quick-chips">
-        <button class="instant-chip" data-instant="rewrite">✏️ Rewrite</button>
-        <button class="instant-chip" data-instant="improve">✨ Improve</button>
-        <button class="instant-chip" data-instant="grammar">🔍 Fix Grammar</button>
-        <button class="instant-chip" data-instant="shorten">➖ Shorten</button>
-        <button class="instant-chip" data-instant="expand">➕ Expand</button>
-        <button class="instant-chip" data-instant="formal">💼 Formal</button>
-        <button class="instant-chip" data-instant="casual">☕ Casual</button>
+    </div>
+
+    <!-- Floating Popup Window Modal (Direct In-Place Body Edit) -->
+    <div id="instant-popup-modal" class="instant-popup-modal hidden">
+      <div class="instant-popup-backdrop" id="instant-popup-backdrop"></div>
+      <div class="instant-popup-dialog">
+        <div class="instant-bar-header">
+          <div class="instant-bar-title">
+            <span class="instant-pulse-dot"></span>
+            <span class="instant-title-text">⚡ Direct In-Place Copilot</span>
+            <span id="instant-sel-count" class="instant-count-badge">0 words</span>
+          </div>
+          <div class="instant-bar-actions">
+            <button id="btn-modal-popout" class="instant-btn-popout" title="Detach into Draggable Floating Window">🪟 Pop Out</button>
+            <button id="btn-instant-undo" class="instant-btn-undo hidden" title="Undo Last In-Place Replace">↩️ Undo</button>
+            <button id="btn-close-popup-modal" class="instant-btn-close" title="Close Popup (Esc)">✕</button>
+          </div>
+        </div>
+
+        <div id="instant-sel-snippet" class="instant-sel-snippet">"Highlight text in your Word document body..."</div>
+
+        <div class="instant-input-row">
+          <input type="text" id="instant-instruction-input" placeholder="⚡ Type instruction (e.g. rewrite formally, simplify, translate)..." autocomplete="off" />
+          <button id="btn-instant-exec" class="primary-btn instant-exec-btn" title="Execute & Replace directly in Word body">Replace ⚡</button>
+        </div>
+
+        <div class="instant-quick-chips">
+          <button class="instant-chip" data-instant="rewrite">✏️ Rewrite</button>
+          <button class="instant-chip" data-instant="improve">✨ Improve</button>
+          <button class="instant-chip" data-instant="grammar">🔍 Fix Grammar</button>
+          <button class="instant-chip" data-instant="shorten">➖ Shorten</button>
+          <button class="instant-chip" data-instant="expand">➕ Expand</button>
+          <button class="instant-chip" data-instant="formal">💼 Formal</button>
+          <button class="instant-chip" data-instant="casual">☕ Casual</button>
+        </div>
+
+        <div id="instant-status" class="instant-status hidden"></div>
       </div>
-      <div id="instant-status" class="instant-status hidden"></div>
     </div>
 
     <!-- Word Count Tracker -->
@@ -199,6 +227,18 @@
         <button class="res-btn" data-action="methodology">🔬 Methodology</button>
         <button class="res-btn" data-action="bibliography">📖 Bibliography</button>
       </div>
+
+      <div class="doc-section-label" style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span>💡 Expert Research Prompts</span>
+        <button id="btn-view-all-research-prompts" class="small-btn" style="font-size:10px;padding:2px 7px;">All (12) ↗</button>
+      </div>
+      <div class="research-prompts-quick-grid">
+        <button class="res-prompt-chip" data-pid="reviewer-2-critique">🔬 Reviewer #2 Peer Review</button>
+        <button class="res-prompt-chip" data-pid="methodology-defense">🛡️ Methodology Justification</button>
+        <button class="res-prompt-chip" data-pid="theoretical-framework">📐 Theoretical Framework</button>
+        <button class="res-prompt-chip" data-pid="limits-delimitations">⚖️ Limitations &amp; Bounds</button>
+      </div>
+
       <div class="research-hint">💡 Tip: Use "Entire Document" context for best results on existing drafts.</div>
     </div>
 
@@ -586,6 +626,7 @@
       </div>
       <div id="dictation-status" class="dictation-status hidden">🔴 Listening... speak now</div>
       <div class="prompt-actions">
+        <button id="btn-open-prompts-library" class="small-btn prompt-library-pill-btn" title="Browse 48+ Pre-built Research &amp; Business Prompts">💡 Prompts (48)</button>
         <select id="context-select">
           <option value="selection">Selected Text</option>
           <option value="document">Entire Document</option>
@@ -673,6 +714,36 @@
         </div>
         <div id="saved-outputs-list" class="drawer-item-list"></div>
       </div>
+    </div>
+
+    <!-- Pre-built Prompts Library Drawer -->
+    <div id="prompts-drawer" class="panel hidden">
+      <div class="panel-header">
+        <h3>💡 Pre-built Prompts Library</h3>
+        <button id="btn-close-prompts" class="icon-btn">✕</button>
+      </div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.4;">
+        48 expert-crafted prompts for Academic Research, Executive Strategy, Legal, and Editing:
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="prompt-filter-bar">
+        <button class="prompt-filter-pill active" data-pcat="all">All (48)</button>
+        <button class="prompt-filter-pill" data-pcat="academic">🎓 Research (12)</button>
+        <button class="prompt-filter-pill" data-pcat="business">💼 Business (10)</button>
+        <button class="prompt-filter-pill" data-pcat="legal">⚖️ Legal (6)</button>
+        <button class="prompt-filter-pill" data-pcat="editing">📝 Editing (8)</button>
+        <button class="prompt-filter-pill" data-pcat="career">🎯 Career (6)</button>
+        <button class="prompt-filter-pill" data-pcat="marketing">📣 Marketing (6)</button>
+      </div>
+
+      <!-- Search Box -->
+      <div class="prompt-search-box">
+        <input type="text" id="prompt-search-input" placeholder="🔍 Search prompts (e.g. peer review, XYZ, SWOT, methodology)..." />
+      </div>
+
+      <!-- Prompts Cards Container -->
+      <div id="prompts-container" class="drawer-item-list" style="max-height: calc(100vh - 170px);"></div>
     </div>
 
     <!-- Framework Smart-Draft Studio Drawer -->
@@ -804,6 +875,7 @@
       </div>
       <div class="keyboard-shortcuts-box">
         <div class="doc-section-label" style="margin-top:0;">⌨️ Global Keyboard Shortcuts</div>
+        <div class="shortcut-row"><span>In-Place Popup Copilot</span><kbd>Ctrl+Shift+E</kbd></div>
         <div class="shortcut-row"><span>Rewrite Selection</span><kbd>Ctrl+Shift+R</kbd></div>
         <div class="shortcut-row"><span>Summarize Selection</span><kbd>Ctrl+Shift+S</kbd></div>
         <div class="shortcut-row"><span>Improve Selection</span><kbd>Ctrl+Shift+I</kbd></div>
@@ -817,6 +889,7 @@
 
   <script src="ai-provider.js"></script>
   <script src="frameworks-data.js"></script>
+  <script src="prompts-data.js"></script>
   <script src="taskpane.js"></script>
 </body>
 </html>
