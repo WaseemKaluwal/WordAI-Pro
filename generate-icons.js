@@ -120,13 +120,16 @@ function makePNG(size, bgR, bgG, bgB, fgR, fgG, fgB) {
   ]);
 }
 
-const assetsDir = path.join(__dirname, 'assets');
-if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir);
-
-// Purple gradient-like bg: #6C3CE1, white W
 const sizes = [16, 32, 80];
 for (const s of sizes) {
   const png = makePNG(s, 108, 60, 225, 255, 255, 255);
-  fs.writeFileSync(path.join(assetsDir, `icon-${s}.png`), png);
-  console.log(`Generated icon-${s}.png`);
+  // Write to root directly (no assets folder required on GitHub)
+  fs.writeFileSync(path.join(__dirname, `icon-${s}.png`), png);
+  console.log(`Generated icon-${s}.png in root`);
+
+  // Also write to assets/ if present
+  const assetsDir = path.join(__dirname, 'assets');
+  if (fs.existsSync(assetsDir)) {
+    fs.writeFileSync(path.join(assetsDir, `icon-${s}.png`), png);
+  }
 }

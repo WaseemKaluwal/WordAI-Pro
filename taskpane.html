@@ -7,8 +7,8 @@
   <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="icon-32.png" />
   <link rel="stylesheet" href="taskpane.css" />
 </head>
 <body>
@@ -37,16 +37,16 @@
       <div class="launcher-left">
         <span class="instant-pulse-dot"></span>
         <div class="launcher-text-col">
-          <span class="launcher-title">⚡ Direct In-Place Copilot</span>
-          <span id="launcher-status-text" class="launcher-subtitle">Highlight text in Word or click to instruct</span>
+          <span class="launcher-title">⚡ In-Place Copilot</span>
+          <span id="launcher-status-text" class="launcher-subtitle">Highlight text in Word</span>
         </div>
       </div>
       <div class="launcher-actions">
-        <button id="btn-open-popup-modal" class="launcher-btn-popup" title="Open Floating Popup Modal (Ctrl+Shift+E)">
+        <button id="btn-open-popup-modal" class="launcher-btn-popup" title="Open In-Place Popup (Ctrl+Shift+E)">
           ⚡ Popup
         </button>
-        <button id="btn-open-float-dialog" class="launcher-btn-float" title="Pop out floating window (draggable anywhere over Word)">
-          🪟 Float
+        <button id="btn-open-float-dialog" class="launcher-btn-float" title="Detach into Floating Dialog">
+          🪟
         </button>
       </div>
     </div>
@@ -100,8 +100,8 @@
       <div id="wc-bar-label" class="wc-bar-label"></div>
     </div>
     <div id="wc-setup" class="wc-setup hidden">
-      <input type="number" id="wc-goal-input" placeholder="Set word goal (e.g. 5000)" min="1" />
-      <button id="btn-wc-save" class="primary-btn">Set Goal</button>
+      <input type="number" id="wc-goal-input" placeholder="Word Goal (e.g. 5000)" min="1" />
+      <button id="btn-wc-save" class="primary-btn">Save</button>
       <button id="btn-wc-clear" class="small-btn">Clear</button>
     </div>
 
@@ -626,32 +626,32 @@
       </div>
       <div id="dictation-status" class="dictation-status hidden">🔴 Listening... speak now</div>
       <div class="prompt-actions">
-        <button id="btn-open-prompts-library" class="small-btn prompt-library-pill-btn" title="Browse 48+ Pre-built Research &amp; Business Prompts">💡 Prompts (48)</button>
+        <button id="btn-open-prompts-library" class="small-btn prompt-library-pill-btn" title="Browse 48+ Pre-built Research &amp; Business Prompts">💡 Prompts</button>
         <select id="context-select">
           <option value="selection">Selected Text</option>
-          <option value="document">Entire Document</option>
+          <option value="document">Entire Doc</option>
           <option value="none">No Context</option>
         </select>
-        <button id="btn-generate" class="primary-btn">Generate ➤</button>
+        <button id="btn-generate" class="primary-btn">Generate ⚡</button>
       </div>
     </section>
 
     <!-- Output Preview, Redline Diff & Side-by-Side -->
     <section id="output-section" class="hidden">
       <div class="output-header">
-        <div class="output-header-left">
-          <span>AI Response</span>
+        <div class="output-header-top">
+          <span class="output-header-title">AI Response</span>
           <div class="output-view-toggle">
             <button id="btn-view-preview" class="view-toggle-btn active">Preview</button>
-            <button id="btn-view-diff" class="view-toggle-btn">Redline Diff</button>
+            <button id="btn-view-diff" class="view-toggle-btn">Diff</button>
             <button id="btn-view-sidebyside" class="view-toggle-btn">Side-by-Side</button>
           </div>
         </div>
-        <div>
-          <button id="btn-insert" class="small-btn">Insert ✅</button>
-          <button id="btn-replace" class="small-btn">Replace 🔄</button>
-          <button id="btn-copy" class="small-btn">Copy 📋</button>
-          <button id="btn-discard" class="small-btn danger">✕</button>
+        <div class="output-header-actions">
+          <button id="btn-insert" class="small-btn btn-action-insert">Insert ✅</button>
+          <button id="btn-replace" class="small-btn btn-action-replace">Replace 🔄</button>
+          <button id="btn-copy" class="small-btn btn-action-copy">Copy 📋</button>
+          <button id="btn-discard" class="small-btn danger" title="Discard">✕</button>
         </div>
       </div>
       <div id="output-text" class="output-text"></div>

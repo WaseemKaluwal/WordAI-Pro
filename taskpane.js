@@ -197,7 +197,7 @@ function bindInstantSelectionCopilot() {
 
     Office.context.ui.displayDialogAsync(
       dialogUrl,
-      { height: 44, width: 34, displayInIframe: false, promptBeforeOpen: false },
+      { height: 48, width: 38, displayInIframe: true, promptBeforeOpen: false },
       (asyncResult) => {
         if (asyncResult.status === Office.AsyncResultStatus.Failed) {
           openInstantPopupModal();
@@ -338,6 +338,7 @@ function bindInstantSelectionCopilot() {
       input.value = '';
     } catch (err) {
       setInstantStatus(`❌ ${err.message}`, true);
+      throw err;
     } finally {
       isInstantProcessing = false;
       execBtn.disabled = false;
