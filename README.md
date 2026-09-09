@@ -1,11 +1,19 @@
-# ⚡ WordAI Pro — Microsoft Word AI Copilot & Research Assistant
+<p align="center">
+  <a href="https://waseemkaluwal.github.io/wordai-pro/">
+    <img src="https://waseemkaluwal.github.io/wordai-pro/assets/icon-80.png" width="72" height="72" alt="WordAI Pro Logo" style="border-radius: 18px; box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);" />
+  </a>
+</p>
 
-[![Office Add-in](https://img.shields.io/badge/Office_Add--in-Word_2016%2B_|_Online_|_Mac_|_iPad-0078d4?style=for-the-badge&logo=microsoftword&logoColor=white)](https://waseemkaluwal.github.io/wordai-pro/)
-[![Manifest Validated](https://img.shields.io/badge/Manifest-100%25_Validated-10b981?style=for-the-badge&logo=checkmarx&logoColor=white)](manifest.xml)
-[![AI Providers](https://img.shields.io/badge/AI_Providers-12_Supported_(BYOK)-6366f1?style=for-the-badge&logo=openai&logoColor=white)](#-multi-provider-ai-suite-12-providers--byok)
-[![Local LLM Support](https://img.shields.io/badge/Local_AI-Ollama_|_LM_Studio-f97316?style=for-the-badge&logo=ollama&logoColor=white)](#-privacy--100-local-offline-ai-ollama)
-[![Privacy First](https://img.shields.io/badge/Privacy-100%25_Client--Side-14b8a6?style=for-the-badge&logo=shield&logoColor=white)](#-privacy-architecture--security)
-[![License](https://img.shields.io/badge/License-Non--Commercial_(No--Resale)-8b5cf6?style=for-the-badge)](LICENSE)
+# <p align="center">WordAI Pro — Microsoft Word AI Copilot &amp; Research Assistant</p>
+
+<p align="center">
+  <a href="https://waseemkaluwal.github.io/wordai-pro/"><img src="https://img.shields.io/badge/Office_Add--in-Word_2016%2B_|_Online_|_Mac_|_iPad-0078d4?style=for-the-badge&logo=microsoftword&logoColor=white" alt="Office Add-in" /></a>
+  <a href="manifest.xml"><img src="https://img.shields.io/badge/Manifest-100%25_Validated-10b981?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Manifest Validated" /></a>
+  <a href="#-multi-provider-ai-suite-12-providers--byok"><img src="https://img.shields.io/badge/AI_Providers-12_Supported_(BYOK)-6366f1?style=for-the-badge&logo=openai&logoColor=white" alt="AI Providers" /></a>
+  <a href="#-privacy--100-local-offline-ai-ollama"><img src="https://img.shields.io/badge/Local_AI-Ollama_|_LM_Studio-f97316?style=for-the-badge&logo=ollama&logoColor=white" alt="Local LLM Support" /></a>
+  <a href="#-privacy-architecture--security"><img src="https://img.shields.io/badge/Privacy-100%25_Client--Side-14b8a6?style=for-the-badge&logo=shield&logoColor=white" alt="Privacy First" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Non--Commercial_(No--Resale)-8b5cf6?style=for-the-badge" alt="License" /></a>
+</p>
 
 **WordAI Pro** is an open-source, full-featured **AI Writing Assistant, Academic Research Copilot, and Document Automation Studio** that operates directly inside **Microsoft Word** (Word Online, Word for Windows Desktop, Word for Mac, and iPad). 
 
@@ -333,22 +341,22 @@ Highlight any sentence in your Word document and press **`Ctrl + Shift + E`**, o
 
 ```text
 WordAI Pro/
+├── assets/            # Add-in icon files (icon-16.png, icon-32.png, icon-80.png)
 ├── screenshots/       # High-resolution UI showcase & sideloading screenshots
+├── _config.yml        # GitHub Pages Jekyll SEO configuration
+├── robots.txt         # Search engine crawler permissions
+├── sitemap.xml        # XML sitemap for Google & Bing indexing
 ├── manifest.xml       # Office Add-in manifest configuration (Validated across all platforms)
 ├── package.json       # Dependencies, build scripts & dev cert utilities
 ├── README.md          # Comprehensive documentation, API guide & user manual
 ├── commands.html      # Office runtime command host
-├── generate-icons.js  # Zero-dependency PNG icon generator
 ├── ai-provider.js     # Multi-provider AI communication engine (12 providers)
 ├── frameworks-data.js # 28 Pre-built Document Frameworks with skeletons & audit specs
 ├── prompts-data.js    # 48 Curated Pre-built Strategic Prompts across 6 domains
 ├── popup-copilot.html # Detached floating in-place copilot dialog
 ├── taskpane.html      # Add-in UI structure (Modes, Framework Studio, History Drawer)
 ├── taskpane.css       # Complete responsive design system, obsidian dark mode & animations
-├── taskpane.js        # Core logic, Word.run bridge, NLP tools, shortcuts & storage
-├── icon-16.png        # Root add-in icon (16x16)
-├── icon-32.png        # Root add-in icon (32x32)
-└── icon-80.png        # Root add-in icon (80x80)
+└── taskpane.js        # Core logic, Word.run bridge, NLP tools, shortcuts & storage
 ```
 
 ---
