@@ -12,7 +12,7 @@
 Equipped with direct page canvas in-place editing, a native rich Word styling engine, multi-model support across **12 leading AI providers** (including GPT-4o, Claude 3.5 Sonnet, Gemini 2.0 Flash, DeepSeek R1, and local offline Ollama), **28 pre-built document frameworks**, **48 curated prompts**, live citation discovery, and visual redline diff inspection—all with zero external servers and zero telemetry (100% client-side BYOK).
 
 <p align="center">
-  <img src="screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
+  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-hero.png" alt="WordAI Pro running live inside Microsoft Word Desktop" width="100%" />
 </p>
 
 ---
@@ -74,9 +74,9 @@ Equipped with direct page canvas in-place editing, a native rich Word styling en
 
 | 🎨 **AI Content Generation & In-Place Copilot** | 🔬 **Research Copilot & Academic Paper Discovery** |
 | :---: | :---: |
-| <img src="screenshots/screenshot-generate.png" width="100%" alt="AI Content Generation & In-Place Copilot" /> | <img src="screenshots/screenshot-research.png" width="100%" alt="Research Copilot & Academic Paper Discovery" /> |
+| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-generate.png" width="100%" alt="AI Content Generation & In-Place Copilot" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-research.png" width="100%" alt="Research Copilot & Academic Paper Discovery" /> |
 | 📋 **28 Document Frameworks Studio** | ⚡ **48 Strategic Prompts Library** |
-| <img src="screenshots/screenshot-frameworks.png" width="100%" alt="28 Document Frameworks Studio" /> | <img src="screenshots/screenshot-prompts.png" width="100%" alt="48 Strategic Prompts Library" /> |
+| <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-frameworks.png" width="100%" alt="28 Document Frameworks Studio" /> | <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-prompts.png" width="100%" alt="48 Strategic Prompts Library" /> |
 
 ---
 
@@ -139,7 +139,7 @@ Comprehensive document engineering studio across 5 critical domains:
   10. 🎓 **Academic Scholar & Faculty Curriculum Vitae:** Peer-reviewed publications in APA, NSF/ERC research grants ($1M+), doctoral mentorship, and university faculty appointments.
 
 <p align="center">
-  <img src="screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
+  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-canvas-framework.png" alt="Document Framework Studio inserting structured Executive Business Plan directly onto Microsoft Word canvas" width="100%" />
 </p>
 
 **⚡ 3 Capabilities Per Framework:**
@@ -245,7 +245,7 @@ WordAI Pro v1.0.1 introduces six game-changing superpowers designed to surpass p
 7. Click **⚙️ Settings** in the add-in header $\rightarrow$ select your provider (e.g. Gemini, OpenAI, Groq, or Ollama) $\rightarrow$ enter your key $\rightarrow$ click **Save Settings**.
 
 <p align="center">
-  <img src="screenshots/screenshot-sideload.png" alt="Sideloading WordAI Pro manifest.xml directly into Microsoft Word" width="100%" />
+  <img src="https://waseemkaluwal.github.io/wordai-pro/screenshots/screenshot-sideload.png" alt="Sideloading WordAI Pro manifest.xml directly into Microsoft Word" width="100%" />
 </p>
 
 ---
