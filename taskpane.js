@@ -1,6 +1,6 @@
 // taskpane.js — WordAI Pro core logic
 
-Office.onReady(() => {
+function initApp() {
   loadSettings();
   bindTabs();
   bindQuickActions();
@@ -12,7 +12,13 @@ Office.onReady(() => {
   bindOutputActions();
   bindSettings();
   bindResearchButtons();
-});
+}
+
+if (typeof Office !== 'undefined') {
+  Office.onReady(() => initApp());
+} else {
+  document.addEventListener('DOMContentLoaded', initApp);
+}
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -32,6 +38,7 @@ function hideOutput() {
 }
 
 async function getContext(mode) {
+  if (typeof Word === 'undefined') return '';
   return Word.run(async (ctx) => {
     if (mode === 'selection') {
       const sel = ctx.document.getSelection();
@@ -50,6 +57,10 @@ async function getContext(mode) {
 }
 
 async function insertText(text, replace = false) {
+  if (typeof Word === 'undefined') {
+    showError('Word API not available in this context.');
+    return;
+  }
   return Word.run(async (ctx) => {
     const sel = ctx.document.getSelection();
     if (replace) {
