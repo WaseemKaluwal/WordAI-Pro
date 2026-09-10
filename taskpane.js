@@ -1,46 +1,59 @@
 // taskpane.js — WordAI Pro core logic
 
-function initApp() {
-  loadSettings();
-  bindTabs();
-  bindSubtabs();
-  bindQuickActions();
-  bindGenerateButtons();
-  bindEditButtons();
-  bindToneButtons();
-  bindChatButtons();
-  bindPromptBox();
-  bindOutputActions();
-  bindSettings();
-  bindResearchButtons();
-  bindDocumentButtons();
-  bindFileUpload();
-  bindDarkMode();
-  bindWordCountTracker();
-  bindEmailButtons();
-  bindSemanticSearch();
-  bindDiffToggle();
-  bindAutocomplete();
-  bindDictation();
-  bindBrandVoice();
-  bindCareerButtons();
-  bindSocialButtons();
-  bindSlidesButtons();
-  bindFrameworkStudio();
-  bindHistoryDrawer();
-  bindKeyboardShortcuts();
-  bindInstantSelectionCopilot();
-  bindPromptsLibrary();
-  bindHumanizer();
-  bindCitationStudio();
-  bindTableGenerator();
-  bindFormatPreservingTranslator();
-}
+const providerUrls = {
+  openai:     { keyUrl: 'https://platform.openai.com/api-keys', name: 'OpenAI' },
+  anthropic:  { keyUrl: 'https://console.anthropic.com/settings/keys', name: 'Anthropic' },
+  gemini:     { keyUrl: 'https://aistudio.google.com/app/apikey', name: 'Google AI Studio' },
+  deepseek:   { keyUrl: 'https://platform.deepseek.com/api_keys', name: 'DeepSeek' },
+  groq:       { keyUrl: 'https://console.groq.com/keys', name: 'Groq' },
+  mistral:    { keyUrl: 'https://console.mistral.ai/api-keys', name: 'Mistral AI' },
+  openrouter: { keyUrl: 'https://openrouter.ai/keys', name: 'OpenRouter' },
+  together:   { keyUrl: 'https://api.together.xyz/settings/api-keys', name: 'Together AI' },
+  perplexity: { keyUrl: 'https://www.perplexity.ai/settings/api', name: 'Perplexity' },
+  cohere:     { keyUrl: 'https://dashboard.cohere.com/api-keys', name: 'Cohere' },
+  ollama:     { keyUrl: '', name: 'Ollama' },
+  custom:     { keyUrl: '', name: 'Custom' }
+};
 
-if (typeof Office !== 'undefined') {
-  Office.onReady(() => initApp());
-} else {
-  document.addEventListener('DOMContentLoaded', initApp);
+function initApp() {
+  try {
+    loadSettings();
+    bindTabs();
+    bindSubtabs();
+    bindQuickActions();
+    bindGenerateButtons();
+    bindEditButtons();
+    bindToneButtons();
+    bindChatButtons();
+    bindPromptBox();
+    bindOutputActions();
+    bindSettings();
+    bindResearchButtons();
+    bindDocumentButtons();
+    bindFileUpload();
+    bindDarkMode();
+    bindWordCountTracker();
+    bindEmailButtons();
+    bindSemanticSearch();
+    bindDiffToggle();
+    bindAutocomplete();
+    bindDictation();
+    bindBrandVoice();
+    bindCareerButtons();
+    bindSocialButtons();
+    bindSlidesButtons();
+    bindFrameworkStudio();
+    bindHistoryDrawer();
+    bindKeyboardShortcuts();
+    bindInstantSelectionCopilot();
+    bindPromptsLibrary();
+    bindHumanizer();
+    bindCitationStudio();
+    bindTableGenerator();
+    bindFormatPreservingTranslator();
+  } catch (err) {
+    console.error('WordAI Pro initialization error:', err);
+  }
 }
 
 // ─── Word Count Tracker ──────────────────────────────────────────────────
@@ -3819,21 +3832,6 @@ Output ONLY valid JSON without markdown formatting.`;
   }
 }
 
-const providerUrls = {
-  openai:     { keyUrl: 'https://platform.openai.com/api-keys', name: 'OpenAI' },
-  anthropic:  { keyUrl: 'https://console.anthropic.com/settings/keys', name: 'Anthropic' },
-  gemini:     { keyUrl: 'https://aistudio.google.com/app/apikey', name: 'Google AI Studio' },
-  deepseek:   { keyUrl: 'https://platform.deepseek.com/api_keys', name: 'DeepSeek' },
-  groq:       { keyUrl: 'https://console.groq.com/keys', name: 'Groq' },
-  mistral:    { keyUrl: 'https://console.mistral.ai/api-keys', name: 'Mistral AI' },
-  openrouter: { keyUrl: 'https://openrouter.ai/keys', name: 'OpenRouter' },
-  together:   { keyUrl: 'https://api.together.xyz/settings/api-keys', name: 'Together AI' },
-  perplexity: { keyUrl: 'https://www.perplexity.ai/settings/api', name: 'Perplexity' },
-  cohere:     { keyUrl: 'https://dashboard.cohere.com/api-keys', name: 'Cohere' },
-  ollama:     { keyUrl: '', name: 'Ollama' },
-  custom:     { keyUrl: '', name: 'Custom' }
-};
-
 function updateProviderUI(provider) {
   const baseUrlGroup = document.getElementById('base-url-group');
   const baseUrlInput = document.getElementById('api-base-url-input');
@@ -4497,5 +4495,22 @@ Return ONLY the translated formatted text without preamble or commentary.`;
   } finally {
     showLoading(false);
   }
+}
+
+// ─── Application Bootstrap ──────────────────────────────────────────────────
+function startWordAI() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initApp());
+  } else {
+    initApp();
+  }
+}
+
+if (typeof Office !== 'undefined') {
+  Office.onReady(() => {
+    startWordAI();
+  });
+} else {
+  startWordAI();
 }
 
